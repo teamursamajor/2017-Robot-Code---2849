@@ -1,7 +1,7 @@
 # 2017-Robot-Code---2849
 2017 Ursa Major 2849 Programming Team Code Repository
 
-Welcome to the 2017 Programming Conglomeration Github Reposotory, this is where all of our code will be placed.
+Welcome to the 2017 Programming Conglomeration GitHub Repository, this is where all of our code will be placed.
 
 Git Quick Reference for team members:
 
