@@ -1,18 +1,17 @@
-# 2017-Robot-Code---2849
-2017 Ursa Major 2849 Programming Team Code Repository
-
+#2017-Robot-Code---2849
 Welcome to the 2017 Programming Conglomeration GitHub Repository, this is where all of our code will be placed.
 
-Git Quick Reference for team members:
+###Git Quick Reference for team members
 
-To add this repo to your computer:
+#####Add repo to your computer
+
 In the command line, type 
     
     git clone https://github.com/teamursamajor/2017-Robot-Code---2849
 
 This clones the 2017 Robot Code repository to your computer, Git will now track any changes you make to existing files.
 
-Adding files:
+#####Adding files
 If you created a new file or changed a file, such as "Drive.java", you will need to tell Git to track this change.
 Simply type 
 
@@ -20,14 +19,14 @@ Simply type
 
 replacing Drive.java with the file you want to add, Git will now "stage" that change.
 
-Deleting files:
+#####Deleting files
 If you want to remove a file from the repository, type 
 
     git rm Drive.java
     
 or whatever file you want to delete. This deletes the file from your computer as well.
 
-Checking your files:
+#####Checking your files
 Typing 
     
     git status
@@ -35,7 +34,7 @@ Typing
 will tell you the status of your files, such as what has been added, modified, or deleted.
 Files under "Changes to be committed:" will be committed to the repository, while files under "Changes not staged for commit:" will need to be added before committing to make the changes permanent.
 
-Committing:
+#####Committing:
 Your code needs to be committed after you have made changes. Otherwise, the changes will only stay on your computer and not be added to the online repository.
 Typing 
 
@@ -55,7 +54,7 @@ which will automatically add all files that have been changed. It will NOT add f
 
     git add -A
 
-Pushing:
+#####Pushing:
 After committing, you must push your code to the repository to save your changes. Simply type 
     
     git push
