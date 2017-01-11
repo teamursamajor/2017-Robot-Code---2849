@@ -91,7 +91,7 @@ public class XboxController extends Joystick implements Runnable {
 	}
 	
 	/**
-	 * Checks if an axis is greater than (NOT equal to) a threshold
+	 * Checks if an axis is less than (NOT equal to) a threshold
 	 * @param axisNumber
 	 * 				axis whose value is to be compared
 	 * @param lessThan
