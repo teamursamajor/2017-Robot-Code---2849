@@ -34,6 +34,7 @@ public class Robot extends IterativeRobot {
     */
     	 new Thread(() -> {
              UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+             System.out.println("Hello World!");
              camera.setResolution(640, 480);
              
              CvSink cvSink = CameraServer.getInstance().getVideo();
