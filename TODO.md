@@ -2,6 +2,12 @@
 
 Tasks for the programming team.
 
+###Autonomous Tasks
+
+- Update files copied from last year with new methods
+- Begin discussing with systems on intended procedures
+- Chart a strategy and intended solutions.
+
 ###Drive Tasks
 
 - Headless drive
