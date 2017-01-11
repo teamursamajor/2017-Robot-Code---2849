@@ -2,6 +2,9 @@
 package org.usfirst.frc.team2849.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.Talon;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -12,6 +15,11 @@ import edu.wpi.first.wpilibj.IterativeRobot;
  */
 public class Robot extends IterativeRobot {
 
+	Talon t1 = new Talon(0);
+	Talon t2 = new Talon(1);
+	Joystick joy1 = new Joystick(0);
+	RobotDrive drive = new RobotDrive(t1, t2);
+	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -44,7 +52,8 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-        
+    	
+        drive.mecanumDrive_Cartesian(joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_X), joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_Y), joy1.getRawAxis(XboxController.AXIS_RIGHTSTICK_X), 0);
     }
     
     /**
