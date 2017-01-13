@@ -55,6 +55,7 @@ public class Robot extends IterativeRobot {
 
 			while (!Thread.interrupted()) {
 		
+<<<<<<< HEAD
 				if (cvSink.grabFrame(source) == 0)
 				{
 					// Send the output the error.
@@ -111,6 +112,30 @@ public class Robot extends IterativeRobot {
 		visionThread.start();
 	}
 
+=======
+		CameraServer.getInstance().startAutomaticCapture();
+    */
+    	 new Thread(() -> {
+             UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+             System.out.println("Hello World!");
+             camera.setResolution(640, 480);
+             
+             CvSink cvSink = CameraServer.getInstance().getVideo();
+             CvSource outputStream = CameraServer.getInstance().putVideo("Blur", 640, 480);
+             
+             Mat source = new Mat();
+             Mat output = new Mat();
+             
+             while(true) {
+                 cvSink.grabFrame(source);
+                 Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+                 outputStream.putFrame(output);
+             } 
+         }).start();
+ 
+    	}
+    
+>>>>>>> f73c72ad8e506de9b82c821d53dbef4419010e24
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
 	 * between different autonomous modes using the dashboard. The sendable
