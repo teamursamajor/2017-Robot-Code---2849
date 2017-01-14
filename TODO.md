@@ -14,7 +14,9 @@ Tasks for the programming team.
     - Decide between magnometer/gyro
     - Consider accuracy errors between measuring tool
     - Optimize code by reduing function calls.
-
+- Auto Drive
+    - (Put something here later)
+    
 ###Subsystem Tasks
 
 - Climber
