@@ -32,31 +32,37 @@ public class Robot extends IterativeRobot {
 	private double maxArea;
 	private double area;
 	private int maxContour;
-	// private Semaphore sem;
+	private boolean threadRunning = true;
 
+	//runs when the robot is disabled
+//	public void disabledInit() {
+//		threadRunning = false;
+//	}
+	
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
-		// CameraServer.getInstance().startAutomaticCapture();
+		threadRunning = true;
+		System.out.println("*****************************************************************1");
 
 		visionThread = new Thread(() -> {
 
 			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-			camera.setResolution(640, 480);
-			System.out.println("pls work");
-		
-	
-
+			//camera.setResolution(640, 480);
+			System.out.println("*****************************************************************2");
 			CvSink cvSink = CameraServer.getInstance().getVideo();
-			CvSource outputStream = CameraServer.getInstance().putVideo("Brightness Cam", 640, 480);
+			System.out.println("*****************************************************************3");
+			CvSource outputStream = CameraServer.getInstance().putVideo("BC", 160, 120);
+			System.out.println("*****************************************************************4");
 			Mat source = new Mat();
 			Mat output = new Mat();
 			Mat temp = new Mat();
-			// sem = new Semaphore(1);
 
-			while (!Thread.interrupted()) {
+			System.out.println("*****************************************************************4.5 " + threadRunning);
+			while (threadRunning) {
+				System.out.println("*****************************************************************5");
 				if (cvSink.grabFrame(source) == 0) {
 					// Send the output the error.
 					outputStream.notifyError(cvSink.getError());
@@ -75,13 +81,14 @@ public class Robot extends IterativeRobot {
 				 * the second source in cvtColor to something else so that
 				 * source is unchanged, then display source
 				 */
-				//System.out.println("test");
+
+				
+				System.out.println("pls work ");
 				outputStream.putFrame(output);
 
 			}
-
+				outputStream.free();
 		});
-		//visionThread.setDaemon(true);
 		visionThread.start();
 	}
 
