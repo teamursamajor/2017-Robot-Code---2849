@@ -1,7 +1,5 @@
 package org.usfirst.frc.team2849.robot;
 
-import java.util.ArrayList;
-
 import edu.wpi.first.wpilibj.Talon;
 
 public class Shooter {
@@ -13,10 +11,16 @@ public class Shooter {
 	/* 1. start motor
 	 * 3. stop motor after shooting is complete
 	 */
-	
+	private static Talon intakeWheel;
+	private static Talon shooterWheel;
 	//buttons, one to turn on turns off automatically, another to kill early,
 	static boolean killedShooter = false;
-	static ArrayList<Talon> shootermotors= new ArrayList<Talon>();
+	
+	public static void shooterInit(){
+		intakeWheel = new Talon(2);
+		shooterWheel = new Talon(5);
+	}
+	
 	public static boolean killShooter(){//call this from controller to stop firing early
 		return true;
 	}
@@ -42,14 +46,14 @@ public class Shooter {
 		return true;//this will use any sensors we can use to see if
 		//there are still balls to be fired
 	}
-	private static void startshootmotors(){
-		for (Talon motor: shootermotors){
-			motor.set(.5);//-1 to 1
-		}
-	}
-	private static void stopshootmotors(){
-		for (Talon motor: shootermotors){
-			motor.set(0);
-		}
-	}
+//	private static void startshootmotors(){
+//		for (Talon motor: shootermotors){
+//			motor.set(.5);//-1 to 1
+//		}
+//	}
+//	private static void stopshootmotors(){
+//		for (Talon motor: shootermotors){
+//			motor.set(0);
+//		}
+//	}
 }
