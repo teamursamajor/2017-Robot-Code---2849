@@ -17,7 +17,7 @@ public class Robot extends IterativeRobot {
 
 	Talon t1 = new Talon(0);
 	Talon t2 = new Talon(1);
-	Joystick joy1 = new Joystick(0);
+	WingmanExtreme joy = new WingmanExtreme(0);
 	RobotDrive drive = new RobotDrive(t1, t2);
 	
     /**
@@ -53,7 +53,11 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
     	
-        drive.mecanumDrive_Cartesian(joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_X), joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_Y), joy1.getRawAxis(XboxController.AXIS_RIGHTSTICK_X), 0);
+     //   drive.mecanumDrive_Cartesian(joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_X), joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_Y), joy1.getRawAxis(XboxController.AXIS_RIGHTSTICK_X), 0);
+        
+        Drive.mechanumDrive(joy.getAxisGreaterThan(WingmanExtreme.AXIS_TILT_X, .1), joy.getAxisGreaterThan(WingmanExtreme.AXIS_TILT_Y, .1), joy.getAxisGreaterThan(WingmanExtreme.AXIS_ROTATE_Z, .1));
+        
+        
     }
     
     /**

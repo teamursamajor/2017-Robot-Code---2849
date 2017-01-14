@@ -39,8 +39,12 @@ public class WingmanExtreme extends Joystick {
 		return this.getRawAxis(axisNumber);
 	}
 
-	public boolean getAxisGreaterThan(int axisNumber, double greaterThan) {
-		return this.getRawAxis(axisNumber) > greaterThan;
+	public double getAxisGreaterThan(int axisNumber, double greaterThan) {
+		if(Math.abs(this.getRawAxis(axisNumber)) > greaterThan){
+			return this.getRawAxis(axisNumber);
+		}else{
+			return 0;
+		}
 	}
 
 	public boolean getAxisLessThan(int axisNumber, double lessThan) {
