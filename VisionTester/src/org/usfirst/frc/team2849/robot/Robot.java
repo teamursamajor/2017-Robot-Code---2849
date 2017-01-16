@@ -24,72 +24,118 @@ import java.util.concurrent.Semaphore;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends IterativeRobot {
-
+public class Robot extends IterativeRobot 
+{
+//VISION II: ELECTRIC BOOGALOO
+//OPENING CREDITS: DEFINING VARIABLES
+// **cue Star Wars music**
 	Thread visionThread;
 	private List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+	private List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
 	private Mat hierarchy = new Mat();
-	private double maxArea;
+	private double maxArea = 0;
+	private double almostMaxArea = 0;
 	private double area;
-	private int maxContour;
 	private boolean threadRunning = true;
-
-	//runs when the robot is disabled
-//	public void disabledInit() {
-//		threadRunning = false;
-//	}
+	private int maxIndex = 0;
+	private int almostMaxIndex = 0;
 	
+	// runs when the robot is disabled
+	// public void disabledInit() {
+	// threadRunning = false;
+	// }
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
-	public void robotInit() {
+	
+//PART II: SETTING UP THE CAMERA
+	
+	public void robotInit() 
+	{
 		threadRunning = true;
-		System.out.println("*****************************************************************1");
+		// System.out.println("*****************************************************************1");
 
-		visionThread = new Thread(() -> {
-
+		visionThread = new Thread(() -> 
+		{
+			/*
+			 * This code creates a USBCamera for some reason and then starts
+			 * the automatic capture. CvSink forwards frames, CvSource obtains
+			 * the frames and provides name/resolution.
+			 * Then we define a bunch of mats for the frame inputs
+			 */
 			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
-			//camera.setResolution(640, 480);
-			System.out.println("*****************************************************************2");
+			// camera.setResolution(640, 480);
+			// System.out.println("*****************************************************************2");
 			CvSink cvSink = CameraServer.getInstance().getVideo();
-			System.out.println("*****************************************************************3");
+			// System.out.println("*****************************************************************3");
 			CvSource outputStream = CameraServer.getInstance().putVideo("BC", 160, 120);
-			System.out.println("*****************************************************************4");
+			// System.out.println("*****************************************************************4");
 			Mat source = new Mat();
 			Mat output = new Mat();
 			Mat temp = new Mat();
 
-			System.out.println("*****************************************************************4.5 " + threadRunning);
-			while (threadRunning) {
-				System.out.println("*****************************************************************5");
-				if (cvSink.grabFrame(source) == 0) {
+			// System.out.println("*****************************************************************4.5" + threadRunning);
+			while (threadRunning) 
+			{
+				// System.out.println("*****************************************************************5");
+				if (cvSink.grabFrame(source) == 0) 
+				{
 					// Send the output the error.
 					outputStream.notifyError(cvSink.getError());
 					// skip the rest of the current iteration
 					continue;
 				}
-
-				Imgproc.cvtColor(source, source, Imgproc.COLOR_BGR2HSV);
-				Core.extractChannel(source, source, 2);
-				Imgproc.threshold(source, source, 200, 600, Imgproc.THRESH_BINARY);
-				Imgproc.Canny(source, output, 210, 215);
-				Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
-				/*
-				 * If we want to be able to see the camera feed itself, change
-				 * the second source in cvtColor to something else so that
-				 * source is unchanged, then display source
-				 */
-
 				
-				System.out.println("pls work ");
-				outputStream.putFrame(output);
+//PART III: THE FINDING OF THE RECTANGLES
+				/*
+				 * Does stuff to the frames captured. Temp exists so that
+				 * the original source can be preserved and outputted after
+				 * changes have been made but we didn't use that
+				 */
+				Imgproc.cvtColor(source, temp, Imgproc.COLOR_BGR2HSV);
+				Core.extractChannel(temp, temp, 2);
+				Imgproc.threshold(temp, temp, 200, 600, Imgproc.THRESH_BINARY);
+				Imgproc.Canny(temp, output, 210, 215);
+				Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+				//Goe
+				for (int i = 0; i < contours.size(); i++) 
+				{
 
+					area = Imgproc.contourArea(contours.get(i));
+					if (area > maxArea)
+					{
+						almostMaxArea = maxArea;
+						maxArea = area;
+						maxIndex = i;
+						
+					} 
+					else if (area > almostMaxArea)
+					{
+						almostMaxArea = area;
+						almostMaxIndex = i;
+					}
+					
+				}
+				
+				maxContours.add(contours.get(maxIndex));
+				maxContours.add(contours.get(almostMaxIndex));
+			
+
+				// System.out.println("pls work ");
+				outputStream.putFrame(output);
 			}
-				outputStream.free();
+			outputStream.free();
 		});
 		visionThread.start();
+//PART IV: AUTO ALIGN
+//PART V: ???
+//PART VI: PROFIT
+//PART VII: ENDING CREDITS
+//VISION III: PLEASE HELP ME coming to theaters near you January 2018
+//Announcing VISION IV: ROBOT NEVERMORE for an expected January 2019 release
+	
 	}
 
 	/*
@@ -117,7 +163,7 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control public void
 	 * teleopPeriodic() { }
 	 * 
- * /** This function is called periodically during test mode
+	 * /** This function is called periodically during test mode
 	 */
 	public void testPeriodic() {
 
