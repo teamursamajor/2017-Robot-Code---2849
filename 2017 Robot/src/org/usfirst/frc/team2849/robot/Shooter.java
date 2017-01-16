@@ -12,13 +12,15 @@ public class Shooter {
 	 * 3. stop motor after shooting is complete
 	 */
 	private static Talon intakeWheel;
-	private static Talon shooterWheel;
+	private static Talon shooterWheel1;
+	private static Talon shooterWheel2;
 	//buttons, one to turn on turns off automatically, another to kill early,
 	static boolean killedShooter = false;
 	
 	public static void shooterInit(){
 		intakeWheel = new Talon(2);
-		shooterWheel = new Talon(5);
+		shooterWheel1 = new Talon(5);
+		shooterWheel2 = new Talon(6);
 	}
 	
 	public static boolean killShooter(){//call this from controller to stop firing early

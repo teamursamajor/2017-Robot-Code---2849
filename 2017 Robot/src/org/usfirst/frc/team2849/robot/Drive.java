@@ -4,10 +4,10 @@ import edu.wpi.first.wpilibj.Talon;
 
 public class Drive {
 
-	static Talon topleft = new Talon(0);
-	static Talon topright = new Talon(1);
-	static Talon bottomleft = new Talon(2);
-	static Talon bottomright = new Talon(3);
+	private static Talon topleft = new Talon(0);
+	private static Talon topright = new Talon(1);
+	private static Talon bottomleft = new Talon(2);
+	private static Talon bottomright = new Talon(3);
 	
 	/**
 	 * This will drive the robot in omnidirectional holonomic drive
