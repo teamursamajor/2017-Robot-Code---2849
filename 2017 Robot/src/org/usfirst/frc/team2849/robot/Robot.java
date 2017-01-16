@@ -55,8 +55,8 @@ public class Robot extends IterativeRobot {
     	
      //   drive.mecanumDrive_Cartesian(joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_X), joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_Y), joy1.getRawAxis(XboxController.AXIS_RIGHTSTICK_X), 0);
         
-        Drive.mechanumDrive(joy.getAxisGreaterThan(WingmanExtreme.AXIS_TILT_X, .1), joy.getAxisGreaterThan(WingmanExtreme.AXIS_TILT_Y, .1), joy.getAxisGreaterThan(WingmanExtreme.AXIS_ROTATE_Z, .1));
-        
+        Drive.mechanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X, .1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1), joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
+        Shooter.shoot(joy.getAxisGreaterThan(XboxController.AXIS_RIGHTTRIGGER, .1));
         
     }
     

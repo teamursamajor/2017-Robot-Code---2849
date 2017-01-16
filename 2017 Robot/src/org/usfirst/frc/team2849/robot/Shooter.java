@@ -26,22 +26,27 @@ public class Shooter {
 	public static boolean killShooter(){//call this from controller to stop firing early
 		return true;
 	}
-	int caseforshooter=0;
-	public static void shoot(boolean button){// call this from controller to begin firing
+	//int caseforshooter=0;
+	public static void shoot(double axis){// call this from controller to begin firing
 		killedShooter = false;
-		int newcase;
-		if (button){
-			
+		
+		if(axis > 0){
+			shooterWheel1.set(1.0);
+			shooterWheel2.set(-1.0);
 		}else{
-			
+			shooterWheel1.set(0);
+			shooterWheel2.set(0);
 		}
-		switch(0){
-			case 1:
-				break;
-			case 2:
-				break;
-				
-		}
+		
+		//int newcase;
+		
+//		switch(0){
+//			case 1:
+//				break;
+//			case 2:
+//				break;
+//				
+//		}
 	}
 	private static boolean keepshooting(){
 		
