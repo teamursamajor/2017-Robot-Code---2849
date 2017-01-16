@@ -15,8 +15,7 @@ public class Shooter {
 	private static Talon shooterWheel1;
 	private static Talon shooterWheel2;
 	//buttons, one to turn on turns off automatically, another to kill early,
-	static boolean killedShooter = false;
-	
+
 	public static void shooterInit(){
 		intakeWheel = new Talon(2);
 		shooterWheel1 = new Talon(5);
@@ -26,9 +25,13 @@ public class Shooter {
 	public static boolean killShooter(){//call this from controller to stop firing early
 		return true;
 	}
-	//int caseforshooter=0;
+	
+	/**
+	 * Runs the shooter wheels as long as the trigger is being pressed
+	 * @param axis
+	 * 			Axis of the trigger that runs the motors
+	 */
 	public static void shoot(double axis){// call this from controller to begin firing
-		killedShooter = false;
 		
 		if(axis > 0){
 			shooterWheel1.set(1.0);
@@ -47,6 +50,21 @@ public class Shooter {
 //				break;
 //				
 //		}
+	}
+	/**
+	 * Runs the shooter wheels as long as the button is being pressed
+	 * @param button
+	 * 			Value of the button that runs the motors
+	 */
+	public static void shoot(boolean button){// call this from controller to begin firing
+			
+			if(button){
+				shooterWheel1.set(1.0);
+				shooterWheel2.set(-1.0);
+			}else{
+				shooterWheel1.set(0);
+				shooterWheel2.set(0);
+			}
 	}
 	private static boolean keepshooting(){
 		
