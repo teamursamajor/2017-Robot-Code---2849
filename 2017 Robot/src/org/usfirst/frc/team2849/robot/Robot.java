@@ -56,7 +56,7 @@ public class Robot extends IterativeRobot {
     	
      //   drive.mecanumDrive_Cartesian(joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_X), joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_Y), joy1.getRawAxis(XboxController.AXIS_RIGHTSTICK_X), 0);
         
-        Drive.mechanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X, .1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1), joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
+        Drive.mecanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X, .1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1), joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
         Shooter.shoot(joy.getAxisGreaterThan(XboxController.AXIS_RIGHTTRIGGER, .1));
         
     }
@@ -69,6 +69,6 @@ public class Robot extends IterativeRobot {
     }
     public void disabledPeriodic(){
     	Shooter.killShooter();
-    	Shooter.stopIntake();
+    	Shooter.intakeValue(0);
     }
 }

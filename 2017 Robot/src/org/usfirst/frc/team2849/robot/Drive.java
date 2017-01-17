@@ -20,7 +20,7 @@ public class Drive {
 	 * 			The rotation of the joystick.
 	 * 
 	 */	
-	public static void mechanumDrive(double xaxis, double yaxis, double raxis){
+	public static void mecanumDrive(double xaxis, double yaxis, double raxis){
 		
 		double r = Math.hypot(xaxis, yaxis);
 		double robotAngle = Math.atan2(yaxis, xaxis) - Math.PI / 4;
@@ -33,8 +33,13 @@ public class Drive {
 		topright.set(v2);
 		bottomleft.set(v3);
 		bottomright.set(v4);
-
-		
+	
+		if (xaxis != 0 || yaxis != 0 || raxis!= 0){
+			Shooter.intakeValue(1);
+		}
+		else{
+			Shooter.intakeValue(0);
+		}
 	}
 	
 
