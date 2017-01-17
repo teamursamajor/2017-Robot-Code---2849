@@ -22,10 +22,10 @@ public class Shooter {
 		intakeWheel = new Talon(2);
 		shooterWheel1 = new Talon(5);
 		shooterWheel2 = new Talon(6);
-		intakeInit();
+
 	}
-	public static void intakeInit(){
-		intakeWheel.set(1.0);//definitely lower
+	public static void intakeValue(double value ){
+		intakeWheel.set(value);//definitely lower
 	}
 	public static void stopIntake(){
 		intakeWheel.set(0.0);
