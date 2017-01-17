@@ -15,7 +15,13 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import java.util.concurrent.Semaphore;
+import org.opencv.imgproc.Moments;
+		// 1/17- PIXELS TO INCHES
+		/*
+		 *  idea: we keep perceived as pixels b/c it can't be converted
+		 *  but we find distance instead & use that to convert
+		 *  inches of known into pixels?
+		 */
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,11 +30,14 @@ import java.util.concurrent.Semaphore;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
+
 public class Robot extends IterativeRobot 
 {
+	
 //VISION II: ELECTRIC BOOGALOO
 //OPENING CREDITS: DEFINING VARIABLES
 // **cue Star Wars music**
+	
 	Thread visionThread;
 	private List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 	private List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
@@ -39,6 +48,9 @@ public class Robot extends IterativeRobot
 	private boolean threadRunning = true;
 	private int maxIndex = 0;
 	private int almostMaxIndex = 0;
+	private double perceived;
+	private double known;
+	private double angle;
 	
 	// runs when the robot is disabled
 	// public void disabledInit() {
@@ -65,6 +77,7 @@ public class Robot extends IterativeRobot
 			 * the frames and provides name/resolution.
 			 * Then we define a bunch of mats for the frame inputs
 			 */
+			
 			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 			// camera.setResolution(640, 480);
 			// System.out.println("*****************************************************************2");
@@ -72,6 +85,7 @@ public class Robot extends IterativeRobot
 			// System.out.println("*****************************************************************3");
 			CvSource outputStream = CameraServer.getInstance().putVideo("BC", 160, 120);
 			// System.out.println("*****************************************************************4");
+	
 			Mat source = new Mat();
 			Mat output = new Mat();
 			Mat temp = new Mat();
@@ -89,21 +103,41 @@ public class Robot extends IterativeRobot
 				}
 				
 //PART III: THE FINDING OF THE RECTANGLES
-				/*
+			
+				/* Theres a light shining on green reflective tape & we need to find
+				 * the location of the tape:
 				 * Does stuff to the frames captured. Temp exists so that
 				 * the original source can be preserved and outputted after
 				 * changes have been made but we didn't use that
+				 * Color changes it to HSV, extract channel 
+				 * makes it only show one of those channels (H, S, or V)
+				 * we don't know which one
+				 * Threshold makes it only show stuff at a certain brightness
+				 * Canny makes it only show outlines
+				 * find contours finds the info for those lines
 				 */
+				
 				Imgproc.cvtColor(source, temp, Imgproc.COLOR_BGR2HSV);
 				Core.extractChannel(temp, temp, 2);
 				Imgproc.threshold(temp, temp, 200, 600, Imgproc.THRESH_BINARY);
 				Imgproc.Canny(temp, output, 210, 215);
 				Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-				//Goe
+				
+				/*
+				 * Goes through each of the contours and finds the largest
+				 * and second largest areas and their index in the matrix
+				 * contourArea finds the area
+				 * i is the index number of the contour in the matrix
+				 * maxContours.add adds the areas of the contours into 
+				 * a matrix which gives you the contours you can use for
+				 * auto align
+				 */
+				
 				for (int i = 0; i < contours.size(); i++) 
 				{
 
 					area = Imgproc.contourArea(contours.get(i));
+					
 					if (area > maxArea)
 					{
 						almostMaxArea = maxArea;
@@ -123,13 +157,29 @@ public class Robot extends IterativeRobot
 				maxContours.add(contours.get(almostMaxIndex));
 			
 
-				// System.out.println("pls work ");
+				// System.out.println("pls work ");'
+				// puts the frame out to the camera, only for testing the code tbh
 				outputStream.putFrame(output);
 			}
+			//I don't know what this does but java isn't mad at us soooooo
 			outputStream.free();
+			
 		});
+		
 		visionThread.start();
+		
 //PART IV: AUTO ALIGN
+		//it may be off slightly but we should have enough lee-way for it to work
+		
+		// the length of one tape to the other tape in the camera in pixels: 
+		//needs to be converted to inches for the formula
+		perceived = 0;
+		
+		//this is the inches from center of one tape to center of other tape
+		known = 8.25;
+		angle = Math.acos(perceived / known);
+		
+		
 //PART V: ???
 //PART VI: PROFIT
 //PART VII: ENDING CREDITS
@@ -148,6 +198,7 @@ public class Robot extends IterativeRobot
 	 * switch structure below with additional strings. If using the + *
 	 * SendableChooser make sure to add them to the chooser code above as well.
 	 */
+	
 	public void autonomousInit() {
 
 	}
