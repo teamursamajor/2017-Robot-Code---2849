@@ -3,6 +3,7 @@ package org.usfirst.frc.team2849.robot;
 import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.core.Core;
@@ -155,7 +156,8 @@ public class Robot extends IterativeRobot
 				
 				maxContours.add(contours.get(maxIndex));
 				maxContours.add(contours.get(almostMaxIndex));
-			
+				System.out.println(maxArea);
+				System.out.println(almostMaxArea);
 
 				// System.out.println("pls work ");'
 				// puts the frame out to the camera, only for testing the code tbh
@@ -171,20 +173,26 @@ public class Robot extends IterativeRobot
 //PART IV: AUTO ALIGN
 		//it may be off slightly but we should have enough lee-way for it to work
 		
-		// the length of one tape to the other tape in the camera in pixels: 
-		//needs to be converted to inches for the formula
-		perceived = 0;
+		/* Possibility:
+		 * find one target's length in pixels, you know that that length = 2 inches, 
+		 * so you know that 2/pixel length = pixels per inch
+		 * use that to get length of distance b/w centers of both tapes
+		 * use charlie's formula thing with the value we get being perceived?
+		 */
 		
+		// the length of one tape to the other tape in the camera in pixels: 
+		//needs to be converted to inches or inches converted to pixels for formula
+		perceived = 0;
+		Imgproc.boundingRect(contours.get(maxIndex));
 		//this is the inches from center of one tape to center of other tape
 		known = 8.25;
 		angle = Math.acos(perceived / known);
-		
-		
+			
 //PART V: ???
 //PART VI: PROFIT
 //PART VII: ENDING CREDITS
-//VISION III: PLEASE HELP ME coming to theaters near you January 2018
-//Announcing VISION IV: ROBOT NEVERMORE for an expected January 2019 release
+//VISION III: PLEASE HELP ME coming to theaters near you January 2018 (tentative name) 
+//Announcing VISION IV: ROBOT NEVERMORE for an expected January 2019 release (tentative name)
 	
 	}
 
