@@ -3,7 +3,9 @@ package org.usfirst.frc.team2849.robot;
 import java.util.ArrayList;
 import java.util.List;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.core.Core;
@@ -183,11 +185,14 @@ public class Robot extends IterativeRobot
 		// the length of one tape to the other tape in the camera in pixels: 
 		//needs to be converted to inches or inches converted to pixels for formula
 		perceived = 0;
-		Imgproc.boundingRect(contours.get(maxIndex));
+		Rect rec = Imgproc.boundingRect(contours.get(maxIndex));
+		int width = 2 / rec.width;
+		//distance in px b/w both centers * int width
+		System.out.println(width);
 		//this is the inches from center of one tape to center of other tape
 		known = 8.25;
 		angle = Math.acos(perceived / known);
-			
+		
 //PART V: ???
 //PART VI: PROFIT
 //PART VII: ENDING CREDITS
