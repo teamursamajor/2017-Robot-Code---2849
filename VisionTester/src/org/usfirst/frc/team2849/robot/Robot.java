@@ -20,11 +20,6 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Talon;
 // 1/17- PIXELS TO INCHES
-/*
- *  idea: we keep perceived as pixels b/c it can't be converted
- *  but we find distance instead & use that to convert
- *  inches of known into pixels?
- */
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -36,9 +31,9 @@ import edu.wpi.first.wpilibj.Talon;
 
 public class Robot extends IterativeRobot {
 
-	// VISION II: ELECTRIC BOOGALOO
-	// OPENING CREDITS: DEFINING VARIABLES
-	// **cue Star Wars music**
+// VISION II: ELECTRIC BOOGALOO
+// OPENING CREDITS: DEFINING VARIABLES
+// **cue Star Wars music**
 
 	Thread visionThread;
 	private List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
@@ -50,9 +45,6 @@ public class Robot extends IterativeRobot {
 	private boolean threadRunning = true;
 	private int maxIndex = 0;
 	private int almostMaxIndex = 0;
-	private double perceivedPx;
-	private double known;
-	private double angle;
 
 	XboxController xbox = new XboxController(0);
 
@@ -63,23 +55,18 @@ public class Robot extends IterativeRobot {
 	private double t1Power = 0.0;
 	private double t2Power = 0.0;
 
-	// runs when the robot is disabled
-	// public void disabledInit() {
-	// threadRunning = false;
-	// }
-
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 
-	// PART II: SETTING UP THE CAMERA
+// PART II: SETTING UP THE CAMERA
 
 	public void robotInit() {
 		threadRunning = true;
-		// System.out.println("*****************************************************************1");
 
 		visionThread = new Thread(() -> {
+
 			/*
 			 * This code creates a USBCamera for some reason and then starts the
 			 * automatic capture. CvSink forwards frames, CvSource obtains the
@@ -89,18 +76,13 @@ public class Robot extends IterativeRobot {
 
 			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 			// camera.setResolution(640, 480);
-			// System.out.println("*****************************************************************2");
 			CvSink cvSink = CameraServer.getInstance().getVideo();
-			// System.out.println("*****************************************************************3");
 			CvSource outputStream = CameraServer.getInstance().putVideo("BC", 160, 120);
-			// System.out.println("*****************************************************************4");
 
 			Mat source = new Mat();
 			Mat output = new Mat();
 			Mat temp = new Mat();
 
-			// System.out.println("*****************************************************************4.5"
-			// + threadRunning);
 			while (threadRunning) {
 				// clear stuff
 				maxArea = 0;
@@ -110,7 +92,6 @@ public class Robot extends IterativeRobot {
 				maxContours.clear();
 				contours.clear();
 
-				// System.out.println("*****************************************************************5");
 				if (cvSink.grabFrame(source) == 0) {
 					// Send the output the error.
 					outputStream.notifyError(cvSink.getError());
@@ -118,8 +99,7 @@ public class Robot extends IterativeRobot {
 					continue;
 				}
 
-				// PART III: THE FINDING OF THE RECTANGLES
-
+// PART III: THE FINDING OF THE RECTANGLES
 				/*
 				 * Theres a light shining on green reflective tape & we need to
 				 * find the location of the tape: Does stuff to the frames
@@ -138,13 +118,6 @@ public class Robot extends IterativeRobot {
 				Imgproc.Canny(temp, output, 210, 215);
 				Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-				// test the contours being found by find contours
-				// for(int i =0; i<contours.size(); i++){
-				// Imgproc.drawContours(output, contours, i, new
-				// Scalar(942.0d));
-				// }
-
-				System.out.println("***" + contours.size());
 
 				/*
 				 * Goes through each of the contours and finds the largest and
@@ -182,63 +155,72 @@ public class Robot extends IterativeRobot {
 				for (int i = 0; i < maxContours.size(); i++) {
 					Imgproc.drawContours(output, maxContours, i, new Scalar(942.0d));
 				}
+								
+
+// PART IV: AUTO ALIGN
+				// it may be off slightly but we should have enough lee-way for it to work
 				
-				System.out.println(maxArea);
-				System.out.println(almostMaxArea);
-
-				// System.out.println("pls work ");'
-				// puts the frame out to the camera, only for testing the code
-				// tbh
+				//draw rectangles around the max contours
+				Rect rec1 = Imgproc.boundingRect(maxContours.get(0));
+				Imgproc.rectangle(output, new Point(rec1.x, rec1.y), new Point(rec1.x + rec1.width, rec1.y + rec1.height), new Scalar(500.0d));
+				Rect rec2 = Imgproc.boundingRect(maxContours.get(1));
+				Imgproc.rectangle(output, new Point(rec2.x, rec2.y), new Point(rec2.x + rec2.width, rec2.y + rec2.height), new Scalar(500.0d));
 				
+				//conversion factor for pixels to inches
+				//2 inches over average of widths (simplify to get 4)
+				double conversion =  4.0 / (rec1.width + rec2.width);
+				
+				//calculate perceived length between outside edges of tape (in pixels)
+				//if rec1 is on the right
+				int perceivedPx;
+				if(rec1.x>rec2.x){
+					perceivedPx = (rec1.x+rec1.width) - rec2.x;
+				}
+				//if rec2 is on the right
+				else{
+					perceivedPx = (rec2.x+rec2.width) - rec1.x;
+				}
+				
+				//perceived in inches
+				double perceivedIn = perceivedPx * conversion;
+				
+				//known length (outer edges of tape) in inches
+				double knownIn = 10.25;
+				
+				//angle robot needs to turn to be parallel to plane of tape
+				//i think this is radians?
+				double angle = Math.acos(perceivedIn / knownIn);
 
-				// PART IV: AUTO ALIGN
-				// it may be off slightly but we should have enough lee-way for
-				// it
-				// to work
-
-				/*
-				 * Possibility: find one target's length in pixels, you know
-				 * that that length = 2 inches, so you know that 2/pixel length
-				 * = pixels per inch use that to get length of distance b/w
-				 * centers of both tapes use charlie's formula thing with the
-				 * value we get being perceived?
-				 */
-
-				// the length of one tape to the other tape in the camera in
-				// pixels:
-				// needs to be converted to inches or inches converted to pixels
-				// for
-				// formula
-				//perceivedPx = 0;
-				Rect rec = Imgproc.boundingRect(contours.get(maxIndex));
-				Imgproc.rectangle(output, new Point(rec.x, rec.y), new Point(rec.x + rec.width, rec.y + rec.height), new Scalar(500.0d));
-				// width in inches divided by width in pixels
-//				double conversion = 2.0 / rec.width;
-//				System.out.println(conversion);
-//				// perceived distance in inches = multiply distance in pixels
-//				// between centers by conversion
-//				double perceived = perceivedPx * conversion;
-//				// this is the known inches from center of one tape to center of
-//				// other tape
-//				known = 8.25;
-//				// this is the angle we have to turn the robot
-//				angle = Math.acos(perceived / known);
-
-				// /*
-				// * find coordinates of either and/or both tapes, if x > 0 turn
-				// * counterclockwise move right if x < 0 turn clockwise move
-				// left
-				// */
-				//
-				// // PART V: ???
-				// // PART VI: PROFIT
-				// // PART VII: ENDING CREDITS
-				// // VISION III: PLEASE HELP ME coming to theaters near you
-				// // January
-				// // 2018 (tentative name)
-				// // Announcing VISION IV: ROBOT NEVERMORE for an expected
-				// January
-				// // 2019 release (tentative name)
+				//find center of 2 tapes by adding half the distance to the left x coordinate
+				double centerOfTapes;
+				if(rec1.x>rec2.x){
+					centerOfTapes = rec2.x + (perceivedPx/2.0);
+				}
+				else{
+					centerOfTapes = rec1.x + (perceivedPx/2.0);
+				}
+				
+				//find center of the frame
+				double centerOfFrame = ((double)output.width())/2.0;
+				
+				//figure out if the center of the tapes of left or right of the center of the frame
+				//if the tapes are to the right of center
+				if(centerOfTapes>centerOfFrame){
+					//turn counterclockwise & move right
+					
+				}
+				//if the tapes are to the left of center
+				else {
+					//turn clockwise & move left
+					
+				}
+				
+// PART V: ???
+// PART VI: PROFIT
+// PART VII: ENDING CREDITS
+// VISION III: PLEASE HELP ME coming to theaters near you January 2018 (tentative name)
+// Announcing VISION IV: ROBOT NEVERMORE for an expect January 2019 release (tentative name)
+				
 				outputStream.putFrame(output);
 			}
 			// I don't know what this does but java isn't mad at us soooooo
@@ -316,6 +298,7 @@ public class Robot extends IterativeRobot {
 			} else if (Math.abs(t1Power) > 1) {
 				t1Power = 1 * Math.signum(t1Power);
 			}
+//HI CHARLIE THIS IS HERSHAL HOPE YOUR CODE RUNS WELL
 			if (Math.abs(t2Power) < .1) {
 				t2Power = 0;
 			} else if (Math.abs(t2Power) > 1) {
