@@ -102,6 +102,14 @@ public class Robot extends IterativeRobot {
 			// System.out.println("*****************************************************************4.5"
 			// + threadRunning);
 			while (threadRunning) {
+				// clear stuff
+				maxArea = 0;
+				almostMaxArea = 0;
+				maxIndex = 0;
+				almostMaxIndex = 0;
+				maxContours.clear();
+				contours.clear();
+
 				// System.out.println("*****************************************************************5");
 				if (cvSink.grabFrame(source) == 0) {
 					// Send the output the error.
@@ -129,8 +137,15 @@ public class Robot extends IterativeRobot {
 				Imgproc.threshold(temp, temp, 200, 600, Imgproc.THRESH_BINARY);
 				Imgproc.Canny(temp, output, 210, 215);
 				Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
+				// test the contours being found by find contours
+				// for(int i =0; i<contours.size(); i++){
+				// Imgproc.drawContours(output, contours, i, new
+				// Scalar(942.0d));
+				// }
+
 				System.out.println("***" + contours.size());
-				Imgproc.drawContours(output, contours, 1, new Scalar(942.0d));
+
 				/*
 				 * Goes through each of the contours and finds the largest and
 				 * second largest areas and their index in the matrix
@@ -156,15 +171,25 @@ public class Robot extends IterativeRobot {
 
 				}
 
+				if (contours.size() == 0) {
+					outputStream.putFrame(output);
+					continue;
+				}
+				
 				maxContours.add(contours.get(maxIndex));
 				maxContours.add(contours.get(almostMaxIndex));
+				
+				for (int i = 0; i < maxContours.size(); i++) {
+					Imgproc.drawContours(output, maxContours, i, new Scalar(942.0d));
+				}
+				
 				System.out.println(maxArea);
 				System.out.println(almostMaxArea);
 
 				// System.out.println("pls work ");'
 				// puts the frame out to the camera, only for testing the code
 				// tbh
-				outputStream.putFrame(output);
+				
 
 				// PART IV: AUTO ALIGN
 				// it may be off slightly but we should have enough lee-way for
@@ -184,34 +209,37 @@ public class Robot extends IterativeRobot {
 				// needs to be converted to inches or inches converted to pixels
 				// for
 				// formula
-				perceivedPx = 0;
+				//perceivedPx = 0;
 				Rect rec = Imgproc.boundingRect(contours.get(maxIndex));
+				Imgproc.rectangle(output, new Point(rec.x, rec.y), new Point(rec.x + rec.width, rec.y + rec.height), new Scalar(500.0d));
 				// width in inches divided by width in pixels
-				double conversion = 2.0 / rec.width;
-				System.out.println(conversion);
-				// perceived distance in inches = multiply distance in pixels
-				// between centers by conversion
-				double perceived = perceivedPx * conversion;
-				// this is the known inches from center of one tape to center of
-				// other tape
-				known = 8.25;
-				// this is the angle we have to turn the robot
-				angle = Math.acos(perceived / known);
+//				double conversion = 2.0 / rec.width;
+//				System.out.println(conversion);
+//				// perceived distance in inches = multiply distance in pixels
+//				// between centers by conversion
+//				double perceived = perceivedPx * conversion;
+//				// this is the known inches from center of one tape to center of
+//				// other tape
+//				known = 8.25;
+//				// this is the angle we have to turn the robot
+//				angle = Math.acos(perceived / known);
 
-				/*
-				 * find coordinates of either and/or both tapes, if x > 0 turn
-				 * counterclockwise move right if x < 0 turn clockwise move left
-				 */
-
-				// PART V: ???
-				// PART VI: PROFIT
-				// PART VII: ENDING CREDITS
-				// VISION III: PLEASE HELP ME coming to theaters near you
+				// /*
+				// * find coordinates of either and/or both tapes, if x > 0 turn
+				// * counterclockwise move right if x < 0 turn clockwise move
+				// left
+				// */
+				//
+				// // PART V: ???
+				// // PART VI: PROFIT
+				// // PART VII: ENDING CREDITS
+				// // VISION III: PLEASE HELP ME coming to theaters near you
+				// // January
+				// // 2018 (tentative name)
+				// // Announcing VISION IV: ROBOT NEVERMORE for an expected
 				// January
-				// 2018 (tentative name)
-				// Announcing VISION IV: ROBOT NEVERMORE for an expected January
-				// 2019 release (tentative name)
-				contours.clear();
+				// // 2019 release (tentative name)
+				outputStream.putFrame(output);
 			}
 			// I don't know what this does but java isn't mad at us soooooo
 			outputStream.free();
