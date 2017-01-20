@@ -33,7 +33,7 @@ public class Shooter implements Runnable {
 		}
 	}
 	
-	public static void shooter(EndCondition ending) {
+	public static void shoot(EndCondition ending) {
 		synchronized (bool) {
 			if (bool) return;
 			bool = true;
