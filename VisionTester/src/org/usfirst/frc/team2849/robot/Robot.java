@@ -29,7 +29,8 @@ import edu.wpi.first.wpilibj.Talon;
  * directory.
  */
 
-public class Robot extends IterativeRobot {
+public class Robot extends IterativeRobot 
+{
 
 // VISION II: ELECTRIC BOOGALOO
 // OPENING CREDITS: DEFINING VARIABLES
@@ -62,10 +63,12 @@ public class Robot extends IterativeRobot {
 
 // PART II: SETTING UP THE CAMERA
 
-	public void robotInit() {
+	public void robotInit() 
+	{
 		threadRunning = true;
 
-		visionThread = new Thread(() -> {
+		visionThread = new Thread(() -> 
+		{
 
 			/*
 			 * This code creates a USBCamera for some reason and then starts the
@@ -83,7 +86,9 @@ public class Robot extends IterativeRobot {
 			Mat output = new Mat();
 			Mat temp = new Mat();
 
-			while (threadRunning) {
+			while (threadRunning) 
+			{
+				
 				// clear stuff
 				maxArea = 0;
 				almostMaxArea = 0;
@@ -92,14 +97,18 @@ public class Robot extends IterativeRobot {
 				maxContours.clear();
 				contours.clear();
 
-				if (cvSink.grabFrame(source) == 0) {
+				if (cvSink.grabFrame(source) == 0) 
+				{
+				
 					// Send the output the error.
 					outputStream.notifyError(cvSink.getError());
 					// skip the rest of the current iteration
 					continue;
+					
 				}
 
 // PART III: THE FINDING OF THE RECTANGLES
+				
 				/*
 				 * Theres a light shining on green reflective tape & we need to
 				 * find the location of the tape: Does stuff to the frames
@@ -128,23 +137,27 @@ public class Robot extends IterativeRobot {
 				 * use for auto align
 				 */
 
-				for (int i = 0; i < contours.size(); i++) {
+				for (int i = 0; i < contours.size(); i++) 
+				{
 
 					area = Imgproc.contourArea(contours.get(i));
 
-					if (area > maxArea) {
+					if (area > maxArea) 
+					{
 						almostMaxArea = maxArea;
 						maxArea = area;
 						maxIndex = i;
 
-					} else if (area > almostMaxArea) {
+					} else if (area > almostMaxArea) 
+					{
 						almostMaxArea = area;
 						almostMaxIndex = i;
 					}
 
 				}
 
-				if (contours.size() == 0) {
+				if (contours.size() == 0) 
+				{
 					outputStream.putFrame(output);
 					continue;
 				}
@@ -152,12 +165,14 @@ public class Robot extends IterativeRobot {
 				maxContours.add(contours.get(maxIndex));
 				maxContours.add(contours.get(almostMaxIndex));
 				
-				for (int i = 0; i < maxContours.size(); i++) {
+				for (int i = 0; i < maxContours.size(); i++) 
+				{
 					Imgproc.drawContours(output, maxContours, i, new Scalar(942.0d));
 				}
 								
 
 // PART IV: AUTO ALIGN
+				
 				// it may be off slightly but we should have enough lee-way for it to work
 				
 				//draw rectangles around the max contours
@@ -173,11 +188,14 @@ public class Robot extends IterativeRobot {
 				//calculate perceived length between outside edges of tape (in pixels)
 				//if rec1 is on the right
 				int perceivedPx;
-				if(rec1.x>rec2.x){
+				
+				if(rec1.x>rec2.x)
+				{
 					perceivedPx = (rec1.x+rec1.width) - rec2.x;
 				}
 				//if rec2 is on the right
-				else{
+				else
+				{
 					perceivedPx = (rec2.x+rec2.width) - rec1.x;
 				}
 				
@@ -193,10 +211,13 @@ public class Robot extends IterativeRobot {
 
 				//find center of 2 tapes by adding half the distance to the left x coordinate
 				double centerOfTapes;
-				if(rec1.x>rec2.x){
+				
+				if(rec1.x > rec2.x)
+				{
 					centerOfTapes = rec2.x + (perceivedPx/2.0);
 				}
-				else{
+				else
+				{
 					centerOfTapes = rec1.x + (perceivedPx/2.0);
 				}
 				
@@ -205,12 +226,14 @@ public class Robot extends IterativeRobot {
 				
 				//figure out if the center of the tapes of left or right of the center of the frame
 				//if the tapes are to the right of center
-				if(centerOfTapes>centerOfFrame){
+				if(centerOfTapes > centerOfFrame)
+				{
 					//turn counterclockwise & move right
 					
 				}
 				//if the tapes are to the left of center
-				else {
+				else 
+				{
 					//turn clockwise & move left
 					
 				}
@@ -227,7 +250,7 @@ public class Robot extends IterativeRobot {
 			outputStream.free();
 
 		});
-
+			
 		visionThread.start();
 	}
 
