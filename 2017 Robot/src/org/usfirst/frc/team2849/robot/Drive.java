@@ -34,13 +34,6 @@ public class Drive {
 		topright.set(v2);
 		bottomleft.set(v3);
 		bottomright.set(v4);
-	
-		if (xaxis != 0 || yaxis != 0 || raxis!= 0){
-			Shooter.intakeValue(1);
-		}
-		else{
-			Shooter.intakeValue(0);
-		}
 	}
 	/**
 	 * This will drive the robot in a direction for the specified time.
