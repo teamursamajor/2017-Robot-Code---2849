@@ -20,6 +20,12 @@ public class Robot extends IterativeRobot {
 	Talon t4 = new Talon(3); // rear right
 	RobotDrive drive = new RobotDrive(t1, t2, t3, t4);
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
+	private int frontrightstate = 0;
+	private int frontleftstate = 0;
+	private int backrightstate = 0;
+	private int backleftstate = 0;
+	private int buttonstate = 0;
+	private int povAngle = -1;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -54,12 +60,114 @@ public class Robot extends IterativeRobot {
 	/**
 	 * This function is called periodically during operator control
 	 */
-	public void teleopPeriodic() {
-
-		drive.mecanumDrive_Cartesian(joy.getAxisGreaterThan(LogitechFlightStick.AXIS_TILT_X, .1),
-				joy.getAxisGreaterThan(LogitechFlightStick.AXIS_TILT_Y, .1),
-				joy.getAxisGreaterThan(-LogitechFlightStick.AXIS_ROTATE_Z, .1), 0);
-
+	public void teleopPeriodic() {	
+		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger)) {
+			povAngle = joy.getPOV(0);
+			switch (povAngle) {
+			case 0:
+				drive.mecanumDrive_Cartesian(0, -.5, 0, 0);
+				break;
+			case 45:
+				drive.mecanumDrive_Cartesian(.25, -.25, 0, 0);
+				break;
+			case 90:
+				drive.mecanumDrive_Cartesian(.5, 0, 0, 0);
+				break;
+			case 135:
+				drive.mecanumDrive_Cartesian(.25, .25, 0, 0);
+				break;
+			case 180:
+				drive.mecanumDrive_Cartesian(0, .5, 0, 0);
+				break;
+			case 225:
+				drive.mecanumDrive_Cartesian(-.25, .25, 0, 0);
+				break;
+			case 270:
+				drive.mecanumDrive_Cartesian(-.5, 0, 0, 0);
+				break;
+			case 315:
+				drive.mecanumDrive_Cartesian(-.25, -.25, 0, 0);
+				break;
+			}
+		} else {
+			drive.mecanumDrive_Cartesian(joy.getXAxis(),
+					joy.getYAxis(),
+					joy.getZAxis(), 0);	
+		}
+				
+		switch (frontrightstate) {
+		case 0:
+			t3.set(0);
+			break;
+		case 1:
+			t3.set(1);
+			break;
+		case 2:
+			t3.set(-1);
+			break;
+		}
+		
+		switch (frontleftstate) {
+		case 0:
+			t1.set(0);
+			break;
+		case 1:
+			t1.set(1);
+			break;
+		case 2:
+			t1.set(-1);
+			break;
+		}
+		
+		switch (backrightstate) {
+		case 0:
+			t4.set(0);
+			break;
+		case 1:
+			t4.set(1);
+			break;
+		case 2:
+			t4.set(-1);
+			break;
+		}
+		
+		switch (backleftstate) {
+		case 0:
+			t2.set(0);
+			break;
+		case 1:
+			t2.set(1);
+			break;
+		case 2:
+			t2.set(-1);
+			break;
+		}
+		
+		switch (buttonstate) {
+		case 0:
+			if (joy.getButton(5)) {
+				frontleftstate++;
+				buttonstate++;
+			}
+			if (joy.getButton(3)) {
+				backleftstate++;
+				buttonstate++;
+			}
+			if (joy.getButton(4)) {
+				backrightstate++;
+				buttonstate++;
+			}
+			if (joy.getButton(6)) {
+				frontrightstate++;
+				buttonstate++;
+			}
+			break;
+		case 1:
+			if (!joy.getButton(5) && !joy.getButton(4) && !joy.getButton(3) && !joy.getButton(6)) {
+				buttonstate = 0;
+			}
+			break;
+		}
 		// Drive.mecanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X,
 		// .1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1),
 		// joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
