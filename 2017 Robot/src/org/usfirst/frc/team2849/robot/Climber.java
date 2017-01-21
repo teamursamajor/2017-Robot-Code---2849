@@ -20,7 +20,7 @@ public class Climber implements Runnable {
 	public void run() {
 		// TODO get someone to write code.
 		while (!ending.done()) {
-			
+			climber.set(1);
 		}
 		climber.set(0);
 		
