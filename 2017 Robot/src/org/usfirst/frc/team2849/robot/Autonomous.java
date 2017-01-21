@@ -32,7 +32,9 @@ public class Autonomous implements Runnable {
 	
 	public void cross() {
 		long time = System.currentTimeMillis();
-		
+//		if () {
+//			
+//		}
 	}
 	
 	public void shoot() {
