@@ -31,7 +31,7 @@ public class Autonomous implements Runnable {
 	}
 	
 	public void cross() {
-		
+		Drive.drive(3, 0);
 	}
 	
 	public void shoot() {

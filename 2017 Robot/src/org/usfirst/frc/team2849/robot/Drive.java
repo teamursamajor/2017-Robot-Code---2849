@@ -17,14 +17,16 @@ public class Drive implements Runnable {
 	private static Talon bottomright = new Talon(3);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);;
 	
- 
+	private static double distance;
+	private static double angle;
 	
 	private static Boolean bool = false;
 	private static EndCondition ending = null;
 	private static Thread driveRunner = null;
 	
-	private Drive (EndCondition ending) {
-		Drive.ending = ending;
+	private Drive (double distance, double angle) {
+		Drive.distance = distance;
+		Drive.angle = angle;
 	}
 	
 	/**
@@ -105,7 +107,8 @@ public class Drive implements Runnable {
 		
 		
 	}
-	public static void mechDriveDistance(double distance, double angleRad){
+	
+	public static void mechDriveDistance(double distance, double angleRad){ // in meters
 		
 		double displacement = 0;
 		ahrs.resetDisplacement();
@@ -154,17 +157,15 @@ public class Drive implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		while (!ending.done()) {
-			
-		}
+		mechDriveDistance(distance, angle);
 	}
 	
-	public static void drive(EndCondition ending) {
+	public static void drive(double distance, double angle) {
 		synchronized (bool) {
 			if (bool) return;
 			bool = true;
 		}
-		driveRunner = new Thread(new Drive(ending), "drive");
+		driveRunner = new Thread(new Drive(distance, angle), "drive");
 		driveRunner.start();
 
 	}
