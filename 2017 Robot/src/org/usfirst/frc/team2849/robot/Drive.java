@@ -127,9 +127,16 @@ public class Drive implements Runnable {
 	    }
 		
 		driveDirection(angleRad);
+		long time = System.currentTimeMillis();
 		while(displacement <= distance){
-			long time = System.currentTimeMillis();
 			displacement += Math.sqrt(Math.pow(ahrs.getRawAccelX()*9.81, 2) + Math.pow(ahrs.getRawAccelZ()*9.81, 2))*.5*Math.pow((System.currentTimeMillis()-time)/1000, 2);
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 			
 		}
 		topleft.set(0.0);
