@@ -22,7 +22,14 @@ public class Shooter implements Runnable {
 		
 		//TODO shoot code? yes, chute code.
 		while(!ending.done()) {
-			
+			upperShooter.set(1);
+			lowerShooter.set(-1);
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		upperShooter.set(0);
