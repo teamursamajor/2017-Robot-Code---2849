@@ -2,12 +2,20 @@ package org.usfirst.frc.team2849.robot;
 
 import edu.wpi.first.wpilibj.Talon;
 
-public class Drive {
+public class Drive implements Runnable {
 
 	private static Talon topleft = new Talon(0);
 	private static Talon topright = new Talon(1);
 	private static Talon bottomleft = new Talon(2);
 	private static Talon bottomright = new Talon(3);
+	
+	private static Boolean bool = false;
+	private static EndCondition ending = null;
+	private static Thread driveRunner = null;
+	
+	private Drive (EndCondition ending) {
+		Drive.ending = ending;
+	}
 	
 	/**
 	 * This will drive the robot in omnidirectional holonomic drive
@@ -34,13 +42,6 @@ public class Drive {
 		topright.set(v2);
 		bottomleft.set(v3);
 		bottomright.set(v4);
-	
-		if (xaxis != 0 || yaxis != 0 || raxis!= 0){
-			Shooter.intakeValue(1);
-		}
-		else{
-			Shooter.intakeValue(0);
-		}
 	}
 	/**
 	 * This will drive the robot in a direction for the specified time.
@@ -72,6 +73,22 @@ public class Drive {
 		bottomright.set(0.0);
 		
 		
+	}
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		while (!ending.done()) {
+			
+		}
+	}
+	
+	public static void drive(EndCondition ending) {
+		synchronized (bool) {
+			if (bool) return;
+			bool = true;
+		}
+		driveRunner = new Thread(new Drive(ending), "drive");
+		driveRunner.start();
 	}
 	
 
