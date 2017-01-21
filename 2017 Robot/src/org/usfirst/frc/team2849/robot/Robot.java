@@ -2,9 +2,6 @@
 package org.usfirst.frc.team2849.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Talon;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -15,18 +12,16 @@ import edu.wpi.first.wpilibj.Talon;
  */
 public class Robot extends IterativeRobot {
 
-	private Talon t1 = new Talon(0);
-	private Talon t2 = new Talon(1);
 	public static XboxController joy = new XboxController(0);
-	private RobotDrive drive = new RobotDrive(t1, t2);
 	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
-    	Shooter.shooterInit();
+    	
     }
+    
     
     
 	/**
@@ -56,8 +51,9 @@ public class Robot extends IterativeRobot {
     	
      //   drive.mecanumDrive_Cartesian(joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_X), joy1.getRawAxis(XboxController.AXIS_LEFTSTICK_Y), joy1.getRawAxis(XboxController.AXIS_RIGHTSTICK_X), 0);
         
-        Drive.mecanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X, .1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1), joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
+//        Drive.mecanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X, .1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1), joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
         Shooter.shoot(joy.getAxisGreaterThan(XboxController.AXIS_RIGHTTRIGGER, .1));
+        Drive.mecanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X, .1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1), joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
         
     }
     
@@ -68,7 +64,6 @@ public class Robot extends IterativeRobot {
     
     }
     public void disabledPeriodic(){
-    	Shooter.killShooter();
-    	Shooter.intakeValue(0);
+    
     }
 }

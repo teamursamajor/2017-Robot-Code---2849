@@ -19,7 +19,7 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Talon;
-// 1/17- PIXELS TO INCHES
+import edu.wpi.first.wpilibj.XboxController;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -29,12 +29,11 @@ import edu.wpi.first.wpilibj.Talon;
  * directory.
  */
 
-public class Robot extends IterativeRobot 
-{
+public class Robot extends IterativeRobot {
 
-// VISION II: ELECTRIC BOOGALOO
-// OPENING CREDITS: DEFINING VARIABLES
-// **cue Star Wars music**
+	// VISION II: ELECTRIC BOOGALOO
+	// OPENING CREDITS: DEFINING VARIABLES
+	// **cue Star Wars music**
 
 	Thread visionThread;
 	private List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
@@ -61,14 +60,12 @@ public class Robot extends IterativeRobot
 	 * used for any initialization code.
 	 */
 
-// PART II: SETTING UP THE CAMERA
+	// PART II: SETTING UP THE CAMERA
 
-	public void robotInit() 
-	{
+	public void robotInit() {
 		threadRunning = true;
 
-		visionThread = new Thread(() -> 
-		{
+		visionThread = new Thread(() -> {
 
 			/*
 			 * This code creates a USBCamera for some reason and then starts the
@@ -86,9 +83,8 @@ public class Robot extends IterativeRobot
 			Mat output = new Mat();
 			Mat temp = new Mat();
 
-			while (threadRunning) 
-			{
-				
+			while (threadRunning) {
+
 				// clear stuff
 				maxArea = 0;
 				almostMaxArea = 0;
@@ -97,18 +93,17 @@ public class Robot extends IterativeRobot
 				maxContours.clear();
 				contours.clear();
 
-				if (cvSink.grabFrame(source) == 0) 
-				{
-				
+				if (cvSink.grabFrame(source) == 0) {
+
 					// Send the output the error.
 					outputStream.notifyError(cvSink.getError());
 					// skip the rest of the current iteration
 					continue;
-					
+
 				}
 
-// PART III: THE FINDING OF THE RECTANGLES
-				
+				// PART III: THE FINDING OF THE RECTANGLES
+
 				/*
 				 * Theres a light shining on green reflective tape & we need to
 				 * find the location of the tape: Does stuff to the frames
@@ -127,7 +122,6 @@ public class Robot extends IterativeRobot
 				Imgproc.Canny(temp, output, 210, 215);
 				Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-
 				/*
 				 * Goes through each of the contours and finds the largest and
 				 * second largest areas and their index in the matrix
@@ -137,120 +131,128 @@ public class Robot extends IterativeRobot
 				 * use for auto align
 				 */
 
-				for (int i = 0; i < contours.size(); i++) 
-				{
+				for (int i = 0; i < contours.size(); i++) {
 
 					area = Imgproc.contourArea(contours.get(i));
 
-					if (area > maxArea) 
-					{
+					if (area > maxArea) {
 						almostMaxArea = maxArea;
 						maxArea = area;
 						maxIndex = i;
 
-					} else if (area > almostMaxArea) 
-					{
+					} else if (area > almostMaxArea) {
 						almostMaxArea = area;
 						almostMaxIndex = i;
 					}
 
 				}
 
-				if (contours.size() == 0) 
-				{
+				if (contours.size() == 0) {
 					outputStream.putFrame(output);
 					continue;
 				}
-				
+
 				maxContours.add(contours.get(maxIndex));
 				maxContours.add(contours.get(almostMaxIndex));
-				
-				for (int i = 0; i < maxContours.size(); i++) 
-				{
+
+				for (int i = 0; i < maxContours.size(); i++) {
 					Imgproc.drawContours(output, maxContours, i, new Scalar(942.0d));
 				}
-								
 
 // PART IV: AUTO ALIGN
-				
-				// it may be off slightly but we should have enough lee-way for it to work
-				
-				//draw rectangles around the max contours
+
+				// it may be off slightly but we should have enough lee-way for
+				// it to work
+
+				// draw rectangles around the max contours
 				Rect rec1 = Imgproc.boundingRect(maxContours.get(0));
-				Imgproc.rectangle(output, new Point(rec1.x, rec1.y), new Point(rec1.x + rec1.width, rec1.y + rec1.height), new Scalar(500.0d));
+				Imgproc.rectangle(output, new Point(rec1.x, rec1.y),
+				new Point(rec1.x + rec1.width, rec1.y + rec1.height), new Scalar(500.0d));
 				Rect rec2 = Imgproc.boundingRect(maxContours.get(1));
-				Imgproc.rectangle(output, new Point(rec2.x, rec2.y), new Point(rec2.x + rec2.width, rec2.y + rec2.height), new Scalar(500.0d));
-				
-				//conversion factor for pixels to inches
-				//2 inches over average of widths (simplify to get 4)
-				double conversion =  4.0 / (rec1.width + rec2.width);
-				
-				//calculate perceived length between outside edges of tape (in pixels)
-				//if rec1 is on the right
+				Imgproc.rectangle(output, new Point(rec2.x, rec2.y),
+				new Point(rec2.x + rec2.width, rec2.y + rec2.height), new Scalar(500.0d));
+
+				// conversion factor for pixels to inches
+				// 2 inches over average of widths (simplify to get 4)
+				double conversion = 4.0 / (rec1.width + rec2.width);
+
+				// calculate perceived length between outside edges of tape (in
+				// pixels)
+				// if rec1 is on the right
+
 				int perceivedPx;
-				
-				if(rec1.x>rec2.x)
-				{
-					perceivedPx = (rec1.x+rec1.width) - rec2.x;
+
+				if (rec1.x > rec2.x) {
+					perceivedPx = (rec1.x + rec1.width) - rec2.x;
 				}
-				//if rec2 is on the right
-				else
-				{
-					perceivedPx = (rec2.x+rec2.width) - rec1.x;
+				// if rec2 is on the right
+				else {
+					perceivedPx = (rec2.x + rec2.width) - rec1.x;
 				}
-				
-				//perceived in inches
+
+				// perceived in inches
 				double perceivedIn = perceivedPx * conversion;
-				
-				//known length (outer edges of tape) in inches
+
+				// known length (outer edges of tape) in inches
 				double knownIn = 10.25;
-				
-				//angle robot needs to turn to be parallel to plane of tape
-				//i think this is radians?
+
+				// angle robot needs to turn to be parallel to plane of tape
+				// i think this is radians?
 				double angle = Math.acos(perceivedIn / knownIn);
 
-				//find center of 2 tapes by adding half the distance to the left x coordinate
+				// find center of 2 tapes by adding half the distance to the
+				// left x coordinate
 				double centerOfTapes;
-				
-				if(rec1.x > rec2.x)
-				{
-					centerOfTapes = rec2.x + (perceivedPx/2.0);
+
+				if (rec1.x > rec2.x) {
+					centerOfTapes = rec2.x + (perceivedPx / 2.0);
+				} else {
+					centerOfTapes = rec1.x + (perceivedPx / 2.0);
 				}
-				else
-				{
-					centerOfTapes = rec1.x + (perceivedPx/2.0);
+
+				// find center of the frame
+				double centerOfFrame = ((double) output.width()) / 2.0;
+
+				double rec1Center = rec1.x / 2;
+				double rec2Center = rec2.x / 2;
+				
+				if ((rec1Center < centerOfFrame && rec2Center < centerOfFrame)
+					|| (rec1Center > centerOfFrame && rec2Center > centerOfFrame)) {
+					//make angle value negative or opposite, so 360-angle or 2pi - angle
+					//if not run normal code
 				}
-				
-				//find center of the frame
-				double centerOfFrame = ((double)output.width())/2.0;
-				
-				//figure out if the center of the tapes of left or right of the center of the frame
-				//if the tapes are to the right of center
-				if(centerOfTapes > centerOfFrame)
-				{
-					//turn counterclockwise & move right
-					
+
+				// figure out if the center of the tapes of left or right of the
+				// center of the frame
+				// if the tapes are to the right of center
+				if (centerOfTapes > centerOfFrame) {
+					// turn counterclockwise & move right
+
 				}
-				//if the tapes are to the left of center
-				else 
-				{
-					//turn clockwise & move left
-					
+				// if the tapes are to the left of center
+				else {
+					// turn clockwise & move left
+
 				}
-				
-// PART V: ???
-// PART VI: PROFIT
-// PART VII: ENDING CREDITS
-// VISION III: PLEASE HELP ME coming to theaters near you January 2018 (tentative name)
-// Announcing VISION IV: ROBOT NEVERMORE for an expect January 2019 release (tentative name)
-				
+
+				// PART V: ???
+				// PART VI: PROFIT
+				// PART VII: ENDING CREDITS
+				// VISION III: PLEASE HELP ME coming to theaters near you
+				// January 2018 (tentative name)
+ 				// Announcing VISION IV: ROBOT NEVERMORE for an expect January
+				// 2019 release (tentative name)
+				System.out.println(angle + " is angle");
+//				System.out.println(centerOfFrame + " is frame" + centerOfTapes + " is tapes");
+//				System.out.println(rec1Center + " is rec1 center");
+//				System.out.println(rec2Center + " is rec2 center");
 				outputStream.putFrame(output);
 			}
 			// I don't know what this does but java isn't mad at us soooooo
 			outputStream.free();
 
 		});
-			
+
 		visionThread.start();
 	}
 
@@ -288,67 +290,67 @@ public class Robot extends IterativeRobot
 
 	public void teleopPeriodic() {
 
-		switch (state) {
-		case 0:
-			if (xbox.getDPad(XboxController.POV_UP)) {
-				t1Power += .1;
-				state++;
-			} else if (xbox.getDPad(XboxController.POV_DOWN)) {
-				t1Power -= .1;
-				state++;
-			} else if (xbox.getDPad(XboxController.POV_RIGHT)) {
-				t1Power += .01;
-				state++;
-			} else if (xbox.getDPad(XboxController.POV_LEFT)) {
-				t1Power -= .01;
-				state++;
-			}
-			if (xbox.getButton(XboxController.BUTTON_Y)) {
-				t2Power += .1;
-				state++;
-			} else if (xbox.getButton(XboxController.BUTTON_A)) {
-				t2Power -= .1;
-				state++;
-			} else if (xbox.getButton(XboxController.BUTTON_B)) {
-				t2Power += .01;
-				state++;
-			} else if (xbox.getButton(XboxController.BUTTON_X)) {
-				t2Power -= .01;
-				state++;
-			}
-			if (Math.abs(t1Power) < .1) {
-				t1Power = 0;
-			} else if (Math.abs(t1Power) > 1) {
-				t1Power = 1 * Math.signum(t1Power);
-			}
-//HI CHARLIE THIS IS HERSHAL HOPE YOUR CODE RUNS WELL
-			if (Math.abs(t2Power) < .1) {
-				t2Power = 0;
-			} else if (Math.abs(t2Power) > 1) {
-				t2Power = 1 * Math.signum(t2Power);
-			}
-			if (xbox.getButton(XboxController.BUTTON_START)) {
-				t1Power = 0;
-			}
-			if (xbox.getButton(XboxController.BUTTON_BACK)) {
-				t2Power = 0;
-			}
-			break;
-		case 1:
-			if (xbox.getDPad(XboxController.POV_NONE)) {
-				state++;
-			}
-			break;
-		case 2:
-			state = 0;
-
-		}
-
-		System.out.println("Talon 1: " + t1Power);
-		System.out.println("Talon 2: " + t2Power);
-		t1.set(-t2Power);
-		t2.set(-t1Power);
-
+//		switch (state) {
+//		case 0:
+//			if (xbox.getDPad(XboxController.POV_UP)) {
+//				t1Power += .1;
+//				state++;
+//			} else if (xbox.getDPad(XboxController.POV_DOWN)) {
+//				t1Power -= .1;
+//				state++;
+//			} else if (xbox.getDPad(XboxController.POV_RIGHT)) {
+//				t1Power += .01;
+//				state++;
+//			} else if (xbox.getDPad(XboxController.POV_LEFT)) {
+//				t1Power -= .01;
+//				state++;
+//			}
+//			if (xbox.getButton(XboxController.BUTTON_Y)) {
+//				t2Power += .1;
+//				state++;
+//			} else if (xbox.getButton(XboxController.BUTTON_A)) {
+//				t2Power -= .1;
+//				state++;
+//			} else if (xbox.getButton(XboxController.BUTTON_B)) {
+//				t2Power += .01;
+//				state++;
+//			} else if (xbox.getButton(XboxController.BUTTON_X)) {
+//				t2Power -= .01;
+//				state++;
+//			}
+//			if (Math.abs(t1Power) < .1) {
+//				t1Power = 0;
+//			} else if (Math.abs(t1Power) > 1) {
+//				t1Power = 1 * Math.signum(t1Power);
+//			}
+//			// HI CHARLIE THIS IS HERSHAL HOPE YOUR CODE RUNS WELL
+//			if (Math.abs(t2Power) < .1) {
+//				t2Power = 0;
+//			} else if (Math.abs(t2Power) > 1) {
+//				t2Power = 1 * Math.signum(t2Power);
+//			}
+//			if (xbox.getButton(XboxController.BUTTON_START)) {
+//				t1Power = 0;
+//			}
+//			if (xbox.getButton(XboxController.BUTTON_BACK)) {
+//				t2Power = 0;
+//			}
+//			break;
+//		case 1:
+//			if (xbox.getDPad(XboxController.POV_NONE)) {
+//				state++;
+//			}
+//			break;
+//		case 2:
+//			state = 0;
+//
+//		}
+//
+//		System.out.println("Talon 1: " + t1Power);
+//		System.out.println("Talon 2: " + t2Power);
+//		t1.set(-t2Power);
+//		t2.set(-t1Power);
+//
 	}
 
 }

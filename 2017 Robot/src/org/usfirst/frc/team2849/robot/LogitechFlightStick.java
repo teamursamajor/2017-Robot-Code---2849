@@ -2,15 +2,20 @@ package org.usfirst.frc.team2849.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 
-public class WingmanExtreme extends Joystick {
+public class LogitechFlightStick extends Joystick {
 
-	public static final int BUTTON_1 = 1;
-	public static final int BUTTON_2 = 2;
-	public static final int BUTTON_3 = 3;
-	public static final int BUTTON_4 = 4;
-	public static final int BUTTON_5 = 5;
-	public static final int BUTTON_6 = 6;
-	public static final int BUTTON_7 = 7;
+	public static final int BUTTON_Trigger = 1;
+	public static final int BUTTON_Side = 2;
+	public static final int BUTTON_BL3 = 3;
+	public static final int BUTTON_BR4 = 4;
+	public static final int BUTTON_TL5 = 5;
+	public static final int BUTTON_TR6 = 6;
+	public static final int BUTTON_Side7 = 7;
+	public static final int BUTTON_Side8 = 8;
+	public static final int BUTTON_Side9 = 9;
+	public static final int BUTTON_Side10 = 10;
+	public static final int BUTTON_Side11 = 11;
+	public static final int BUTTON_Side12 = 12;
 
 	public static final int AXIS_TILT_X = 0;
 	public static final int AXIS_TILT_Y = 1;
@@ -27,7 +32,7 @@ public class WingmanExtreme extends Joystick {
 	public static final int POV_LEFT = 270;
 	public static final int POV_DIAUPLEFT = 315;
 
-	public WingmanExtreme(int port) {
+	public LogitechFlightStick (int port) {
 		super(port);
 	}
 
