@@ -2,16 +2,18 @@ package org.usfirst.frc.team2849.robot;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.MatOfPoint2f;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
-import org.opencv.core.Size;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
 //import org.opencv.core.MatOfPoint;
 import org.opencv.imgproc.Imgproc;
+
+import com.kauailabs.navx.frc.AHRS;
+
 //why can't I own a Canadian?
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
@@ -19,7 +21,9 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,13 +49,18 @@ public class Robot extends IterativeRobot {
 	private boolean threadRunning = true;
 	private int maxIndex = 0;
 	private int almostMaxIndex = 0;
+	private int state = 0;
+	private double t1Power = 0.0;
+	private double t2Power = 0.0;
 
 	Talon t1 = new Talon(0); // front left
 	Talon t2 = new Talon(1); // rear left
 	Talon t3 = new Talon(2); // front right
 	Talon t4 = new Talon(3); // rear right
 	RobotDrive drive = new RobotDrive(t1, t2, t3, t4);
-	public static LogitechFlightStick joy = new LogitechFlightStick(0);
+	public static XboxController xbox = new XboxController(0);
+	
+	AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -61,6 +70,7 @@ public class Robot extends IterativeRobot {
 	// PART II: SETTING UP THE CAMERA
 
 	public void robotInit() {
+		ahrs.reset();
 		threadRunning = true;
 
 		visionThread = new Thread(() -> {
@@ -116,7 +126,7 @@ public class Robot extends IterativeRobot {
 
 				Imgproc.cvtColor(source, temp, Imgproc.COLOR_BGR2HSV);
 				Core.extractChannel(temp, temp, 2);
-				Imgproc.threshold(temp, temp, 200, 600, Imgproc.THRESH_BINARY);
+				Imgproc.threshold(temp, temp, 180, 600, Imgproc.THRESH_BINARY);
 				Imgproc.Canny(temp, output, 210, 215);
 				Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
@@ -173,13 +183,16 @@ public class Robot extends IterativeRobot {
 				// conversion factor for pixels to inches
 				// 2 inches over average of widths (simplify to get 4)
 				double conversion = 4.0 / (rec1.width + rec2.width);
-
+				System.out.println(rec1.width);
+				System.out.println(rec2.width);
 				// calculate perceived length between outside edges of tape (in
 				// pixels)
 				// if rec1 is on the right
 
 				int perceivedPx;
-
+				//checks to make sure that rec1 is on the left so it measures
+				//outer edges, not inner of rec1 to outer of rec2 
+				
 				if (rec1.x > rec2.x) {
 					perceivedPx = (rec1.x + rec1.width) - rec2.x;
 				}
@@ -195,7 +208,7 @@ public class Robot extends IterativeRobot {
 				double knownIn = 10.25;
 
 				// angle robot needs to turn to be parallel to plane of tape
-				// i think this is radians?
+				// i think this is radians? no wait maybe not we dont actually know what it is
 				double angle = Math.acos(perceivedIn / knownIn);
 
 				// find center of 2 tapes by adding half the distance to the
@@ -240,10 +253,11 @@ public class Robot extends IterativeRobot {
 				// January 2018 (tentative name)
  				// Announcing VISION IV: ROBOT NEVERMORE for an expect January
 				// 2019 release (tentative name)
-				System.out.println(angle + " is angle");
-//				System.out.println(centerOfFrame + " is frame" + centerOfTapes + " is tapes");
-//				System.out.println(rec1Center + " is rec1 center");
-//				System.out.println(rec2Center + " is rec2 center");
+				System.out.println("Angle: " + angle);
+				System.out.println("Frame: " + centerOfFrame);
+				System.out.println("Tapes: " + centerOfTapes);
+				System.out.println("Center 1: " + rec1Center);
+				System.out.println("Center 2: " + rec2Center);
 				outputStream.putFrame(output);
 			}
 			// I don't know what this does but java isn't mad at us soooooo
@@ -287,70 +301,78 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopPeriodic() {
-		drive.mecanumDrive_Cartesian(joy.getXAxis(),
-				joy.getYAxis(),
-				joy.getZAxis(), 0);
-//		switch (state) {
-//		case 0:
-//			if (xbox.getDPad(XboxController.POV_UP)) {
-//				t1Power += .1;
-//				state++;
-//			} else if (xbox.getDPad(XboxController.POV_DOWN)) {
-//				t1Power -= .1;
-//				state++;
-//			} else if (xbox.getDPad(XboxController.POV_RIGHT)) {
-//				t1Power += .01;
-//				state++;
-//			} else if (xbox.getDPad(XboxController.POV_LEFT)) {
-//				t1Power -= .01;
-//				state++;
-//			}
-//			if (xbox.getButton(XboxController.BUTTON_Y)) {
-//				t2Power += .1;
-//				state++;
-//			} else if (xbox.getButton(XboxController.BUTTON_A)) {
-//				t2Power -= .1;
-//				state++;
-//			} else if (xbox.getButton(XboxController.BUTTON_B)) {
-//				t2Power += .01;
-//				state++;
-//			} else if (xbox.getButton(XboxController.BUTTON_X)) {
-//				t2Power -= .01;
-//				state++;
-//			}
-//			if (Math.abs(t1Power) < .1) {
-//				t1Power = 0;
-//			} else if (Math.abs(t1Power) > 1) {
-//				t1Power = 1 * Math.signum(t1Power);
-//			}
-//			// HI CHARLIE THIS IS HERSHAL HOPE YOUR CODE RUNS WELL
-//			if (Math.abs(t2Power) < .1) {
-//				t2Power = 0;
-//			} else if (Math.abs(t2Power) > 1) {
-//				t2Power = 1 * Math.signum(t2Power);
-//			}
-//			if (xbox.getButton(XboxController.BUTTON_START)) {
-//				t1Power = 0;
-//			}
-//			if (xbox.getButton(XboxController.BUTTON_BACK)) {
-//				t2Power = 0;
-//			}
-//			break;
-//		case 1:
-//			if (xbox.getDPad(XboxController.POV_NONE)) {
-//				state++;
-//			}
-//			break;
-//		case 2:
-//			state = 0;
-//
-//		}
-//
-//		System.out.println("Talon 1: " + t1Power);
-//		System.out.println("Talon 2: " + t2Power);
-//		t1.set(-t2Power);
-//		t2.set(-t1Power);
+//		drive.mecanumDrive_Cartesian(joy.getXAxis(),
+//				joy.getYAxis(),
+//				joy.getZAxis(), 0);
+		switch (state) {
+		case 0:
+			if (xbox.getDPad(XboxController.POV_UP)) {
+				t1Power += .1;
+				state++;
+			} else if (xbox.getDPad(XboxController.POV_DOWN)) {
+				t1Power -= .1;
+				state++;
+			} else if (xbox.getDPad(XboxController.POV_RIGHT)) {
+				t1Power += .01;
+				state++;
+			} else if (xbox.getDPad(XboxController.POV_LEFT)) {
+				t1Power -= .01;
+				state++;
+			}
+			if (xbox.getButton(XboxController.BUTTON_Y)) {
+				t2Power += .1;
+				state++;
+			} else if (xbox.getButton(XboxController.BUTTON_A)) {
+				t2Power -= .1;
+				state++;
+			} else if (xbox.getButton(XboxController.BUTTON_B)) {
+				t2Power += .01;
+				state++;
+			} else if (xbox.getButton(XboxController.BUTTON_X)) {
+				t2Power -= .01;
+				state++;
+			}
+			if (Math.abs(t1Power) < .1) {
+				t1Power = 0;
+			} else if (Math.abs(t1Power) > 1) {
+				t1Power = 1 * Math.signum(t1Power);
+			}
+			// HI CHARLIE THIS IS HERSHAL HOPE YOUR CODE RUNS WELL
+			if (Math.abs(t2Power) < .1) {
+				t2Power = 0;
+			} else if (Math.abs(t2Power) > 1) {
+				t2Power = 1 * Math.signum(t2Power);
+			}
+			if (xbox.getButton(XboxController.BUTTON_START)) {
+				t1Power = 0;
+			}
+			if (xbox.getButton(XboxController.BUTTON_BACK)) {
+				t2Power = 0;
+			}
+			break;
+		case 1:
+			if (xbox.getDPad(XboxController.POV_NONE)) {
+				state++;
+			}
+			break;
+		case 2:
+			state = 0;
 
+		}
+
+		System.out.println("Talon 1: " + t1Power);
+		System.out.println("Talon 2: " + t2Power);
+		t1.set(-t2Power);
+		t2.set(-t1Power);
+
+	}
+	
+	public void disabledPeriodic() {
+		SmartDashboard.putBoolean(  "IMU_Connected",        ahrs.isConnected());
+        SmartDashboard.putBoolean(  "IMU_IsCalibrating",    ahrs.isCalibrating());
+        SmartDashboard.putNumber(   "IMU_Yaw",              ahrs.getYaw());
+        SmartDashboard.putNumber(   "IMU_Pitch",            ahrs.getPitch());
+        SmartDashboard.putNumber(   "IMU_Roll",             ahrs.getRoll());
 	}
 
 }
