@@ -1,9 +1,12 @@
 
 package org.usfirst.frc.team2849.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.Talon;
 
@@ -15,7 +18,6 @@ import edu.wpi.first.wpilibj.Talon;
  * directory.
  */
 public class Robot extends IterativeRobot {
-
 	Talon t1 = new Talon(0); // front left
 	Talon t2 = new Talon(1); // rear left
 	Talon t3 = new Talon(2); // front right
@@ -28,6 +30,7 @@ public class Robot extends IterativeRobot {
 	private int backleftstate = 0;
 	private int buttonstate = 0;
 	private int povAngle = -1;
+	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	
 //	private PowerDistributionPanel board = new PowerDistributionPanel(0);
 	
@@ -36,6 +39,8 @@ public class Robot extends IterativeRobot {
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
+		//System.out.println("Test 2");
+		ahrs.zeroYaw();
 		drive.setInvertedMotor(MotorType.kFrontLeft, true);
 		drive.setInvertedMotor(MotorType.kRearLeft, true);
 
@@ -64,6 +69,8 @@ public class Robot extends IterativeRobot {
 	}
 	
 	public void teleopInit() {
+		ahrs.reset();
+		ahrs.resetDisplacement();
 		drive.stopMotor();
 	}
 
@@ -71,7 +78,10 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {	
-				
+		//System.out.println("Test 3");
+		System.out.println("Angle: " + ahrs.getAngle() % 360);
+		System.out.println("Displacement: " + ahrs.getDisplacementX());
+		double angle = ahrs.getAngle() % 360;
 		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger)) {
 			povAngle = joy.getPOV(0);
 			switch (povAngle) {

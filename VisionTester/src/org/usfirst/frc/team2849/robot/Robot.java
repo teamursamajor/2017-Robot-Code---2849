@@ -20,9 +20,8 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -53,11 +52,12 @@ public class Robot extends IterativeRobot {
 	private double t1Power = 0.0;
 	private double t2Power = 0.0;
 
-	Talon t1 = new Talon(0); // front left
-	Talon t2 = new Talon(1); // rear left
-	Talon t3 = new Talon(2); // front right
-	Talon t4 = new Talon(3); // rear right
-	RobotDrive drive = new RobotDrive(t1, t2, t3, t4);
+//	Talon t1 = new Talon(0); // front left
+//	Talon t2 = new Talon(1); // rear left
+//	Talon t3 = new Talon(2); // front right
+//	Talon t4 = new Talon(3); // rear right
+//	RobotDrive drive = new RobotDrive(t1, t2, t3, t4);
+	Spark spark = new Spark(1);
 	public static XboxController xbox = new XboxController(0);
 	
 	AHRS ahrs = new AHRS(SPI.Port.kMXP);
@@ -70,7 +70,7 @@ public class Robot extends IterativeRobot {
 	// PART II: SETTING UP THE CAMERA
 
 	public void robotInit() {
-		ahrs.reset();
+		ahrs.zeroYaw();
 		threadRunning = true;
 
 		visionThread = new Thread(() -> {
@@ -360,10 +360,10 @@ public class Robot extends IterativeRobot {
 
 		}
 
-		System.out.println("Talon 1: " + t1Power);
-		System.out.println("Talon 2: " + t2Power);
-		t1.set(-t2Power);
-		t2.set(-t1Power);
+		System.out.println("Spark: " + t1Power);
+//		System.out.println("Talon 2: " + t2Power);
+		spark.set(-t1Power);
+//		t2.set(-t1Power);
 
 	}
 	
