@@ -21,19 +21,24 @@ import com.kauailabs.navx.frc.AHRS;
 public class Vision {
 
 // VISION II: ELECTRIC BOOGALOO
-// OPENING CREDITS: DEFINING VARIABLES
 // **cue Star Wars music**
 
 	private static Thread visionThread;
 	private static List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 	private static List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
+	
+	//we don't actually know what this does
 	private static Mat hierarchy = new Mat();
+	
 	private static double maxArea = 0;
 	private static double almostMaxArea = 0;
 	private static double area;
 	private static boolean threadRunning = true;
 	private static int maxIndex = 0;
 	private static int almostMaxIndex = 0;
+	
+	//AHRS stands for something (according to Charlie) but we don't know what
+	//Its for the IMU sensor NavX MXP
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	
 	//the angle the robot needs to turn to be perpendicular to the peg
@@ -54,6 +59,7 @@ public class Vision {
 	//conversion factor from pixels to inches
 	private static double conversion;
 	
+	//Arrays of Arrays used to hold the frames we grab from the camera
 	private static Mat source = new Mat();
 	private static Mat output = new Mat();
 	private static Mat temp = new Mat();
@@ -69,12 +75,12 @@ public class Vision {
 			/*
 			 * This code creates a USBCamera (for some reason) and then starts the
 			 * automatic capture. CvSink forwards frames, CvSource obtains the
-			 * frames and provides name/resolution. Then we define a bunch of
-			 * mats for the frame inputs
+			 * frames and provides name/resolution.
 			 */
 
 			UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 			CvSink cvSink = CameraServer.getInstance().getVideo();
+			//test different resolutions
 			CvSource outputStream = CameraServer.getInstance().putVideo("BC", 160, 120);
 
 			/*
@@ -91,13 +97,17 @@ public class Vision {
 //figure out how to make the robot turn clockwise
 			
 			//doesn't need to be a while loop in competition, only for testing
+			/*
+			 * when not while loop:
+			 * 1. getDistance
+			 * 2. move that distance 
+			 * 3. check getDistance again to make sure were aligned w/in a margin of error 
+			 * 4. move forward 
+			 */
 			while (threadRunning) {
 				
 				//returns distance that the robot needs to move 
 				distance = getDistance(cvSink, outputStream);
-				
-				// figure out if the center of the tapes is left or right of the
-				// center of the frame and move accordingly
 				
 				//converts distance to meters (thats the unit the drive code is in)
 				distance *= 0.0254;
@@ -113,16 +123,24 @@ public class Vision {
 
 				//only for testing purposes; delete for competition
 				outputStream.putFrame(output);
-			}
-			// I don't know what this does but java isn't mad at us soooooo
+			} // end while loop
+			
 			outputStream.free();
 			//be free outputStream!!!
 
-		});
+		}); //end of Thread
 
 		visionThread.start();
 	}
 
+	/**
+	 * Uses contours to find centerOfTapes and centerOfFrame, 
+	 * then calculates and returns distance between them in inches. Might return Double.NaN
+	 * 
+	 * @param cvSink
+	 * @param outputStream
+	 * @return double distance
+	 */
 	public static double getDistance(CvSink cvSink, CvSource outputStream){
 		
 		// clear stuff
@@ -233,11 +251,5 @@ public class Vision {
 			return (centerOfTapes - centerOfFrame) * conversion;
 		}
 	}
-	
-// PART V: ???
-// PART VI: PROFIT
-// PART VII: ENDING CREDITS
-// VISION III: PLEASE HELP ME coming to theaters near you January 2018
-// (tentative name)
-// Announcing VISION IV: ROBOT NEVERMORE for an expected January 2019 release
-// (tentative name)
+// VISION III: PLEASE HELP ME coming to theaters near you January 2018 (tentative name)
+// Announcing VISION IV: ROBOT NEVERMORE for an expected January 2019 release (tentative name)
