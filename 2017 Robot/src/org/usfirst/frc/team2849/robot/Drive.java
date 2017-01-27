@@ -3,6 +3,7 @@ package org.usfirst.frc.team2849.robot;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Talon;
 
@@ -13,6 +14,7 @@ public class Drive implements Runnable {
 	private static Talon bottomleft = new Talon(2);
 	private static Talon bottomright = new Talon(3);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	private static RobotDrive drive = new RobotDrive(topleft, topright, bottomleft, bottomright);
 	private static double distance;
 	private static double angle;
 
@@ -105,7 +107,12 @@ public class Drive implements Runnable {
 		bottomright.set(0.0);
 
 	}
-
+	public static void driveAngle(double angleDeg){
+		drive.mecanumDrive_Cartesian(0, 0, .5, 0);
+		if(ahrs.getAngle() == angleDeg){
+			drive.stopMotor();
+		}
+	}
 	public static void mechDriveDistance(double distance, double angleDeg) { // in
 																				// meters
 
