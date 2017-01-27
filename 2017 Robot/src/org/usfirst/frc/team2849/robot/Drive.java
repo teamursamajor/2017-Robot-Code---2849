@@ -12,13 +12,7 @@ public class Drive implements Runnable {
 	private static Talon topright = new Talon(1);
 	private static Talon bottomleft = new Talon(2);
 	private static Talon bottomright = new Talon(3);
-<<<<<<< HEAD
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
-	
-=======
-	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);;
-
->>>>>>> bf3ae56610fc299bc20654993b839b10c2b468ab
 	private static double distance;
 	private static double angle;
 

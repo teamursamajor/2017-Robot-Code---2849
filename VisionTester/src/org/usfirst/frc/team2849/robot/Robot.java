@@ -21,7 +21,7 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -57,7 +57,7 @@ public class Robot extends IterativeRobot {
 //	Talon t3 = new Talon(2); // front right
 //	Talon t4 = new Talon(3); // rear right
 //	RobotDrive drive = new RobotDrive(t1, t2, t3, t4);
-	Spark spark = new Spark(1);
+	Talon t3 = new Talon(3);
 	public static XboxController xbox = new XboxController(0);
 	
 	AHRS ahrs = new AHRS(SPI.Port.kMXP);
@@ -360,9 +360,9 @@ public class Robot extends IterativeRobot {
 
 		}
 
-		System.out.println("Spark: " + t1Power);
+		System.out.println("Talon: " + t1Power);
 //		System.out.println("Talon 2: " + t2Power);
-		spark.set(-t1Power);
+		t3.set(-t1Power);
 //		t2.set(-t1Power);
 
 	}
