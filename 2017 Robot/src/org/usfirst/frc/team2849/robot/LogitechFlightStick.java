@@ -31,6 +31,9 @@ public class LogitechFlightStick extends Joystick {
 	public static final int POV_DIADOWNLEFT = 225;
 	public static final int POV_LEFT = 270;
 	public static final int POV_DIAUPLEFT = 315;
+	
+	private final double MAX_XY = 1;
+	private final double MAX_Z = .5;
 
 	public LogitechFlightStick (int port) {
 		super(port);
@@ -52,13 +55,13 @@ public class LogitechFlightStick extends Joystick {
 		}
 	}
 	public double getXAxis() {
-		return Math.pow(this.getAxisGreaterThan(AXIS_TILT_X, .1), 2) * Math.signum(this.getAxis(AXIS_TILT_X));
+		return Math.pow(this.getAxisGreaterThan(AXIS_TILT_X, .1), 2) * Math.signum(this.getAxis(AXIS_TILT_X)) * MAX_XY;
 	}
 	public double getYAxis() {
-		return Math.pow(this.getAxisGreaterThan(AXIS_TILT_Y, .1), 2) * Math.signum(this.getAxis(AXIS_TILT_Y));
+		return Math.pow(this.getAxisGreaterThan(AXIS_TILT_Y, .1), 2) * Math.signum(this.getAxis(AXIS_TILT_Y)) * MAX_XY;
 	}
 	public double getZAxis() {
-		return Math.pow(this.getAxisGreaterThan(AXIS_ROTATE_Z, .1), 2) * Math.signum(this.getAxis(AXIS_ROTATE_Z))*.5;
+		return Math.pow(this.getAxisGreaterThan(AXIS_ROTATE_Z, .1), 2) * Math.signum(this.getAxis(AXIS_ROTATE_Z))*MAX_Z;
 	}
 	public boolean getAxisLessThan(int axisNumber, double lessThan) {
 		return this.getRawAxis(axisNumber) < lessThan;

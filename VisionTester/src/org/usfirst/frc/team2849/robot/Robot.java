@@ -58,7 +58,7 @@ public class Robot extends IterativeRobot {
 //	Talon t4 = new Talon(3); // rear right
 //	RobotDrive drive = new RobotDrive(t1, t2, t3, t4);
 	Talon t3 = new Talon(3);
-	public static XboxController xbox = new XboxController(0);
+	public static LogitechFlightStick joy = new LogitechFlightStick(0);
 	
 	AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
@@ -304,66 +304,66 @@ public class Robot extends IterativeRobot {
 //		drive.mecanumDrive_Cartesian(joy.getXAxis(),
 //				joy.getYAxis(),
 //				joy.getZAxis(), 0);
-		switch (state) {
-		case 0:
-			if (xbox.getDPad(XboxController.POV_UP)) {
-				t1Power += .1;
-				state++;
-			} else if (xbox.getDPad(XboxController.POV_DOWN)) {
-				t1Power -= .1;
-				state++;
-			} else if (xbox.getDPad(XboxController.POV_RIGHT)) {
-				t1Power += .01;
-				state++;
-			} else if (xbox.getDPad(XboxController.POV_LEFT)) {
-				t1Power -= .01;
-				state++;
-			}
-			if (xbox.getButton(XboxController.BUTTON_Y)) {
-				t2Power += .1;
-				state++;
-			} else if (xbox.getButton(XboxController.BUTTON_A)) {
-				t2Power -= .1;
-				state++;
-			} else if (xbox.getButton(XboxController.BUTTON_B)) {
-				t2Power += .01;
-				state++;
-			} else if (xbox.getButton(XboxController.BUTTON_X)) {
-				t2Power -= .01;
-				state++;
-			}
-			if (Math.abs(t1Power) < .1) {
-				t1Power = 0;
-			} else if (Math.abs(t1Power) > 1) {
-				t1Power = 1 * Math.signum(t1Power);
-			}
-			// HI CHARLIE THIS IS HERSHAL HOPE YOUR CODE RUNS WELL
-			if (Math.abs(t2Power) < .1) {
-				t2Power = 0;
-			} else if (Math.abs(t2Power) > 1) {
-				t2Power = 1 * Math.signum(t2Power);
-			}
-			if (xbox.getButton(XboxController.BUTTON_START)) {
-				t1Power = 0;
-			}
-			if (xbox.getButton(XboxController.BUTTON_BACK)) {
-				t2Power = 0;
-			}
-			break;
-		case 1:
-			if (xbox.getDPad(XboxController.POV_NONE)) {
-				state++;
-			}
-			break;
-		case 2:
-			state = 0;
-
-		}
-
-		System.out.println("Talon: " + t1Power);
-//		System.out.println("Talon 2: " + t2Power);
-		t3.set(-t1Power);
-//		t2.set(-t1Power);
+//		switch (state) {
+//		case 0:
+//			if (xbox.getDPad(XboxController.POV_UP)) {
+//				t1Power += .1;
+//				state++;
+//			} else if (xbox.getDPad(XboxController.POV_DOWN)) {
+//				t1Power -= .1;
+//				state++;
+//			} else if (xbox.getDPad(XboxController.POV_RIGHT)) {
+//				t1Power += .01;
+//				state++;
+//			} else if (xbox.getDPad(XboxController.POV_LEFT)) {
+//				t1Power -= .01;
+//				state++;
+//			}
+//			if (xbox.getButton(XboxController.BUTTON_Y)) {
+//				t2Power += .1;
+//				state++;
+//			} else if (xbox.getButton(XboxController.BUTTON_A)) {
+//				t2Power -= .1;
+//				state++;
+//			} else if (xbox.getButton(XboxController.BUTTON_B)) {
+//				t2Power += .01;
+//				state++;
+//			} else if (xbox.getButton(XboxController.BUTTON_X)) {
+//				t2Power -= .01;
+//				state++;
+//			}
+//			if (Math.abs(t1Power) < .1) {
+//				t1Power = 0;
+//			} else if (Math.abs(t1Power) > 1) {
+//				t1Power = 1 * Math.signum(t1Power);
+//			}
+//			// HI CHARLIE THIS IS HERSHAL HOPE YOUR CODE RUNS WELL
+//			if (Math.abs(t2Power) < .1) {
+//				t2Power = 0;
+//			} else if (Math.abs(t2Power) > 1) {
+//				t2Power = 1 * Math.signum(t2Power);
+//			}
+//			if (xbox.getButton(XboxController.BUTTON_START)) {
+//				t1Power = 0;
+//			}
+//			if (xbox.getButton(XboxController.BUTTON_BACK)) {
+//				t2Power = 0;
+//			}
+//			break;
+//		case 1:
+//			if (xbox.getDPad(XboxController.POV_NONE)) {
+//				state++;
+//			}
+//			break;
+//		case 2:
+//			state = 0;
+//
+//		}
+//
+//		System.out.println("Talon: " + t1Power);
+////		System.out.println("Talon 2: " + t2Power);
+//		t3.set(-t1Power);
+////		t2.set(-t1Power);
 
 	}
 	

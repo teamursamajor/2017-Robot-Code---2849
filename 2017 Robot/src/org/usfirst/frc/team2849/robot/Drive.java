@@ -2,29 +2,45 @@ package org.usfirst.frc.team2849.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.hal.FRCNetComm.tInstances;
+import edu.wpi.first.wpilibj.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.wpilibj.hal.HAL;
 
-public class Drive implements Runnable {
+public class Drive extends RobotDrive {
 
-	private static Talon topleft = new Talon(0);
-	private static Talon topright = new Talon(1);
-	private static Talon bottomleft = new Talon(2);
-	private static Talon bottomright = new Talon(3);
+	/**
+	 * can't have talons and RobotDrive inside another robot drive
+	 * you would have to dig in to find out why, but that's the issue
+	 * 
+	 * - other charlie
+	 */
+//	private static Talon topleft = new Talon(0);
+//	private static Talon topright = new Talon(1);
+//	private static Talon bottomleft = new Talon(2);
+//	private static Talon bottomright = new Talon(3);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
-	private static RobotDrive drive = new RobotDrive(topleft, topright, bottomleft, bottomright);
+//	private static RobotDrive drive = new RobotDrive(topleft, topright, bottomleft, bottomright);
 	private static double distance;
 	private static double angle;
 
 	private static Boolean bool = false;
 	private static EndCondition ending = null;
 	private static Thread driveRunner = null;
+	
+	private final double RL_SCALE = .05;
+	private final double RL_THRESH = .25;
 
-	private Drive(double distance, double angle) {
-		Drive.distance = distance;
-		Drive.angle = angle;
+//	private Drive(double distance, double angle) {
+//		Drive.distance = distance;
+//		Drive.angle = angle;
+//	}
+	
+	public Drive(SpeedController t1, SpeedController t2, SpeedController t3, SpeedController t4) {
+		super(t1, t2, t3, t4);
 	}
 
 	/**
@@ -48,10 +64,10 @@ public class Drive implements Runnable {
 		final double v2 = r * sinu - raxis;
 		final double v3 = r * sinu + raxis;
 		final double v4 = r * cosu - raxis;
-		topleft.set(v1);
-		topright.set(v2);
-		bottomleft.set(v3);
-		bottomright.set(v4);
+//		topleft.set(v1);
+//		topright.set(v2);
+//		bottomleft.set(v3);
+//		bottomright.set(v4);
 	}
 
 	/**
@@ -69,10 +85,10 @@ public class Drive implements Runnable {
 		final double v2 = sinu;
 		final double v3 = sinu;
 		final double v4 = cosu;
-		topleft.set(v1);
-		topright.set(v2);
-		bottomleft.set(v3);
-		bottomright.set(v4);
+//		topleft.set(v1);
+//		topright.set(v2);
+//		bottomleft.set(v3);
+//		bottomright.set(v4);
 
 	}
 
@@ -94,27 +110,26 @@ public class Drive implements Runnable {
 		final double v2 = sinu;
 		final double v3 = sinu;
 		final double v4 = cosu;
-		topleft.set(v1);
-		topright.set(v2);
-		bottomleft.set(v3);
-		bottomright.set(v4);
+//		topleft.set(v1);
+//		topright.set(v2);
+//		bottomleft.set(v3);
+//		bottomright.set(v4);
 		while ((System.currentTimeMillis() - timer) < time) {
 
 		}
-		topleft.set(0.0);
-		topright.set(0.0);
-		bottomleft.set(0.0);
-		bottomright.set(0.0);
+//		topleft.set(0.0);
+//		topright.set(0.0);
+//		bottomleft.set(0.0);
+//		bottomright.set(0.0);
 
 	}
 	public static void driveAngle(double angleDeg){
-		drive.mecanumDrive_Cartesian(0, 0, .5, 0);
-		if(ahrs.getAngle() == angleDeg){
-			drive.stopMotor();
-		}
+//		drive.mecanumDrive_Cartesian(0, 0, .5, 0);
+//		if(ahrs.getAngle() == angleDeg){
+//			drive.stopMotor();
+//		}
 	}
-	public static void mechDriveDistance(double distance, double angleDeg) { // in
-																				// meters
+	public static void mechDriveDistance(double distance, double angleDeg) { // in meters
 
 		double displacement = 0;
 		ahrs.resetDisplacement();
@@ -132,10 +147,10 @@ public class Drive implements Runnable {
 			}
 
 		}
-		topleft.set(0.0);
-		topright.set(0.0);
-		bottomleft.set(0.0);
-		bottomright.set(0.0);
+//		topleft.set(0.0);
+//		topright.set(0.0);
+//		bottomleft.set(0.0);
+//		bottomright.set(0.0);
 
 		// VELOCITY
 		// driveDirection(angle);
@@ -162,21 +177,60 @@ public class Drive implements Runnable {
 		// bottomright.set(0.0);
 	}
 
-	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 		mechDriveDistance(distance, angle);
 	}
 
-	public static void drive(double distance, double angle) {
-		synchronized (bool) {
-			if (bool)
-				return;
-			bool = true;
-		}
-		driveRunner = new Thread(new Drive(distance, angle), "drive");
-		driveRunner.start();
+//	public static void drive(double distance, double angle) {
+//		synchronized (bool) {
+//			if (bool)
+//				return;
+//			bool = true;
+//		}
+//		driveRunner = new Thread(new Drive(distance, angle), "drive");
+//		driveRunner.start();
+//
+//	}
+	
+	@SuppressWarnings("ParameterName")
+	  public void mecanumDrive_Cartesian(double x, double y, double rotation, double gyroAngle) {
+	    if (!kMecanumCartesian_Reported) {
+	      HAL.report(tResourceType.kResourceType_RobotDrive, getNumMotors(),
+	          tInstances.kRobotDrive_MecanumCartesian);
+	      kMecanumCartesian_Reported = true;
+	    }
+	    @SuppressWarnings("LocalVariableName")
+	    double xIn = x;
+	    @SuppressWarnings("LocalVariableName")
+	    double yIn = y;
+	    // Negate y for the joystick.
+	    yIn = -yIn;
+	    // Compenstate for gyro angle.
+	    double[] rotated = rotateVector(xIn, yIn, gyroAngle);
+	    xIn = rotated[0];
+	    yIn = rotated[1];
 
-	}
+	    double[] wheelSpeeds = new double[kMaxNumberOfMotors];
+	    wheelSpeeds[MotorType.kFrontLeft.value] = xIn + yIn + rotation;
+	    wheelSpeeds[MotorType.kFrontRight.value] = -xIn + yIn - rotation;
+	    wheelSpeeds[MotorType.kRearLeft.value] = -xIn + yIn + rotation;
+	    wheelSpeeds[MotorType.kRearRight.value] = xIn + yIn - rotation;
+
+	    normalize(wheelSpeeds);
+	    m_frontLeftMotor.set(wheelSpeeds[MotorType.kFrontLeft.value] * m_maxOutput);
+	    m_frontRightMotor.set(wheelSpeeds[MotorType.kFrontRight.value] * m_maxOutput);
+	    double rearLeftValue = wheelSpeeds[MotorType.kRearLeft.value] * m_maxOutput;
+	    System.out.println(rearLeftValue);
+	    if (Math.abs(rearLeftValue) < RL_THRESH) {
+	    	rearLeftValue += RL_SCALE * Math.signum(rearLeftValue);
+	    }
+	    m_rearLeftMotor.set(rearLeftValue);
+	    m_rearRightMotor.set(wheelSpeeds[MotorType.kRearRight.value] * m_maxOutput);
+
+	    if (m_safetyHelper != null) {
+	      m_safetyHelper.feed();
+	    }
+	  }
 
 }

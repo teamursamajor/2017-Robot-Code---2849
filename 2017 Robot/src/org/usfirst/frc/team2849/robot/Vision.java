@@ -15,6 +15,7 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -64,6 +65,9 @@ public class Vision {
 	private static Mat output = new Mat();
 	private static Mat temp = new Mat();
 	
+	//String for the peg side the robot is going to auto align to
+	private static String pegSide = "middle";
+	
 	static {
 
 		threadRunning = true;
@@ -92,9 +96,28 @@ public class Vision {
 			 */
 			
 			//get the angle and turn to be perpendicular with the peg
-			angle = ahrs.getAngle() % 360;
-			angle *= -1;
-//figure out how to make the robot turn clockwise
+			//angle = ahrs.getAngle() % 360;
+			//angle *= -1;
+			
+			//GEAR IS ON THE BACK OF THE ROBOT ;-;
+			switch(pegSide){
+			case "left":
+				//find angle to be head-on with the leftmost peg - if regular hexagon, 240 degrees
+				//turns the robot to angle ___ when the user presses the button set to right
+				Drive.driveAngle(240.0);
+			break;
+			case "right":
+				//find angle to be head-on with the rightmost peg - if regular hexagon, 120 degrees
+				//turns the robot to angle ___ when the user presses the button set to right
+				Drive.driveAngle(120.0);
+			break;
+			case "middle":
+				//turns the robot to angle 180 when the user presses the button set to middle
+				Drive.driveAngle(180.0);
+			default:
+				
+			break;
+			}
 			
 			//doesn't need to be a while loop in competition, only for testing
 			/*
@@ -120,18 +143,23 @@ public class Vision {
 					// if the tapes are to the left of center, then move left
 					Drive.mechDriveDistance(distance, 270);
 				}
-
+				
+				/*
+				 * Drive.getDistance(cvSink, outputStream);
+				 * 
+				 */
+				
 				//only for testing purposes; delete for competition
 				outputStream.putFrame(output);
 			} // end while loop
-			
+			Drive.mechDriveDistance(1, 180);
 			outputStream.free();
 			//be free outputStream!!!
 
 		}); //end of Thread
 
 		visionThread.start();
-	}
+	} //end static
 
 	/**
 	 * Uses contours to find centerOfTapes and centerOfFrame, 
@@ -249,7 +277,12 @@ public class Vision {
 
 			//finds distance you need to move by subtracting frame from center
 			return (centerOfTapes - centerOfFrame) * conversion;
-		}
-	}
+		}//end getDistance
+	
+	public static void setPegSide(String pegSide){
+		Vision.pegSide = pegSide;
+	}//end setPegSide
+	
+}
 // VISION III: PLEASE HELP ME coming to theaters near you January 2018 (tentative name)
 // Announcing VISION IV: ROBOT NEVERMORE for an expected January 2019 release (tentative name)
