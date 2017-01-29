@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.hal.FRCNetComm.tInstances;
 import edu.wpi.first.wpilibj.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.wpilibj.hal.HAL;
 
-public class Drive extends RobotDrive {
+public class Drive implements Runnable {
 
 	/**
 	 * can't have talons and RobotDrive inside another robot drive
@@ -40,7 +40,9 @@ public class Drive extends RobotDrive {
 //	}
 	
 	public Drive(SpeedController t1, SpeedController t2, SpeedController t3, SpeedController t4) {
-		super(t1, t2, t3, t4);
+	}
+	
+	public Drive() {
 	}
 
 	/**
@@ -179,58 +181,68 @@ public class Drive extends RobotDrive {
 
 	public void run() {
 		// TODO Auto-generated method stub
-		mechDriveDistance(distance, angle);
+		long time = System.currentTimeMillis();
+		double displacement = 0.0;
+		while (true) {
+			displacement += Math.sqrt(Math.pow(ahrs.getRawAccelX(), 2) + Math.pow(ahrs.getRawAccelZ(), 2))
+					* .5 * Math.pow((System.currentTimeMillis() - time) / 1000, 2);
+			System.out.println("X Accel: " + ahrs.getRawAccelX());
+			System.out.println("Z Accel: " + ahrs.getRawAccelY());
+//			System.out.println(displacement);
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
 	}
 
-//	public static void drive(double distance, double angle) {
-//		synchronized (bool) {
-//			if (bool)
-//				return;
-//			bool = true;
-//		}
-//		driveRunner = new Thread(new Drive(distance, angle), "drive");
-//		driveRunner.start();
-//
-//	}
+	public static void startDrive() {
+		driveRunner = new Thread(new Drive(), "drive");
+		driveRunner.start();
+
+	}
 	
-	@SuppressWarnings("ParameterName")
-	  public void mecanumDrive_Cartesian(double x, double y, double rotation, double gyroAngle) {
-	    if (!kMecanumCartesian_Reported) {
-	      HAL.report(tResourceType.kResourceType_RobotDrive, getNumMotors(),
-	          tInstances.kRobotDrive_MecanumCartesian);
-	      kMecanumCartesian_Reported = true;
-	    }
-	    @SuppressWarnings("LocalVariableName")
-	    double xIn = x;
-	    @SuppressWarnings("LocalVariableName")
-	    double yIn = y;
-	    // Negate y for the joystick.
-	    yIn = -yIn;
-	    // Compenstate for gyro angle.
-	    double[] rotated = rotateVector(xIn, yIn, gyroAngle);
-	    xIn = rotated[0];
-	    yIn = rotated[1];
-
-	    double[] wheelSpeeds = new double[kMaxNumberOfMotors];
-	    wheelSpeeds[MotorType.kFrontLeft.value] = xIn + yIn + rotation;
-	    wheelSpeeds[MotorType.kFrontRight.value] = -xIn + yIn - rotation;
-	    wheelSpeeds[MotorType.kRearLeft.value] = -xIn + yIn + rotation;
-	    wheelSpeeds[MotorType.kRearRight.value] = xIn + yIn - rotation;
-
-	    normalize(wheelSpeeds);
-	    m_frontLeftMotor.set(wheelSpeeds[MotorType.kFrontLeft.value] * m_maxOutput);
-	    m_frontRightMotor.set(wheelSpeeds[MotorType.kFrontRight.value] * m_maxOutput);
-	    double rearLeftValue = wheelSpeeds[MotorType.kRearLeft.value] * m_maxOutput;
-	    System.out.println(rearLeftValue);
-	    if (Math.abs(rearLeftValue) < RL_THRESH) {
-	    	rearLeftValue += RL_SCALE * Math.signum(rearLeftValue);
-	    }
-	    m_rearLeftMotor.set(rearLeftValue);
-	    m_rearRightMotor.set(wheelSpeeds[MotorType.kRearRight.value] * m_maxOutput);
-
-	    if (m_safetyHelper != null) {
-	      m_safetyHelper.feed();
-	    }
-	  }
+//	@SuppressWarnings("ParameterName")
+//	  public void mecanumDrive_Cartesian(double x, double y, double rotation, double gyroAngle) {
+//	    if (!kMecanumCartesian_Reported) {
+//	      HAL.report(tResourceType.kResourceType_RobotDrive, getNumMotors(),
+//	          tInstances.kRobotDrive_MecanumCartesian);
+//	      kMecanumCartesian_Reported = true;
+//	    }
+//	    @SuppressWarnings("LocalVariableName")
+//	    double xIn = x;
+//	    @SuppressWarnings("LocalVariableName")
+//	    double yIn = y;
+//	    // Negate y for the joystick.
+//	    yIn = -yIn;
+//	    // Compenstate for gyro angle.
+//	    double[] rotated = rotateVector(xIn, yIn, gyroAngle);
+//	    xIn = rotated[0];
+//	    yIn = rotated[1];
+//
+//	    double[] wheelSpeeds = new double[kMaxNumberOfMotors];
+//	    wheelSpeeds[MotorType.kFrontLeft.value] = xIn + yIn + rotation;
+//	    wheelSpeeds[MotorType.kFrontRight.value] = -xIn + yIn - rotation;
+//	    wheelSpeeds[MotorType.kRearLeft.value] = -xIn + yIn + rotation;
+//	    wheelSpeeds[MotorType.kRearRight.value] = xIn + yIn - rotation;
+//
+//	    normalize(wheelSpeeds);
+//	    m_frontLeftMotor.set(wheelSpeeds[MotorType.kFrontLeft.value] * m_maxOutput);
+//	    m_frontRightMotor.set(wheelSpeeds[MotorType.kFrontRight.value] * m_maxOutput);
+//	    double rearLeftValue = wheelSpeeds[MotorType.kRearLeft.value] * m_maxOutput;
+//	    System.out.println(rearLeftValue);
+//	    if (Math.abs(rearLeftValue) < RL_THRESH) {
+//	    	rearLeftValue += RL_SCALE * Math.signum(rearLeftValue);
+//	    }
+//	    m_rearLeftMotor.set(rearLeftValue);
+//	    m_rearRightMotor.set(wheelSpeeds[MotorType.kRearRight.value] * m_maxOutput);
+//
+//	    if (m_safetyHelper != null) {
+//	      m_safetyHelper.feed();
+//	    }
+//	  }
 
 }

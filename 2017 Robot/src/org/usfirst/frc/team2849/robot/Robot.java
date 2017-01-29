@@ -24,7 +24,7 @@ public class Robot extends IterativeRobot {
 	Talon t2 = new Talon(1); // rear left
 	Talon t3 = new Talon(2); // front right
 	Talon t4 = new Talon(3); // rear right
-	Drive drive = null;
+	RobotDrive drive = null;
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
 	private int frontrightstate = 0;
 	private int frontleftstate = 0;
@@ -32,6 +32,7 @@ public class Robot extends IterativeRobot {
 	private int backleftstate = 0;
 	private int buttonstate = 0;
 	private int povAngle = -1;
+	private double displacement = 0.0;
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	private PowerDistributionPanel board = new PowerDistributionPanel(0);
@@ -43,16 +44,17 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		// System.out.println("Test 2");
 		try {
-			drive = new Drive(t1, t2, t3, t4);
+			drive = new RobotDrive(t1, t2, t3, t4);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
-		
+		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
-		drive.setInvertedMotor(MotorType.kFrontLeft, true);
-		drive.setInvertedMotor(MotorType.kRearLeft, true);
-
+//		drive.setInvertedMotor(MotorType.kFrontLeft, true);
+//		drive.setInvertedMotor(MotorType.kRearLeft, true);
+		Drive.startDrive();
+		
 	}
 
 	/**
@@ -67,7 +69,7 @@ public class Robot extends IterativeRobot {
 	 * SendableChooser make sure to add them to the chooser code above as well.
 	 */
 	public void autonomousInit() {
-
+		
 	}
 
 	/**
@@ -230,10 +232,17 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during test mode
 	 */
 	public void testPeriodic() {
-
+		
 	}
 
 	public void disabledPeriodic() {
+//		displacement += ahrs.getDisplacementX() * 100;
+//		ahrs.resetDisplacement();
+//		System.out.println(displacement);
+		boolean isConnected = ahrs.isConnected();
+		double yaw = ahrs.getYaw();
+		double pitch = ahrs.getPitch();
+		double roll = ahrs.getRate();
 		SmartDashboard.putBoolean("IMU_Connected", ahrs.isConnected());
 		SmartDashboard.putBoolean("IMU_IsCalibrating", ahrs.isCalibrating());
 		SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
