@@ -34,6 +34,7 @@ public class Robot extends IterativeRobot {
 	private int povAngle = -1;
 	private double displacement = 0.0;
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	private Vision vision;
 
 	private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
@@ -42,6 +43,8 @@ public class Robot extends IterativeRobot {
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
+		//create camera feeds
+		Vision vision = new Vision();
 		// System.out.println("Test 2");
 		try {
 			drive = new RobotDrive(t1, t2, t3, t4);
@@ -53,7 +56,7 @@ public class Robot extends IterativeRobot {
 		ahrs.zeroYaw();
 //		drive.setInvertedMotor(MotorType.kFrontLeft, true);
 //		drive.setInvertedMotor(MotorType.kRearLeft, true);
-		Drive.startDrive();
+//		Drive.startDrive();
 		
 	}
 
@@ -90,6 +93,10 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 
+		if(joy.getButton(LogitechFlightStick.BUTTON_Side)) {
+			vision.run();
+		}
+		
 		// System.out.println("Test 3");
 		// System.out.println("Angle: " + ahrs.getAngle() % 360);
 		// System.out.println("Displacement: " + ahrs.getDisplacementX());
@@ -102,6 +109,8 @@ public class Robot extends IterativeRobot {
 			Vision.setPegSide("right");
 		}
 
+	
+		
 		double angle = ahrs.getAngle() % 360;
 		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger)) {
 			povAngle = joy.getPOV(0);
@@ -243,10 +252,12 @@ public class Robot extends IterativeRobot {
 		double yaw = ahrs.getYaw();
 		double pitch = ahrs.getPitch();
 		double roll = ahrs.getRate();
-		SmartDashboard.putBoolean("IMU_Connected", ahrs.isConnected());
-		SmartDashboard.putBoolean("IMU_IsCalibrating", ahrs.isCalibrating());
-		SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
-		SmartDashboard.putNumber("IMU_Pitch", ahrs.getPitch());
-		SmartDashboard.putNumber("IMU_Roll", ahrs.getRoll());
+//		SmartDashboard.putBoolean("IMU_Connected", ahrs.isConnected());
+//		SmartDashboard.putBoolean("IMU_IsCalibrating", ahrs.isCalibrating());
+//		SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
+//		SmartDashboard.putNumber("IMU_Pitch", ahrs.getPitch());
+//		SmartDashboard.putNumber("IMU_Roll", ahrs.getRoll());
+		
+
 	}
 }

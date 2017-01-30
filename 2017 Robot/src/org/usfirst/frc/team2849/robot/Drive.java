@@ -186,8 +186,8 @@ public class Drive implements Runnable {
 		while (true) {
 			displacement += Math.sqrt(Math.pow(ahrs.getRawAccelX(), 2) + Math.pow(ahrs.getRawAccelZ(), 2))
 					* .5 * Math.pow((System.currentTimeMillis() - time) / 1000, 2);
-			System.out.println("X Accel: " + ahrs.getRawAccelX());
-			System.out.println("Z Accel: " + ahrs.getRawAccelY());
+//			System.out.println("X Accel: " + ahrs.getRawAccelX());
+//			System.out.println("Z Accel: " + ahrs.getRawAccelY());
 //			System.out.println(displacement);
 			try {
 				Thread.sleep(1);
