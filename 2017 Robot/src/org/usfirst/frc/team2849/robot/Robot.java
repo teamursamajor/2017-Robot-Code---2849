@@ -43,9 +43,8 @@ public class Robot extends IterativeRobot {
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
-		//create camera feeds
-		//THIS CAUSED CRC ERROR WHEN NOTHING ELSE WAS UNCOMMENTED
-//		Vision vision = new Vision();
+		//create camera feeds		
+		Vision vision = new Vision();
 		// System.out.println("Test 2");
 		try {
 			drive = new RobotDrive(t1, t2, t3, t4);
@@ -61,8 +60,8 @@ public class Robot extends IterativeRobot {
 
 		drive.setInvertedMotor(MotorType.kFrontLeft, true);
 		drive.setInvertedMotor(MotorType.kRearLeft, true);
-		//CRC ERRORS HERE AS WELL
-		//Drive.startDrive();
+		
+		Drive.startDrive();
 		
 	}
 
@@ -98,33 +97,33 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {
-//FIX BUTTONS BEING DUMB :^(
-//		if(joy.getButton(LogitechFlightStick.BUTTON_Side8)) {
-//			vision.run();
-//			System.out.println("yay buttons");
-//		}
+
+		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
+			//vision.run();
+			System.out.println("***************yay buttons***************");
+		}
 		
 //		 System.out.println("Test 3");
 //		 System.out.println("Angle: " + ahrs.getAngle() % 360);
 //		 System.out.println("Displacement: " + ahrs.getDisplacementX());
 
-		//CRC ERRORS HERE AS WELL
-//		if (joy.getButton(LogitechFlightStick.BUTTON_Side7)) {
-//			Vision.setPegSide("left");
-//			System.out.println("left");
-//		} else if (joy.getButton(LogitechFlightStick.BUTTON_Side9)) {
-//			Vision.setPegSide("middle");
-//			System.out.println("middle");
-//		} else if (joy.getButton(LogitechFlightStick.BUTTON_Side11)) {
-//			Vision.setPegSide("right");
-//			System.out.println("right");
-//		}
+
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+			Vision.setPegSide("left");
+			System.out.println("left");
+		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+			Vision.setPegSide("middle");
+			System.out.println("middle");
+		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+			Vision.setPegSide("right");
+			System.out.println("right");
+		}
 		
 
 	
 		
 		double angle = ahrs.getAngle() % 360;
-		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger)) {
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Trigger)) {
 			povAngle = joy.getPOV(0);
 			switch (povAngle) {
 			case 0:
@@ -158,96 +157,101 @@ public class Robot extends IterativeRobot {
 		} else {
 			drive.mecanumDrive_Cartesian(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), ahrs.getAngle());
 		}
-		if (joy.getButton(2)) {
+		
+		if (joy.getSingleButtonPress(2)) {
 			System.out.print("Front Left: " + board.getCurrent(14));
 			System.out.print("\nBack Left: " + board.getCurrent(15));
 			System.out.print("\nFront Right: " + board.getCurrent(13));
 			System.out.println("\nBack Right: " + board.getCurrent(0));
 		}
-//TEST CRC ERRORS FROM HERE		
-		// switch (frontrightstate) {
-		// case 0:
-		// t3.set(0);
-		// break;
-		// case 1:
-		// t3.set(1);
-		// break;
-		// case 2:
-		// t3.set(-1);
-		// break;
-		// }
-		//
-		// switch (frontleftstate) {
-		// case 0:
-		// t1.set(0);
-		// break;
-		// case 1:
-		// t1.set(1);
-		// break;
-		// case 2:
-		// t1.set(-1);
-		// break;
-		// }
-		//
-		// switch (backrightstate) {
-		// case 0:
-		// t4.set(0);
-		// break;
-		// case 1:
-		// t4.set(1);
-		// break;
-		// case 2:
-		// t4.set(-1);
-		// break;
-		// }
-		//
-		// switch (backleftstate) {
-		// case 0:
-		// t2.set(0);
-		// break;
-		// case 1:
-		// t2.set(1);
-		// break;
-		// case 2:
-		// t2.set(-1);
-		// break;
-		// }
+		
+		 switch (frontrightstate) {
+		 case 0:
+		 t3.set(0);
+		 break;
+		 case 1:
+		 t3.set(1);
+		 break;
+		 case 2:
+		 t3.set(-1);
+		 break;
+		 }
+		
+		 switch (frontleftstate) {
+		 case 0:
+		 t1.set(0);
+		 break;
+		 case 1:
+		 t1.set(1);
+		 break;
+		 case 2:
+		 t1.set(-1);
+		 break;
+		 }
+		
+		 switch (backrightstate) {
+		 case 0:
+		 t4.set(0);
+		 break;
+		 case 1:
+		 t4.set(1);
+		 break;
+		 case 2:
+		 t4.set(-1);
+		 break;
+		 }
+		
+		 switch (backleftstate) {
+		 case 0:
+		 t2.set(0);
+		 break;
+		 case 1:
+		 t2.set(1);
+		 break;
+		 case 2:
+		 t2.set(-1);
+		 break;
+		 }
 
-		// switch (buttonstate) {
-		// case 0:
-		// if (joy.getButton(5)) {
-		// frontleftstate++;
-		// buttonstate++;
-		// }
-		// if (joy.getButton(3)) {
-		// backleftstate++;
-		// buttonstate++;
-		// }
-		// if (joy.getButton(4)) {
-		// backrightstate++;
-		// buttonstate++;
-		// }
-		// if (joy.getButton(6)) {
-		// frontrightstate++;
-		// buttonstate++;
-		// }
-		// break;
-		// case 1:
-		// if (!joy.getButton(5) && !joy.getButton(4) && !joy.getButton(3) &&
-		// !joy.getButton(6)) {
-		// buttonstate = 0;
-		// }
-		// break;
-		// }
-		// Drive.mecanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X,
-		// .1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1),
-		// joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
-		// Shooter.shoot(joy.getAxisGreaterThan(XboxController.AXIS_RIGHTTRIGGER,
-		// .1));
-		// Drive.mecanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X,
-		// .1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1),
-		// joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
-
+		 switch (buttonstate) {
+		 case 0:
+		 if (joy.getSingleButtonPress(5)) {
+		 frontleftstate++;
+		 buttonstate++;
+		 }
+		 if (joy.getSingleButtonPress(3)) {
+		 backleftstate++;
+		 buttonstate++;
+		 }
+		 if (joy.getSingleButtonPress(4)) {
+		 backrightstate++;
+		 buttonstate++;
+		 }
+		 if (joy.getSingleButtonPress(6)) {
+		 frontrightstate++;
+		 buttonstate++;
+		 }
+		 break;
+		 case 1:
+		 if (!joy.getSingleButtonPress(5) && !joy.getSingleButtonPress(4) && !joy.getSingleButtonPress(3) &&
+		 !joy.getSingleButtonPress(6)) {
+		 buttonstate = 0;
+		 }
+		 break;
+		 }
+		 
+		 
+		//Drive.mecanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X,
+		//.1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1),
+		//joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
+		   
+		   
+		/*Shooter.shoot( () -> joy.getAxisGreaterThan(XboxController.AXIS_RIGHTTRIGGER,
+		.1) == 0);
+		Drive.mecanumDrive(joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_X,
+		.1), joy.getAxisGreaterThan(XboxController.AXIS_LEFTSTICK_Y, .1),
+		joy.getAxisGreaterThan(XboxController.AXIS_RIGHTSTICK_X, .1));
+		*/
 	}
 
 	/**
@@ -271,21 +275,21 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("IMU_Pitch", ahrs.getPitch());
 //		SmartDashboard.putNumber("IMU_Roll", ahrs.getRoll());
 		
-//		if(joy.getButton(LogitechFlightStick.BUTTON_Side)) {
-//			vision.run();
-//		}
+		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side)) {
+			vision.run();
+		}
 		
-		// System.out.println("Test 3");
-		// System.out.println("Angle: " + ahrs.getAngle() % 360);
-		// System.out.println("Displacement: " + ahrs.getDisplacementX());
+		 //System.out.println("Test 3");
+		 //System.out.println("Angle: " + ahrs.getAngle() % 360);
+		 //System.out.println("Displacement: " + ahrs.getDisplacementX());
 
-//		if (joy.getButton(LogitechFlightStick.BUTTON_Side7)) {
-//			Vision.setPegSide("left");
-//		} else if (joy.getButton(LogitechFlightStick.BUTTON_Side9)) {
-//			Vision.setPegSide("middle");
-//		} else if (joy.getButton(LogitechFlightStick.BUTTON_Side11)) {
-//			Vision.setPegSide("right");
-//		}
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+			Vision.setPegSide("left");
+		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+			Vision.setPegSide("middle");
+		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+			Vision.setPegSide("right");
+		}
 
 
 	}
