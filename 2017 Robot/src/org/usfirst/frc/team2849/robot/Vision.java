@@ -21,8 +21,8 @@ import com.kauailabs.navx.frc.AHRS;
 
 public class Vision implements Runnable{
 
-	// VISION II: ELECTRIC BOOGALOO
-	// **cue Star Wars music**
+// VISION II: ELECTRIC BOOGALOO
+// **cue Star Wars music**
 
 	private static List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 	private static List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
@@ -82,12 +82,13 @@ public class Vision implements Runnable{
 		cvSink = CameraServer.getInstance().getVideo();
 		// test different resolutions
 		outputStream = CameraServer.getInstance().putVideo("BC", 160, 120);
+		outputStream.free();
 	}
 	
 	public void run(){
 			
 			//autoAlign();
-		
+			//outputStream.free();
 			// only for testing purposes; delete for competition
 			//outputStream.putFrame(output);
 			//outputStream.free();
@@ -124,6 +125,7 @@ public class Vision implements Runnable{
 			// turns the robot to angle 180 when the user presses the button set
 			// to middle
 			Drive.driveAngle(180.0);
+			System.out.println(pegSide);
 		default:
 
 			break;
@@ -172,9 +174,9 @@ public class Vision implements Runnable{
 				Drive.mechDriveDistance(1 , 180);
 			}
 		} 
-
+		System.out.println(distance);
 		
-	}
+	} //end autoAlign
 
 	/**
 	 * Uses contours to find centerOfTapes and centerOfFrame, then calculates

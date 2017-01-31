@@ -44,19 +44,25 @@ public class Robot extends IterativeRobot {
 	 */
 	public void robotInit() {
 		//create camera feeds
-		Vision vision = new Vision();
+		//THIS CAUSED CRC ERROR WHEN NOTHING ELSE WAS UNCOMMENTED
+//		Vision vision = new Vision();
 		// System.out.println("Test 2");
 		try {
 			drive = new RobotDrive(t1, t2, t3, t4);
+			drive.setSafetyEnabled(false);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
 		}
+	
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
-//		drive.setInvertedMotor(MotorType.kFrontLeft, true);
-//		drive.setInvertedMotor(MotorType.kRearLeft, true);
-//		Drive.startDrive();
+
+		drive.setInvertedMotor(MotorType.kFrontLeft, true);
+		drive.setInvertedMotor(MotorType.kRearLeft, true);
+		//CRC ERRORS HERE AS WELL
+		//Drive.startDrive();
 		
 	}
 
@@ -92,22 +98,28 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {
-
-		if(joy.getButton(LogitechFlightStick.BUTTON_Side)) {
-			vision.run();
-		}
+//FIX BUTTONS BEING DUMB :^(
+//		if(joy.getButton(LogitechFlightStick.BUTTON_Side8)) {
+//			vision.run();
+//			System.out.println("yay buttons");
+//		}
 		
-		// System.out.println("Test 3");
-		// System.out.println("Angle: " + ahrs.getAngle() % 360);
-		// System.out.println("Displacement: " + ahrs.getDisplacementX());
+//		 System.out.println("Test 3");
+//		 System.out.println("Angle: " + ahrs.getAngle() % 360);
+//		 System.out.println("Displacement: " + ahrs.getDisplacementX());
 
-		if (joy.getButton(LogitechFlightStick.BUTTON_Side7)) {
-			Vision.setPegSide("left");
-		} else if (joy.getButton(LogitechFlightStick.BUTTON_Side9)) {
-			Vision.setPegSide("middle");
-		} else if (joy.getButton(LogitechFlightStick.BUTTON_Side11)) {
-			Vision.setPegSide("right");
-		}
+		//CRC ERRORS HERE AS WELL
+//		if (joy.getButton(LogitechFlightStick.BUTTON_Side7)) {
+//			Vision.setPegSide("left");
+//			System.out.println("left");
+//		} else if (joy.getButton(LogitechFlightStick.BUTTON_Side9)) {
+//			Vision.setPegSide("middle");
+//			System.out.println("middle");
+//		} else if (joy.getButton(LogitechFlightStick.BUTTON_Side11)) {
+//			Vision.setPegSide("right");
+//			System.out.println("right");
+//		}
+		
 
 	
 		
@@ -152,6 +164,7 @@ public class Robot extends IterativeRobot {
 			System.out.print("\nFront Right: " + board.getCurrent(13));
 			System.out.println("\nBack Right: " + board.getCurrent(0));
 		}
+//TEST CRC ERRORS FROM HERE		
 		// switch (frontrightstate) {
 		// case 0:
 		// t3.set(0);
@@ -248,16 +261,32 @@ public class Robot extends IterativeRobot {
 //		displacement += ahrs.getDisplacementX() * 100;
 //		ahrs.resetDisplacement();
 //		System.out.println(displacement);
-		boolean isConnected = ahrs.isConnected();
-		double yaw = ahrs.getYaw();
-		double pitch = ahrs.getPitch();
-		double roll = ahrs.getRate();
+//		boolean isConnected = ahrs.isConnected();
+//		double yaw = ahrs.getYaw();
+//		double pitch = ahrs.getPitch();
+//		double roll = ahrs.getRate();
 //		SmartDashboard.putBoolean("IMU_Connected", ahrs.isConnected());
 //		SmartDashboard.putBoolean("IMU_IsCalibrating", ahrs.isCalibrating());
 //		SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
 //		SmartDashboard.putNumber("IMU_Pitch", ahrs.getPitch());
 //		SmartDashboard.putNumber("IMU_Roll", ahrs.getRoll());
 		
+//		if(joy.getButton(LogitechFlightStick.BUTTON_Side)) {
+//			vision.run();
+//		}
+		
+		// System.out.println("Test 3");
+		// System.out.println("Angle: " + ahrs.getAngle() % 360);
+		// System.out.println("Displacement: " + ahrs.getDisplacementX());
+
+//		if (joy.getButton(LogitechFlightStick.BUTTON_Side7)) {
+//			Vision.setPegSide("left");
+//		} else if (joy.getButton(LogitechFlightStick.BUTTON_Side9)) {
+//			Vision.setPegSide("middle");
+//		} else if (joy.getButton(LogitechFlightStick.BUTTON_Side11)) {
+//			Vision.setPegSide("right");
+//		}
+
 
 	}
 }
