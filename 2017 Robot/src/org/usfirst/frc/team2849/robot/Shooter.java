@@ -1,5 +1,7 @@
 package org.usfirst.frc.team2849.robot;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Talon;
 
 public class Shooter implements Runnable {
@@ -8,6 +10,10 @@ public class Shooter implements Runnable {
 	
 	private Talon upperShooter = new Talon(4);
 	private Talon lowerShooter = new Talon(5);
+	
+	AnalogInput encoder = new AnalogInput(0);
+	
+	PIDController pid = new PIDController(.1, .1, .1, encoder, upperShooter);
 	
 	private static EndCondition ending = null;
 	

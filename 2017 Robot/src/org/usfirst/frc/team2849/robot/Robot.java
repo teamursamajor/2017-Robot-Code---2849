@@ -8,9 +8,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -20,11 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	Talon t1 = new Talon(0); // front left
-	Talon t2 = new Talon(1); // rear left
-	Talon t3 = new Talon(2); // front right
-	Talon t4 = new Talon(3); // rear right
-	RobotDrive drive = null;
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
 	private int frontrightstate = 0;
 	private int frontleftstate = 0;
@@ -78,7 +71,7 @@ public class Robot extends IterativeRobot {
 	 * SendableChooser make sure to add them to the chooser code above as well.
 	 */
 	public void autonomousInit() {
-		
+		Autonomous.auto(() -> !this.isAutonomous(), AutoMode.CROSS);
 	}
 
 	/**
