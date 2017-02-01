@@ -28,6 +28,8 @@ public class Robot extends IterativeRobot {
 	private double displacement = 0.0;
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	private Vision vision;
+	
+	private Drive drive;
 
 	private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
@@ -40,20 +42,13 @@ public class Robot extends IterativeRobot {
 		//THIS CAUSED CRC ERROR WHEN NOTHING ELSE WAS UNCOMMENTED
 //		Vision vision = new Vision();
 		// System.out.println("Test 2");
-		try {
-			drive = new RobotDrive(t1, t2, t3, t4);
-			drive.setSafetyEnabled(false);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println(e.getMessage());
-		}
 	
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
 
-		drive.setInvertedMotor(MotorType.kFrontLeft, true);
-		drive.setInvertedMotor(MotorType.kRearLeft, true);
+		drive = new Drive(0, 1, 2, 3);
+		drive.startDrive();
+		
 		//CRC ERRORS HERE AS WELL
 		//Drive.startDrive();
 		
@@ -84,7 +79,7 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		ahrs.reset();
 		ahrs.resetDisplacement();
-		drive.stopMotor();
+		drive.mecanumDrive(0, 0, 0, 0);
 	}
 
 	/**
@@ -114,6 +109,7 @@ public class Robot extends IterativeRobot {
 //		}
 		
 
+		drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), ahrs.getAngle());
 	
 		
 		double angle = ahrs.getAngle() % 360;
@@ -121,35 +117,35 @@ public class Robot extends IterativeRobot {
 			povAngle = joy.getPOV(0);
 			switch (povAngle) {
 			case 0:
-				drive.mecanumDrive_Cartesian(0, -.5, 0, 0);
+				drive.mecanumDrive(0, -.5, 0, 0);
 				break;
 			case 45:
-				drive.mecanumDrive_Cartesian(.5, -.5, 0, 0);
+				drive.mecanumDrive(.5, -.5, 0, 0);
 				break;
 			case 90:
-				drive.mecanumDrive_Cartesian(.75, 0, 0, 0);
+				drive.mecanumDrive(.75, 0, 0, 0);
 				break;
 			case 135:
-				drive.mecanumDrive_Cartesian(.5, .5, 0, 0);
+				drive.mecanumDrive(.5, .5, 0, 0);
 				break;
 			case 180:
-				drive.mecanumDrive_Cartesian(0, .5, 0, 0);
+				drive.mecanumDrive(0, .5, 0, 0);
 				break;
 			case 225:
-				drive.mecanumDrive_Cartesian(-.5, .5, 0, 0);
+				drive.mecanumDrive(-.5, .5, 0, 0);
 				break;
 			case 270:
-				drive.mecanumDrive_Cartesian(-.75, 0, 0, 0);
+				drive.mecanumDrive(-.75, 0, 0, 0);
 				break;
 			case 315:
-				drive.mecanumDrive_Cartesian(-.5, -.5, 0, 0);
+				drive.mecanumDrive(-.5, -.5, 0, 0);
 				break;
 			default:
-				drive.stopMotor();
+				drive.mecanumDrive(0, 0, 0, 0);
 				break;
 			}
 		} else {
-			drive.mecanumDrive_Cartesian(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), ahrs.getAngle());
+			drive.mecanumDrive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), ahrs.getAngle());
 		}
 		if (joy.getButton(2)) {
 			System.out.print("Front Left: " + board.getCurrent(14));

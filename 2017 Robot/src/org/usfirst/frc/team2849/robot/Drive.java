@@ -21,7 +21,11 @@ public class Drive implements Runnable {
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 //	private static RobotDrive drive = new RobotDrive(topleft, topright, bottomleft, bottomright);
 	private static double distance;
-	private static double angle;
+	
+	private double xaxis = 0.0;
+	private double yaxis = 0.0;
+	private double zaxis = 0.0;
+	private double angle = 0.0;
 
 	private static Boolean bool = false;
 	private static EndCondition ending = null;
@@ -94,7 +98,6 @@ public class Drive implements Runnable {
 	 /**
 	   * Rotate a vector in Cartesian space.
 	   */
-	  @SuppressWarnings("ParameterName")
 	  protected double[] rotateVector(double x, double y, double angle) {
 	    double cosA = Math.cos(angle * (Math.PI / 180.0));
 	    double sinA = Math.sin(angle * (Math.PI / 180.0));
@@ -108,11 +111,13 @@ public class Drive implements Runnable {
 	 * This will drive the robot in omnidirectional holonomic drive
 	 * 
 	 * @param xaxis
-	 *            The x axis of the joystick.
+	 * 			The x axis of the joystick.
 	 * @param yaxis
-	 *            The y axis of the joystick.
+	 * 			The y axis of the joystick.
 	 * @param raxis
-	 *            The rotation of the joystick.
+	 * 			The rotation of the joystick.
+	 * @param gyroAngle
+	 * 			The input of the gyro.
 	 * 
 	 */
 	public void mecanumDrive(double xaxis, double yaxis, double raxis, double gyroAngle) {
@@ -151,7 +156,6 @@ public class Drive implements Runnable {
 			    wheelSpeeds[7] = xIn + yIn - raxis;
 			    
 			    normalize(wheelSpeeds);
-			    
 			    frontLeftMotor1.set(wheelSpeeds[0]);
 			    frontLeftMotor2.set(wheelSpeeds[1]);
 			    frontRightMotor1.set(wheelSpeeds[2]);
@@ -182,21 +186,11 @@ public class Drive implements Runnable {
 	 * Drives the robot in a direction without a stop.
 	 * 
 	 * @param angleDeg
-	 *            An angle measurement in radians.
+	 * 			An angle measurement in degrees.
 	 */
 	public void driveDirection(double angleDeg) {
 
-		double angleRad = angleDeg * (Math.PI / 180);
-		double cosu = Math.cos(angleRad);
-		double sinu = Math.sin(angleRad);
-		final double v1 = cosu;
-		final double v2 = sinu;
-		final double v3 = sinu;
-		final double v4 = cosu;
-//		topleft.set(v1);
-//		topright.set(v2);
-//		bottomleft.set(v3);
-//		bottomright.set(v4);
+		mecanumDrive(1.0, 0, 0, -angleDeg);
 
 	}
 
@@ -204,39 +198,40 @@ public class Drive implements Runnable {
 	 * This will drive the robot in a direction for the specified time.
 	 * 
 	 * @param angleDeg
-	 *            An angle measurement in radians.
+	 * 			An angle measurement in degrees.
 	 * @param time
-	 *            A time measurement in milliseconds.
+	 * 			A time measurement in milliseconds.
 	 */
 	public void driveDirection(double angleDeg, int time) {
-
-		long timer = System.currentTimeMillis();
-		double angleRad = angleDeg * (Math.PI / 180);
-		double cosu = Math.cos(angleRad);
-		double sinu = Math.sin(angleRad);
-		final double v1 = cosu;
-		final double v2 = sinu;
-		final double v3 = sinu;
-		final double v4 = cosu;
-//		topleft.set(v1);
-//		topright.set(v2);
-//		bottomleft.set(v3);
-//		bottomright.set(v4);
-		while ((System.currentTimeMillis() - timer) < time) {
-
-		}
+		
+		mecanumDrive(1.0, 0, 0, -angleDeg);
+		
+		
 //		topleft.set(0.0);
 //		topright.set(0.0);
 //		bottomleft.set(0.0);
 //		bottomright.set(0.0);
 
 	}
-	public static void driveAngle(double angleDeg){
-//		drive.mecanumDrive_Cartesian(0, 0, .5, 0);
-//		if(ahrs.getAngle() == angleDeg){
-//			drive.stopMotor();
-//		}
+	/**
+	 * This will turn the robot at a steady rate clockwise until it is pointing at the specified angle.
+	 * 
+	 * @param angleDeg 
+	 * 			An angle measurement in degrees,
+	 */
+	public void driveAngle(double angleDeg){
+		
+		mecanumDrive(0, 0, .5, 0);
+
 	}
+	/**
+	 * This will drive the robot the specified distance at the specified angle.
+	 * 
+	 * @param distance
+	 * 			A distance in meters.
+	 * @param angleDeg
+	 * 			An angle measurement in degrees.
+	 */
 	public void mechDriveDistance(double distance, double angleDeg) { // in meters
 
 		double displacement = 0;
@@ -287,23 +282,23 @@ public class Drive implements Runnable {
 
 	public void run() {
 		// TODO Auto-generated method stub
-		long time = System.currentTimeMillis();
-		double displacement = 0.0;
 		while (true) {
-			displacement += Math.sqrt(Math.pow(ahrs.getRawAccelX(), 2) + Math.pow(ahrs.getRawAccelZ(), 2))
-					* .5 * Math.pow((System.currentTimeMillis() - time) / 1000, 2);
-//			System.out.println("X Accel: " + ahrs.getRawAccelX());
-//			System.out.println("Z Accel: " + ahrs.getRawAccelY());
-//			System.out.println(displacement);
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			mecanumDrive(this.xaxis, this.yaxis, this.zaxis, this.angle);
+		
 		}
 	}
+	
+	public void startDrive() {
+		new Thread(this, "driveThread").start();
+	}
+	
+	public void drive(double xaxis, double yaxis, double zaxis, double angle) {
+		this.xaxis = xaxis;
+		this.yaxis = yaxis;
+		this.zaxis = zaxis;
+		this.angle = angle;
+	}
+	
 
 //	public static void startDrive() {
 //		driveRunner = new Thread(new Drive(), "drive");
