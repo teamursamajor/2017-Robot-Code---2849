@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.Talon;
 
 public class Climber implements Runnable {
 
+	// two cims, opposite directions
+	
 	private static Thread climberRunner = null;
 	
 	private static Boolean bool = false;
