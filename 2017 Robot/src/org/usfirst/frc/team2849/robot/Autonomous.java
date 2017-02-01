@@ -32,7 +32,7 @@ public class Autonomous implements Runnable {
 
 	public void cross() {
 		while (!ending.done()) {
-			Drive.drive(3, 0);
+			//Drive.drive(3, 0);
 		}
 	}
 

@@ -2,7 +2,7 @@ package org.usfirst.frc.team2849.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.RobotDrive.MotorType;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Spark;
 
@@ -14,12 +14,12 @@ public class Drive implements Runnable {
 	 * 
 	 * - other charlie
 	 */
-//	private static Spark topleft = new Spark(0);
-//	private static Spark topright = new Spark(1);
-//	private static Spark bottomleft = new Spark(2);
-//	private static Spark bottomright = new Spark(3);
+	private static Spark topleft = new Spark(0);
+	private static Spark topright = new Spark(1);
+	private static Spark bottomleft = new Spark(2);
+	private static Spark bottomright = new Spark(3);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
-//	private static RobotDrive drive = new RobotDrive(topleft, topright, bottomleft, bottomright);
+	private static RobotDrive drive = new RobotDrive(topleft, topright, bottomleft, bottomright);
 	private static double distance;
 	private static double angle;
 
@@ -28,6 +28,10 @@ public class Drive implements Runnable {
 	private static Thread driveRunner = null;
 	private final double RL_SCALE = .05;
 	private final double RL_THRESH = .25;
+	
+	private double xAxis = 0.0;
+	private double yAxis = 0.0;
+	private double zAxis = 0.0;
 	
 	private Spark frontLeftMotor1;
 	private Spark frontLeftMotor2;
@@ -40,10 +44,10 @@ public class Drive implements Runnable {
 	private int numMotors;
 	
 
-//	private Drive(double distance, double angle) {
-//		Drive.distance = distance;
-//		Drive.angle = angle;
-//	}
+	private Drive(double distance, double angle) {
+		Drive.distance = distance;
+		Drive.angle = angle;
+	}
 	public Drive(int t1, int t3, 
 				 int t2, int t4) {
 		
@@ -74,7 +78,10 @@ public class Drive implements Runnable {
 	}
 	
 	
-	 /**
+	 public Drive() {
+		// TODO Auto-generated constructor stub
+	}
+	/**
 	   * Normalize all wheel speeds if the magnitude of any wheel is greater than 1.0.
 	   */
 	 protected void normalize(double[] wheelSpeeds) {
@@ -184,7 +191,7 @@ public class Drive implements Runnable {
 	 * @param angleDeg
 	 *            An angle measurement in radians.
 	 */
-	public void driveDirection(double angleDeg) {
+	public static void driveDirection(double angleDeg) {
 
 		double angleRad = angleDeg * (Math.PI / 180);
 		double cosu = Math.cos(angleRad);
@@ -232,12 +239,12 @@ public class Drive implements Runnable {
 
 	}
 	public static void driveAngle(double angleDeg){
-//		drive.mecanumDrive_Cartesian(0, 0, .5, 0);
-//		if(ahrs.getAngle() == angleDeg){
-//			drive.stopMotor();
-//		}
+		drive.mecanumDrive_Cartesian(0, 0, .5, 0);
+		if(ahrs.getAngle() == angleDeg){
+			drive.stopMotor();
+		}
 	}
-	public void mechDriveDistance(double distance, double angleDeg) { // in meters
+	public static void mechDriveDistance(double distance, double angleDeg) { // in meters
 
 		double displacement = 0;
 		ahrs.resetDisplacement();
@@ -305,11 +312,11 @@ public class Drive implements Runnable {
 		}
 	}
 
-//	public static void startDrive() {
-//		driveRunner = new Thread(new Drive(), "drive");
-//		driveRunner.start();
-//
-//	}
+	public static void startDrive() {
+		driveRunner = new Thread(new Drive(), "drive");
+		driveRunner.start();
+
+	}
 	
 //	@SuppressWarnings("ParameterName")
 //	  public void mecanumDrive_Cartesian(double x, double y, double rotation, double gyroAngle) {

@@ -15,8 +15,6 @@ import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.SPI;
-//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import com.kauailabs.navx.frc.AHRS;
 
 public class Vision implements Runnable{
@@ -70,7 +68,7 @@ public class Vision implements Runnable{
 	private static CvSink cvSink;
 	private static CvSource outputStream;
 	
-	private static Thread visionRun=null;
+	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
 	
 	public Vision(){
@@ -81,10 +79,13 @@ public class Vision implements Runnable{
 		 * the automatic capture. CvSink forwards frames, CvSource obtains
 		 * the frames and provides name/resolution.
 		 */
-		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+		
+		CameraServer.getInstance().startAutomaticCapture();
+		CameraServer.getInstance().startAutomaticCapture();
+		CameraServer.getInstance().startAutomaticCapture();
 		cvSink = CameraServer.getInstance().getVideo();
 		// test different resolutions
-		outputStream = CameraServer.getInstance().putVideo("BC", 160, 120);
+		outputStream = CameraServer.getInstance().putVideo("Gear Cam", 160, 120);
 		outputStream.free();
 	}
 	
@@ -99,10 +100,9 @@ public class Vision implements Runnable{
 			
 			if(runAutoAlign){
 				System.out.println("running auto align");
-				//autoAlign();
-				//outputStream.free();
-				// only for testing purposes; delete for competition
-				//outputStream.putFrame(output);
+				autoAlign();
+				//only for testing purposes; delete for competition
+				outputStream.putFrame(output);
 				//outputStream.free();
 				// be free outputStream!!!
 				runAutoAlign = false;
@@ -146,6 +146,7 @@ public class Vision implements Runnable{
 			break;
 		}
 			System.out.println(pegSide);
+			
 		// doesn't need to be a while loop in competition, only for testing
 		/*
 		 * when not in a while loop: 
