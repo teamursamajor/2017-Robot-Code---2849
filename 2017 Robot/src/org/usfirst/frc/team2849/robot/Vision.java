@@ -70,6 +70,9 @@ public class Vision implements Runnable{
 	private static CvSink cvSink;
 	private static CvSource outputStream;
 	
+	private static Thread visionRun=null;
+	private static boolean runAutoAlign = false;
+	
 	public Vision(){
 		pegSide = "middle";
 		
@@ -85,14 +88,27 @@ public class Vision implements Runnable{
 		outputStream.free();
 	}
 	
+	public static void visionInit(){
+		visionRun = new Thread(new Vision(), "visionThread");
+		visionRun.start();
+	}
+	
 	public void run(){
+		//and instantiation goes here?
+		while(true){
 			
-			//autoAlign();
-			//outputStream.free();
-			// only for testing purposes; delete for competition
-			//outputStream.putFrame(output);
-			//outputStream.free();
-			// be free outputStream!!!
+			if(runAutoAlign){
+				System.out.println("running auto align");
+				//autoAlign();
+				//outputStream.free();
+				// only for testing purposes; delete for competition
+				//outputStream.putFrame(output);
+				//outputStream.free();
+				// be free outputStream!!!
+				runAutoAlign = false;
+			}
+		}
+			
 	}
 	
 	public static void autoAlign() {
@@ -125,12 +141,11 @@ public class Vision implements Runnable{
 			// turns the robot to angle 180 when the user presses the button set
 			// to middle
 			Drive.driveAngle(180.0);
-			System.out.println(pegSide);
 		default:
 
 			break;
 		}
-
+			System.out.println(pegSide);
 		// doesn't need to be a while loop in competition, only for testing
 		/*
 		 * when not in a while loop: 
@@ -296,6 +311,10 @@ public class Vision implements Runnable{
 		Vision.pegSide = pegSide;
 	}// end setPegSide
 
+	public static void setRunAutoAlign(boolean runAutoAlign) {
+		Vision.runAutoAlign = runAutoAlign;
+		System.out.println(runAutoAlign);
+	}//end setRunAutoAlign
 }
 // VISION III: PLEASE HELP ME coming to theaters near you January 2018
 // (tentative name)

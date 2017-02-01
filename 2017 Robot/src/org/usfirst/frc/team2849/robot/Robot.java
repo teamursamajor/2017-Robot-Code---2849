@@ -45,6 +45,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		//create camera feeds		
 		Vision vision = new Vision();
+		vision.visionInit();
 		// System.out.println("Test 2");
 		try {
 			drive = new RobotDrive(t1, t2, t3, t4);
@@ -97,10 +98,8 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {
-
-		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
-			//vision.run();
-			System.out.println("***************yay buttons***************");
+		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side)) {
+			Vision.setRunAutoAlign(true);
 		}
 		
 //		 System.out.println("Test 3");
