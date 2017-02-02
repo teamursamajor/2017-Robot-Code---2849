@@ -292,12 +292,14 @@ public class Drive implements Runnable {
 		new Thread(this, "driveThread").start();
 	}
 	
+	
 	public void drive(double xaxis, double yaxis, double zaxis, double angle) {
 		this.xaxis = xaxis;
 		this.yaxis = yaxis;
 		this.zaxis = zaxis;
 		this.angle = angle;
 	}
+	
 	
 
 //	public static void startDrive() {

@@ -60,9 +60,6 @@ public class Vision implements Runnable{
 
 	// String for the peg side the robot is going to auto align to
 	private static String pegSide = "middle";
-
-	private static int time1;
-	private static int time2;
 	
 	//Declares CvSink and CvSource so that they can be passed values in Vision constructor
 	private static CvSink cvSink;
@@ -70,6 +67,8 @@ public class Vision implements Runnable{
 	
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
+	
+	private Drive drive = new Drive(0,1,2,3);
 	
 	public Vision(){
 		pegSide = "middle";
@@ -111,7 +110,7 @@ public class Vision implements Runnable{
 			
 	}
 	
-	public static void autoAlign() {
+	public void autoAlign() {
 
 		/*
 		 * This uses the IMU sensor Navx MXP to find the angle the robot is
@@ -128,19 +127,19 @@ public class Vision implements Runnable{
 			// hexagon, 240 degrees
 			// turns the robot to angle ___ when the user presses the button set
 			// to right
-			Drive.driveAngle(240.0);
+			drive.driveAngle(240.0);
 			break;
 		case "right":
 			// find angle to be head-on with the rightmost peg - if regular
 			// hexagon, 120 degrees
 			// turns the robot to angle ___ when the user presses the button set
 			// to right
-			Drive.driveAngle(120.0);
+			drive.driveAngle(120.0);
 			break;
 		case "middle":
 			// turns the robot to angle 180 when the user presses the button set
 			// to middle
-			Drive.driveAngle(180.0);
+			drive.driveAngle(180.0);
 		default:
 
 			break;
@@ -162,10 +161,10 @@ public class Vision implements Runnable{
 
 		if (distance > 0) {
 			// if the tapes are to the right of the center, then move right
-			Drive.mechDriveDistance(distance, 90);
+			drive.mechDriveDistance(distance, 90);
 		} else {
 			// if the tapes are to the left of center, then move left
-			Drive.mechDriveDistance(distance, 270);
+			drive.mechDriveDistance(distance, 270);
 		}
 
 		/*
@@ -179,15 +178,15 @@ public class Vision implements Runnable{
 			
 			if (distance > 0) {
 				// if the tapes are to the right of the center, then move right
-				Drive.mechDriveDistance(distance, 90);
+				drive.mechDriveDistance(distance, 90);
 			} else {
 				// if the tapes are to the left of center, then move left
-				Drive.mechDriveDistance(distance, 270);
+				drive.mechDriveDistance(distance, 270);
 			}
 		
 			if(distance < 0.0825){
 				//move forward
-				Drive.mechDriveDistance(1 , 180);
+				drive.mechDriveDistance(1 , 180);
 			}
 		} 
 		System.out.println(distance);
