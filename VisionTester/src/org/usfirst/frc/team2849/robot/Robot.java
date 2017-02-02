@@ -304,11 +304,11 @@ public class Robot extends IterativeRobot {
 
 	public void teleopPeriodic() {
 
-		System.out.println(ahrs.getAngle() % 360);
+	//	System.out.println(ahrs.getAngle());
 		
-//		System.out.println("X Acceleration: "+ahrs.getRawAccelX()*9.8);
-//		System.out.println("Y Acceleration: "+ahrs.getRawAccelY()*9.8);
-//		System.out.println("Z Acceleration: "+ahrs.getRawAccelZ()*9.8);
+		System.out.println("X: "+((int)((int)(ahrs.getRawAccelX()*10000)/100))/100.0*9.8+"                    Y: "+((int)((int)(ahrs.getRawAccelY()*10000)/100))/100.0*9.8+"                          Z: "+((int)((int)(ahrs.getRawAccelZ()*10000)/100))/100.0*9.8);
+		//System.out.println("Y: "+ahrs.getRawAccelY()*9.8);
+		//System.out.println("Z: "+ahrs.getRawAccelZ()*9.8);
 //		drive.mecanumDrive_Cartesian(joy.getXAxis(),
 //				joy.getYAxis(),
 //				joy.getZAxis(), 0);

@@ -30,6 +30,7 @@ public class Robot extends IterativeRobot {
 	private Vision vision;
 	
 	private Drive drive;
+	
 
 	private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
@@ -99,7 +100,7 @@ public class Robot extends IterativeRobot {
 		}
 		
 //		 System.out.println("Test 3");
-//		 System.out.println("Angle: " + ahrs.getAngle() % 360);
+//		 System.out.println("Angle: " + drive.getHeading() % 360);
 //		 System.out.println("Displacement: " + ahrs.getDisplacementX());
 
 		
@@ -115,10 +116,11 @@ public class Robot extends IterativeRobot {
 		}
 		
 
-		drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), ahrs.getAngle());
+		drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), drive.getHeading());
 	
 		
-		double angle = ahrs.getAngle() % 360;
+		double angle = drive.getHeading();
+		//System.out.println(angle);
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Trigger)) {
 			povAngle = joy.getPOV(0);
 			switch (povAngle) {
@@ -151,7 +153,7 @@ public class Robot extends IterativeRobot {
 				break;
 			}
 		} else {
-			drive.mecanumDrive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), ahrs.getAngle());
+			drive.mecanumDrive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), drive.getHeading());
 		}
 		if (joy.getSingleButtonPress(2)) {
 			System.out.print("Front Left: " + board.getCurrent(14));
@@ -271,7 +273,7 @@ public class Robot extends IterativeRobot {
 //		}
 		
 		// System.out.println("Test 3");
-		// System.out.println("Angle: " + ahrs.getAngle() % 360);
+		// System.out.println("Angle: " + drive.getHeading() % 360);
 		// System.out.println("Displacement: " + ahrs.getDisplacementX());
 
 //		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {

@@ -222,6 +222,9 @@ public class Drive implements Runnable {
 	public void driveAngle(double angleDeg){
 		
 		mecanumDrive(0, 0, .5, 0);
+		if(getHeading()==angleDeg){
+			mecanumDrive(0, 0, 0, 0);
+		}
 
 	}
 	/**
@@ -300,6 +303,20 @@ public class Drive implements Runnable {
 		this.angle = angle;
 	}
 	
+	public double getHeading(){
+		double angle = ahrs.getAngle();
+		
+		if (angle > 0){
+		
+			angle %= 360;
+			
+		} else if(angle < 0){
+			
+			angle =-(Math.abs(angle) % 360 ) + 360;
+		
+		}
+		return angle;
+	}
 	
 
 //	public static void startDrive() {
