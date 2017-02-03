@@ -55,6 +55,13 @@ public class Drive implements Runnable {
 		frontRightMotor1 = new Spark(t2);
 		backLeftMotor1 = new Spark(t3);
 		backRightMotor1 = new Spark(t4);
+		
+//		frontRightMotor1.setInverted(true);
+		backRightMotor1.setInverted(true);
+		backLeftMotor1.setInverted(true);
+		
+		
+		
 		numMotors = 4;
 	}
 	
@@ -126,6 +133,7 @@ public class Drive implements Runnable {
 		    double yIn = yaxis;
 		    // Negate y for the joystick.
 		    yIn = -yIn;
+		    raxis = -raxis;
 		    // Compenstate for gyro angle.
 		    double[] rotated = rotateVector(xIn, yIn, gyroAngle);
 		    xIn = rotated[0];
@@ -287,7 +295,6 @@ public class Drive implements Runnable {
 		// TODO Auto-generated method stub
 		while (true) {
 			mecanumDrive(this.xaxis, this.yaxis, this.zaxis, this.angle);
-		
 		}
 	}
 	

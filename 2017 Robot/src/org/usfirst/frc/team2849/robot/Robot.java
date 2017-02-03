@@ -116,7 +116,7 @@ public class Robot extends IterativeRobot {
 		}
 		
 
-		drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), drive.getHeading());
+		drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), 0);
 	
 		
 		double angle = drive.getHeading();

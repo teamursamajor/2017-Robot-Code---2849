@@ -1,28 +1,11 @@
 package org.usfirst.frc.team2849.robot;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-//import org.opencv.core.MatOfPoint;
-import org.opencv.imgproc.Imgproc;
+import java.text.DecimalFormat;
 
 import com.kauailabs.navx.frc.AHRS;
 
-//why can't I own a Canadian?
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -60,6 +43,8 @@ public class Robot extends IterativeRobot {
 //	Talon t3 = new Talon(3);
 //	public static LogitechFlightStick joy = new LogitechFlightStick(0);
 //	
+	private Drive drive = new Drive(0, 1, 2, 3);
+	private DecimalFormat format = new DecimalFormat("00.0000");
 	AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	/**
@@ -70,6 +55,7 @@ public class Robot extends IterativeRobot {
 	// PART II: SETTING UP THE CAMERA
 
 	public void robotInit() {
+		drive.startDrive();
 		ahrs.zeroYaw();
 		ahrs.reset();
 		
@@ -301,12 +287,12 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 
 	}
-
+	private double distance=0;
 	public void teleopPeriodic() {
-
-	//	System.out.println(ahrs.getAngle());
+//		System.out.println(ahrs.getAngle());
 		
-		System.out.println("X: "+((int)((int)(ahrs.getRawAccelX()*10000)/100))/100.0*9.8+"                    Y: "+((int)((int)(ahrs.getRawAccelY()*10000)/100))/100.0*9.8+"                          Z: "+((int)((int)(ahrs.getRawAccelZ()*10000)/100))/100.0*9.8);
+//		System.out.println("X: "+format.format(ahrs.getRawAccelX()*9.8)+" Y: "+format.format(ahrs.getRawAccelY()*9.8)+" Z: "+format.format(ahrs.getRawAccelZ()*9.8));
+		
 		//System.out.println("Y: "+ahrs.getRawAccelY()*9.8);
 		//System.out.println("Z: "+ahrs.getRawAccelZ()*9.8);
 //		drive.mecanumDrive_Cartesian(joy.getXAxis(),
