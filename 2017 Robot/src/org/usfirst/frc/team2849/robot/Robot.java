@@ -28,7 +28,7 @@ public class Robot extends IterativeRobot {
 	private double displacement = 0.0;
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	private Vision vision;
-	
+	private double currentAngle = 0.0;
 	private Drive drive;
 	
 
@@ -40,18 +40,16 @@ public class Robot extends IterativeRobot {
 	 */
 	public void robotInit() {
 		//create camera feeds
-		//THIS CAUSED CRC ERROR WHEN NOTHING ELSE WAS UNCOMMENTED
-//		Vision vision = new Vision();
+		Vision vision = new Vision();
 		// System.out.println("Test 2");
 	
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
 
-		drive = new Drive(0, 1, 2, 3);
+		drive = new Drive(0, 1, 2, 3, 4, 5, 6, 7);
 		drive.startDrive();
 		
-		//CRC ERRORS HERE AS WELL
-		//Drive.startDrive();
+		drive.startDrive();
 		
 	}
 
@@ -87,7 +85,10 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during operator control
 	 */
 	public void teleopPeriodic() {
-
+		
+		currentAngle = drive.getHeading();
+		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
+		
 		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X), joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
 		
 		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)){

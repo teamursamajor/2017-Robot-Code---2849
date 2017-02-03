@@ -43,6 +43,7 @@ public class Drive implements Runnable {
 	private Spark backRightMotor2;
 	private int numMotors;
 	
+	
 
 //	private Drive(double distance, double angle) {
 //		Drive.distance = distance;
@@ -325,6 +326,15 @@ public class Drive implements Runnable {
 		return angle;
 	}
 	
+	public void angleLock(double xaxis, double zaxis, double currentAngle){
+		
+		if(xaxis > 0 && zaxis == 0){
+			
+			driveAngle(currentAngle);
+			
+		}
+		
+	}
 
 //	public static void startDrive() {
 //		driveRunner = new Thread(new Drive(), "drive");
