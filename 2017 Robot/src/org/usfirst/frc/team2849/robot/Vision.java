@@ -73,7 +73,6 @@ public class Vision implements Runnable {
 
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
-<<<<<<< HEAD
 	private static boolean switchCamera = false;
 	private static boolean switchCamera2 = false;
 	private static boolean switchBack = false;
@@ -83,16 +82,10 @@ public class Vision implements Runnable {
 	private UsbCamera camera1;
 	private UsbCamera camera2;
 	private int nextPort = 1181;
-
-	private Drive drive = new Drive(0, 1, 2, 3);
-
-	public Vision() {
-=======
 	
 	private static Drive drive;
 	
 	public Vision(Drive drive){
->>>>>>> 4bd5194172f58f17c1924ad189b733657129151c
 		pegSide = "middle";
 
 		//this is in place of the startAutomaticCapture lines, bcos they were creating bandwidth problems
@@ -110,7 +103,6 @@ public class Vision implements Runnable {
 //		server = CameraServer.getInstance().addServer("serve_USB Camera 1");
 //		server.setSource(camera1);
 		
-<<<<<<< HEAD
 //		cvSink = CameraServer.getInstance().getVideo(camera2);
 //		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
 //		CameraServer.getInstance().addCamera(outputStream);
@@ -119,29 +111,8 @@ public class Vision implements Runnable {
 		//DONT NEED OUTPUTSTREAM.FREE
 	}
 
-	public static void visionInit() {
-		visionRun = new Thread(new Vision(), "visionThread");
-=======
-		/*
-		 * This code creates a USBCamera (so that the automatic capture can be initialized) and then starts
-		 * the automatic capture. CvSink forwards frames, CvSource obtains
-		 * the frames and provides name/resolution.
-		 */
-		
-		CameraServer.getInstance().startAutomaticCapture();
-		CameraServer.getInstance().startAutomaticCapture();
-		CameraServer.getInstance().startAutomaticCapture();
-		cvSink = CameraServer.getInstance().getVideo();
-		// test different resolutions
-		outputStream = CameraServer.getInstance().putVideo("Gear Cam", 160, 120);
-		outputStream.free();
-		
-		this.drive = drive;
-	}
-	
 	public static void visionInit(Drive drive){
 		visionRun = new Thread(new Vision(drive), "visionThread");
->>>>>>> 4bd5194172f58f17c1924ad189b733657129151c
 		visionRun.start();
 	}
 

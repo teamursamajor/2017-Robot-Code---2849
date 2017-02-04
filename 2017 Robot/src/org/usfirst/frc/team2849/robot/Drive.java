@@ -265,12 +265,7 @@ public class Drive implements Runnable {
 			}
 
 		}
-<<<<<<< HEAD
-		//TODO Why is this code commented out????? -Sheldon
-		
-=======
 		mecanumDrive(0, 0, 0, 0);
->>>>>>> 5e42336a6ff130a95bde25d90027f363e6c86c6f
 //		topleft.set(0.0);
 //		topright.set(0.0);
 //		bottomleft.set(0.0);
