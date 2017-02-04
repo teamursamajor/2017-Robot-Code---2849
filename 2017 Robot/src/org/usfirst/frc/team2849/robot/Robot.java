@@ -1,6 +1,8 @@
 
 package org.usfirst.frc.team2849.robot;
 
+import java.util.LinkedList;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -53,7 +55,9 @@ public class Robot extends IterativeRobot {
 	 * SendableChooser make sure to add them to the chooser code above as well.
 	 */
 	public void autonomousInit() {
-		Autonomous.auto(() -> !this.isAutonomous(), AutoMode.CROSS);
+		LinkedList<AutoMode> modes = new LinkedList<AutoMode>();
+		modes.add(AutoMode.GEAR);
+		Autonomous.auto(() -> !this.isAutonomous(), modes, StartPosition.CENTER, drive);
 	}
 
 	/**
