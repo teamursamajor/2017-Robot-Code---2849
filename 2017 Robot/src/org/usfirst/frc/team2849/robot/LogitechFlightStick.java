@@ -46,7 +46,7 @@ public class LogitechFlightStick extends Joystick {
 	private boolean button12Pressed = false;
 	
 	private final double MAX_XY = 1;
-	private final double MAX_Z = .5;
+	private final double MAX_Z = .75;
 
 	public LogitechFlightStick (int port) {
 		super(port);

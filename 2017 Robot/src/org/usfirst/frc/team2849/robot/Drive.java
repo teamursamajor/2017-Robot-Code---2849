@@ -53,6 +53,8 @@ public class Drive implements Runnable {
 		backLeftMotor1 = new Spark(t2);
 		frontRightMotor1 = new Spark(t3);
 		backRightMotor1 = new Spark(t4);
+		frontRightMotor1.setInverted(true);
+		backRightMotor1.setInverted(true);
 		numMotors = 4;
 	}
 	
@@ -290,7 +292,7 @@ public class Drive implements Runnable {
 	public void run() {
 		// TODO Auto-generated method stub
 		while (true) {
-			mecanumDrive(this.xaxis, this.yaxis, this.zaxis, this.angle);
+			mecanumDrive(Drive.xaxis, Drive.yaxis, Drive.zaxis, Drive.angle);
 		}
 	}
 	

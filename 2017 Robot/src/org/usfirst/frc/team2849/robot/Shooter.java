@@ -12,10 +12,10 @@ public class Shooter implements Runnable {
 
 	private static Thread shooterRunner = null;
 	
-//	private static Spark upperShooter = new Spark(5);
-//	private static Spark lowerShooter = new Spark(6);
+	private static Spark upperShooter = new Spark(5);
+	private static Spark lowerShooter = new Spark(6);
 	
-//	private static Spark intake = new Spark(8);
+	private static Spark intake = new Spark(8);
 	
 //	AnalogInput encoder = new AnalogInput(0);
 	
@@ -67,13 +67,13 @@ public class Shooter implements Runnable {
 	}
 	
 	public static void shoot(boolean shooting) {
-//		if (shooting) {
-//			upperShooter.set(-1 * power);
-//			lowerShooter.set(1 * power);
-//		} else {
-//			upperShooter.set(0);
-//			lowerShooter.set(0);
-//		}
+		if (shooting) {
+			upperShooter.set(-1 * power);
+			lowerShooter.set(1 * power);
+		} else {
+			upperShooter.set(0);
+			lowerShooter.set(0);
+		}
 	}
 	
 	public static void setPower(double power) {
@@ -84,11 +84,11 @@ public class Shooter implements Runnable {
 	public static void ballIntake(double xaxis, double yaxis){
 		if( Math.abs( joystickAngle(xaxis, yaxis) - (ahrs.getAngle() % 360)) <= 30 ){
 	
-//			intake.set(1.0);
+			intake.set(1.0);
 			
 		} else {
 			
-//			intake.set(0.0);
+			intake.set(0.0);
 			
 		}
 		
@@ -102,13 +102,13 @@ public class Shooter implements Runnable {
 	}
 	
 	public static void clearIntake(){
-//		intake.set(-1.0);
+		intake.set(-1.0);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		intake.set(0.0);
+		intake.set(0.0);
 	}
 }

@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.Talon;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	public static XboxController joy = new XboxController(0);
+	public static LogitechFlightStick joy = new LogitechFlightStick(0);
 	private int frontrightstate = 0;
 	private int frontleftstate = 0;
 	private int backrightstate = 0;
@@ -47,7 +47,7 @@ public class Robot extends IterativeRobot {
 	
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
-		drive = new Drive(0, 1, 2, 3);
+		drive = new Drive(0, 1, 3, 2);
 		drive.startDrive();
 		
 		
@@ -79,6 +79,7 @@ public class Robot extends IterativeRobot {
 
 	public void teleopInit() {
 		ahrs.reset();
+		ahrs.zeroYaw();
 		ahrs.resetDisplacement();
 	}
 
@@ -87,7 +88,7 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		
-		drive.drive(joy.getX(), joy.getY(), joy.getZ(), drive.getHeading());
+		Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
 		
 		Shooter.shoot(joy.getButton(1));
 		
@@ -116,11 +117,52 @@ public class Robot extends IterativeRobot {
 //			System.out.println("right");
 //		}
 	}
+	
+	public void testInit() {
+		ahrs.zeroYaw();
+		ahrs.reset();
+	}
 
 	/**
 	 * This function is called periodically during test mode
 	 */
 	public void testPeriodic() {
+		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger)) {
+			povAngle = joy.getPOV(0);
+			switch (povAngle) {
+			case 0:
+				Drive.drive(0, -.5, 0, 0);
+				break;
+			case 45:
+				Drive.drive(.5, -.5, 0, 0);
+				break;
+			case 90:
+				Drive.drive(.75, 0, 0, 0);
+				break;
+			case 135:
+				Drive.drive(.5, .5, 0, 0);
+				break;
+			case 180:
+				Drive.drive(0, .5, 0, 0);
+				break;
+			case 225:
+				Drive.drive(-.5, .5, 0, 0);
+				break;
+			case 270:
+				Drive.drive(-.75, 0, 0, 0);
+				break;
+			case 315:
+				Drive.drive(-.5, -.5, 0, 0);
+				break;
+			default:
+				Drive.drive(0, 0, 0, 0);
+				break;
+			}
+		} else {
+			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
+		}
+		
+		Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
 		
 	}
 
