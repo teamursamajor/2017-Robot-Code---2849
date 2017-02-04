@@ -20,9 +20,10 @@ public class Robot extends IterativeRobot {
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	private Vision vision;
-	private double currentAngle = 0.0;
 	private Drive drive;
 	private int povAngle = 0; 
+	
+	Latch b1 = new Latch();
 	
 
 //	private PowerDistributionPanel board = new PowerDistributionPanel(0);
@@ -33,13 +34,14 @@ public class Robot extends IterativeRobot {
 	 */
 	public void robotInit() {
 		//create camera feeds
-		Vision vision = new Vision();
+		drive = new Drive(0, 1, 3, 2);
+		drive.startDrive();
+		Vision vision = new Vision(drive);
+		// TODO please clean up after yourself -Sheldon
 		// System.out.println("Test 2");
 		//Vision.visionInit();
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
-		drive = new Drive(0, 1, 3, 2);
-		drive.startDrive();
 		
 		
 	}
@@ -99,11 +101,16 @@ public class Robot extends IterativeRobot {
 	 * Place all non-final code here instead of teleopPeriodic().
 	 */
 	public void testPeriodic() {
-		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger)) {
+		if (joy.getButton(5)) {
+			Climber.climb(() -> !joy.getButton(5)); 
+		}
+		
+		if (joy.getButton(2)) {
 			povAngle = joy.getPOV(0);
+			//TODO This code looks like it wants to be written with trig -Sheldon
 			switch (povAngle) {
 			case 0:
-				Drive.drive(0, -.5, 0, 0);
+				Drive.drive(0, -1, 0, 0);
 				break;
 			case 45:
 				Drive.drive(.5, -.5, 0, 0);
@@ -133,14 +140,24 @@ public class Robot extends IterativeRobot {
 		} else {
 			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
 		}
+				
+//		Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
+		Shooter.startShoot(() -> !joy.getButton(1));
+
 		
-		Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
 		
-		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
-		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X), joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
+		Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
+
 		
-		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)){
-			Shooter.clearIntake();
+		//TODO Why is this code commented out??????? -Sheldon
+//		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
+//		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X), joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
+		
+		if (joy.getButton(3)) {
+			Shooter.ballIntake(1, 1);
+		} else {
+			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
 		}
 		
 		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {

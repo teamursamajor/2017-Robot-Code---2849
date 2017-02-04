@@ -68,9 +68,9 @@ public class Vision implements Runnable{
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
 	
-	private Drive drive = new Drive(0,1,2,3);
+	private static Drive drive;
 	
-	public Vision(){
+	public Vision(Drive drive){
 		pegSide = "middle";
 		
 		/*
@@ -86,10 +86,12 @@ public class Vision implements Runnable{
 		// test different resolutions
 		outputStream = CameraServer.getInstance().putVideo("Gear Cam", 160, 120);
 		outputStream.free();
+		
+		this.drive = drive;
 	}
 	
-	public static void visionInit(){
-		visionRun = new Thread(new Vision(), "visionThread");
+	public static void visionInit(Drive drive){
+		visionRun = new Thread(new Vision(drive), "visionThread");
 		visionRun.start();
 	}
 	
