@@ -2,7 +2,6 @@ package org.usfirst.frc.team2849.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Spark;
 
@@ -14,24 +13,12 @@ public class Drive implements Runnable {
 	 * 
 	 * - other charlie
 	 */
-//	private static Spark topleft = new Spark(0);
-//	private static Spark topright = new Spark(1);
-//	private static Spark bottomleft = new Spark(2);
-//	private static Spark bottomright = new Spark(3);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
-//	private static RobotDrive drive = new RobotDrive(topleft, topright, bottomleft, bottomright);
-	private static double distance;
 	
 	private static double xaxis = 0.0;
 	private static double yaxis = 0.0;
 	private static double zaxis = 0.0;
 	private static double angle = 0.0;
-
-	private static Boolean bool = false;
-	private static EndCondition ending = null;
-	private static Thread driveRunner = null;
-	private final double RL_SCALE = .05;
-	private final double RL_THRESH = .25;
 	
 	private Spark frontLeftMotor2;
 	private Spark frontRightMotor1;
@@ -43,10 +30,14 @@ public class Drive implements Runnable {
 	private int numMotors;
 	private Spark frontLeftMotor1;	
 
-//	private Drive(double distance, double angle) {
-//		Drive.distance = distance;
-//		Drive.angle = angle;
-//	}
+	/**
+	 * Drive constructor for 4-motor drive.
+	 * 
+	 * @param t1 Port of the front left motor.
+	 * @param t2 Port of the back left motor.
+	 * @param t3 Port of the front right motor.
+	 * @param t4 Port of the back right motor.
+	 */
 	public Drive(int t1, int t2, int t3, int t4) {
 		
 		frontLeftMotor1 = new Spark(t1);
@@ -58,7 +49,18 @@ public class Drive implements Runnable {
 		numMotors = 4;
 	}
 	
-	
+	/**
+	 * Drive constructor for 8-motor drive.
+	 * 
+	 * @param t1 Port of the front left full cim.
+	 * @param t2 Port of the front left mini cim.
+	 * @param t3 Port of the front right full cim.
+	 * @param t4 Port of the front right mini cim.
+	 * @param t5 Port of the back left full cim.
+	 * @param t6 Port of the back left mini cim.
+	 * @param t7 Port of the back right full cim.
+	 * @param t8 Port of the back right mini cim.
+	 */
 	public Drive(int t1, int t3, 
 				 int t2, int t4,
 				 
@@ -289,13 +291,19 @@ public class Drive implements Runnable {
 		// bottomright.set(0.0);
 	}
 
+	/**
+	 * Runs automatically after calling startDrive(). Will continue running in the drive thread while the robot is on.
+	 * Place all calls to drive code inside the while loop.
+	 */
 	public void run() {
-		// TODO Auto-generated method stub
 		while (true) {
 			mecanumDrive(Drive.xaxis, Drive.yaxis, Drive.zaxis, Drive.angle);
 		}
 	}
 	
+	/**
+	 * Starts the drive thread. Call this after initializing a Drive object and before any other Drive methods.
+	 */
 	public void startDrive() {
 		new Thread(this, "driveThread").start();
 	}
@@ -340,51 +348,4 @@ public class Drive implements Runnable {
 		}
 		
 	}
-
-//	public static void startDrive() {
-//		driveRunner = new Thread(new Drive(), "drive");
-//		driveRunner.start();
-//
-//	}
-	
-//	@SuppressWarnings("ParameterName")
-//	  public void mecanumDrive_Cartesian(double x, double y, double rotation, double gyroAngle) {
-//	    if (!kMecanumCartesian_Reported) {
-//	      HAL.report(tResourceType.kResourceType_RobotDrive, getNumMotors(),
-//	          tInstances.kRobotDrive_MecanumCartesian);
-//	      kMecanumCartesian_Reported = true;
-//	    }
-//	    @SuppressWarnings("LocalVariableName")
-//	    double xIn = x;
-//	    @SuppressWarnings("LocalVariableName")
-//	    double yIn = y;
-//	    // Negate y for the joystick.
-//	    yIn = -yIn;
-//	    // Compenstate for gyro angle.
-//	    double[] rotated = rotateVector(xIn, yIn, gyroAngle);
-//	    xIn = rotated[0];
-//	    yIn = rotated[1];
-//
-//	    double[] wheelSpeeds = new double[kMaxNumberOfMotors];
-//	    wheelSpeeds[MotorType.kFrontLeft.value] = xIn + yIn + rotation;
-//	    wheelSpeeds[MotorType.kFrontRight.value] = -xIn + yIn - rotation;
-//	    wheelSpeeds[MotorType.kRearLeft.value] = -xIn + yIn + rotation;
-//	    wheelSpeeds[MotorType.kRearRight.value] = xIn + yIn - rotation;
-//
-//	    normalize(wheelSpeeds);
-//	    m_frontLeftMotor.set(wheelSpeeds[MotorType.kFrontLeft.value] * m_maxOutput);
-//	    m_frontRightMotor.set(wheelSpeeds[MotorType.kFrontRight.value] * m_maxOutput);
-//	    double rearLeftValue = wheelSpeeds[MotorType.kRearLeft.value] * m_maxOutput;
-//	    System.out.println(rearLeftValue);
-//	    if (Math.abs(rearLeftValue) < RL_THRESH) {
-//	    	rearLeftValue += RL_SCALE * Math.signum(rearLeftValue);
-//	    }
-//	    m_rearLeftMotor.set(rearLeftValue);
-//	    m_rearRightMotor.set(wheelSpeeds[MotorType.kRearRight.value] * m_maxOutput);
-//
-//	    if (m_safetyHelper != null) {
-//	      m_safetyHelper.feed();
-//	    }
-//	  }
-
 }

@@ -67,15 +67,34 @@ public class LogitechFlightStick extends Joystick {
 			return 0;
 		}
 	}
+	
+	/**
+	 * Call only this method for x-axis readings
+	 * 
+	 * @return Reading from the x-axis with deadzone, squared, and maximum speed cap.
+	 */
 	public double getXAxis() {
 		return Math.pow(this.getAxisGreaterThan(AXIS_TILT_X, .1), 2) * Math.signum(this.getAxis(AXIS_TILT_X)) * MAX_XY;
 	}
+	
+	/**
+	 * Call only this method for y-axis readings
+	 * 
+	 * @return Reading from the y-axis with deadzone, squared, and maximum speed cap.
+	 */
 	public double getYAxis() {
 		return Math.pow(this.getAxisGreaterThan(AXIS_TILT_Y, .1), 2) * Math.signum(this.getAxis(AXIS_TILT_Y)) * MAX_XY;
 	}
+	
+	/**
+	 * Call only this method for z-axis readings
+	 * 
+	 * @return Reading from the z-axis with deadzone, squared, and maximum speed cap.
+	 */
 	public double getZAxis() {
 		return Math.pow(this.getAxisGreaterThan(AXIS_ROTATE_Z, .1), 2) * Math.signum(this.getAxis(AXIS_ROTATE_Z))*MAX_Z;
 	}
+	
 	public boolean getAxisLessThan(int axisNumber, double lessThan) {
 		return this.getRawAxis(axisNumber) < lessThan;
 	}
