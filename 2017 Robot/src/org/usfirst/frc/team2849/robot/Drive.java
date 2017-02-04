@@ -22,10 +22,10 @@ public class Drive implements Runnable {
 //	private static RobotDrive drive = new RobotDrive(topleft, topright, bottomleft, bottomright);
 	private static double distance;
 	
-	private double xaxis = 0.0;
-	private double yaxis = 0.0;
-	private double zaxis = 0.0;
-	private double angle = 0.0;
+	private static double xaxis = 0.0;
+	private static double yaxis = 0.0;
+	private static double zaxis = 0.0;
+	private static double angle = 0.0;
 
 	private static Boolean bool = false;
 	private static EndCondition ending = null;
@@ -33,7 +33,6 @@ public class Drive implements Runnable {
 	private final double RL_SCALE = .05;
 	private final double RL_THRESH = .25;
 	
-	private Spark frontLeftMotor1;
 	private Spark frontLeftMotor2;
 	private Spark frontRightMotor1;
 	private Spark frontRightMotor2;
@@ -42,27 +41,18 @@ public class Drive implements Runnable {
 	private Spark backRightMotor1;
 	private Spark backRightMotor2;
 	private int numMotors;
-	
-	
+	private Spark frontLeftMotor1;	
 
 //	private Drive(double distance, double angle) {
 //		Drive.distance = distance;
 //		Drive.angle = angle;
 //	}
-	public Drive(int t1, int t3, 
-				 int t2, int t4) {
+	public Drive(int t1, int t2, int t3, int t4) {
 		
 		frontLeftMotor1 = new Spark(t1);
-		frontRightMotor1 = new Spark(t2);
-		backLeftMotor1 = new Spark(t3);
+		backLeftMotor1 = new Spark(t2);
+		frontRightMotor1 = new Spark(t3);
 		backRightMotor1 = new Spark(t4);
-		
-//		frontRightMotor1.setInverted(true);
-		backRightMotor1.setInverted(true);
-		backLeftMotor1.setInverted(true);
-		
-		
-		
 		numMotors = 4;
 	}
 	
@@ -116,7 +106,8 @@ public class Drive implements Runnable {
 	  }
 
 	/**
-	 * This will drive the robot in omnidirectional holonomic drive
+	 * This will drive the robot in omnidirectional holonomic drive.
+	 * Do NOT call this method from Robot.java! Call drive.drive() instead!
 	 * 
 	 * @param xaxis
 	 * 			The x axis of the joystick.
@@ -128,7 +119,7 @@ public class Drive implements Runnable {
 	 * 			The input of the gyro.
 	 * 
 	 */
-	public void mecanumDrive(double xaxis, double yaxis, double raxis, double gyroAngle) {
+	private void mecanumDrive(double xaxis, double yaxis, double raxis, double gyroAngle) {
 
 		    double xIn = xaxis;
 		    double yIn = yaxis;
@@ -211,10 +202,14 @@ public class Drive implements Runnable {
 	 * @param time
 	 * 			A time measurement in milliseconds.
 	 */
-	public void driveDirection(double angleDeg, int time) {
+	public static void driveDirection(double angleDeg, int time) {
+		double timer = System.currentTimeMillis();
 		
-		mecanumDrive(1.0, 0, 0, -angleDeg);
+		while (System.currentTimeMillis() - timer < time) {
+			drive(-.5, 0, 0, -angleDeg);
+		}
 		
+		drive(0, 0, 0, 0);
 		
 //		topleft.set(0.0);
 //		topright.set(0.0);
@@ -303,12 +298,20 @@ public class Drive implements Runnable {
 		new Thread(this, "driveThread").start();
 	}
 	
-	
-	public void drive(double xaxis, double yaxis, double zaxis, double angle) {
-		this.xaxis = xaxis;
-		this.yaxis = yaxis;
-		this.zaxis = zaxis;
-		this.angle = angle;
+	/** 
+	 * Call THIS method to drive. Must call drive.startDrive() first to initialize the thread.
+	 * 
+	 * @param xaxis The x-axis of the joystick
+	 * @param yaxis The y-axis of the joystick
+	 * @param zaxis The rotational axis of the joystick
+	 * @param angle The angle read from the gyro. Pass 0 for robot-centric driving
+	 * 
+	 */
+	public static void drive(double xaxis, double yaxis, double zaxis, double angle) {
+		Drive.xaxis = xaxis;
+		Drive.yaxis = yaxis;
+		Drive.zaxis = zaxis;
+		Drive.angle = angle;
 	}
 	
 	public double getHeading(){

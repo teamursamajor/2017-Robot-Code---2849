@@ -12,7 +12,7 @@ public class Climber implements Runnable {
 	
 	private static EndCondition ending = null;
 	
-	private Talon climber = new Talon(9);
+//	private Talon climber = new Talon(9);
 	
 	private Climber(EndCondition ending) {
 		Climber.ending = ending;
@@ -22,9 +22,9 @@ public class Climber implements Runnable {
 	public void run() {
 		// TODO get someone to write code.
 		while (!ending.done()) {
-			climber.set(1);
+//			climber.set(1);
 		}
-		climber.set(0);
+//		climber.set(0);
 		
 		synchronized (bool) {
 			bool = false;

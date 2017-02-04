@@ -12,20 +12,22 @@ public class Shooter implements Runnable {
 
 	private static Thread shooterRunner = null;
 	
-	private Talon upperShooter = new Talon(4);
-	private Talon lowerShooter = new Talon(5);
+//	private static Spark upperShooter = new Spark(5);
+//	private static Spark lowerShooter = new Spark(6);
 	
-	private static Spark intake = new Spark(8);
+//	private static Spark intake = new Spark(8);
 	
-	AnalogInput encoder = new AnalogInput(0);
+//	AnalogInput encoder = new AnalogInput(0);
 	
-	PIDController pid = new PIDController(.1, .1, .1, encoder, upperShooter);
+//	PIDController pid = new PIDController(.1, .1, .1, encoder, upperShooter);
 	
 	private static EndCondition ending = null;
 	
 	private static Boolean bool = false;
 	
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	
+	private static double power = 1.0;
 	
 	private Shooter(EndCondition ending) {
 		Shooter.ending = ending;
@@ -35,20 +37,20 @@ public class Shooter implements Runnable {
 	public void run() {
 		
 		//TODO shoot code? yes, chute code.
-		upperShooter.set(1);
-		lowerShooter.set(-1);
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		//upperShooter.set(1);
+		//lowerShooter.set(-1);
+//		try {
+//			Thread.sleep(500);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		while(!ending.done()) {
 			
 		}
 		
-		upperShooter.set(0);
-		lowerShooter.set(0);
+//		upperShooter.set(0);
+//		lowerShooter.set(0);
 		
 		synchronized (bool) {
 			bool = false;
@@ -64,14 +66,29 @@ public class Shooter implements Runnable {
 		shooterRunner.start();
 	}
 	
+	public static void shoot(boolean shooting) {
+//		if (shooting) {
+//			upperShooter.set(-1 * power);
+//			lowerShooter.set(1 * power);
+//		} else {
+//			upperShooter.set(0);
+//			lowerShooter.set(0);
+//		}
+	}
+	
+	public static void setPower(double power) {
+		//System.out.println(power);
+		Shooter.power = power;
+	}
+	
 	public static void ballIntake(double xaxis, double yaxis){
 		if( Math.abs( joystickAngle(xaxis, yaxis) - (ahrs.getAngle() % 360)) <= 30 ){
 	
-			intake.set(1.0);
+//			intake.set(1.0);
 			
 		} else {
 			
-			intake.set(0.0);
+//			intake.set(0.0);
 			
 		}
 		
@@ -85,13 +102,13 @@ public class Shooter implements Runnable {
 	}
 	
 	public static void clearIntake(){
-		intake.set(-1.0);
+//		intake.set(-1.0);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		intake.set(0.0);
+//		intake.set(0.0);
 	}
 }

@@ -43,8 +43,8 @@ public class Robot extends IterativeRobot {
 //	Talon t3 = new Talon(3);
 //	public static LogitechFlightStick joy = new LogitechFlightStick(0);
 //	
-	private Drive drive = new Drive(0, 1, 2, 3);
-	private DecimalFormat format = new DecimalFormat("00.0000");
+//	private Drive drive = new Drive(0, 1, 2, 3);
+//	private DecimalFormat format = new DecimalFormat("00.0000");
 	AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	/**
@@ -55,7 +55,7 @@ public class Robot extends IterativeRobot {
 	// PART II: SETTING UP THE CAMERA
 
 	public void robotInit() {
-		drive.startDrive();
+//		drive.startDrive();
 		ahrs.zeroYaw();
 		ahrs.reset();
 		
@@ -290,7 +290,9 @@ public class Robot extends IterativeRobot {
 	private double distance=0;
 	public void teleopPeriodic() {
 //		System.out.println(ahrs.getAngle());
-		
+		System.out.println("X: " + ahrs.getRawAccelX()*9.8);
+		//System.out.println("Y: " + ahrs.getRawAccelY()*9.8);
+		//System.out.println("Z: " + ahrs.getRawAccelZ()*9.8);
 //		System.out.println("X: "+format.format(ahrs.getRawAccelX()*9.8)+" Y: "+format.format(ahrs.getRawAccelY()*9.8)+" Z: "+format.format(ahrs.getRawAccelZ()*9.8));
 		
 		//System.out.println("Y: "+ahrs.getRawAccelY()*9.8);
