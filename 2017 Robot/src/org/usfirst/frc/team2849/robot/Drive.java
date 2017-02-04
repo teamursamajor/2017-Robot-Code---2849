@@ -197,7 +197,7 @@ public class Drive implements Runnable {
 	 */
 	public void driveDirection(double angleDeg) {
 
-		mecanumDrive(1.0, 0, 0, -angleDeg);
+		mecanumDrive(0, .5, 0, -angleDeg);
 
 	}
 
@@ -213,7 +213,7 @@ public class Drive implements Runnable {
 		double timer = System.currentTimeMillis();
 		
 		while (System.currentTimeMillis() - timer < time) {
-			drive(-.5, 0, 0, -angleDeg);
+			drive(0, .5, 0, -angleDeg);
 		}
 		
 		drive(0, 0, 0, 0);
@@ -265,8 +265,12 @@ public class Drive implements Runnable {
 			}
 
 		}
+<<<<<<< HEAD
 		//TODO Why is this code commented out????? -Sheldon
 		
+=======
+		mecanumDrive(0, 0, 0, 0);
+>>>>>>> 5e42336a6ff130a95bde25d90027f363e6c86c6f
 //		topleft.set(0.0);
 //		topright.set(0.0);
 //		bottomleft.set(0.0);
