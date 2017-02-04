@@ -46,7 +46,7 @@ public class LogitechFlightStick extends Joystick {
 	private boolean button12Pressed = false;
 	
 	private final double MAX_XY = 1;
-	private final double MAX_Z = .5;
+	private final double MAX_Z = .75;
 
 	public LogitechFlightStick (int port) {
 		super(port);
@@ -102,6 +102,7 @@ public class LogitechFlightStick extends Joystick {
 	public boolean getDPad(int dPadNumber) {
 		return this.getPOV(0) == dPadNumber;
 	}
+	//TODO - HERSHAL FIX UR DAMN CODE, it needs condensing
 	public boolean getSingleButtonPress(int buttNum){
 		switch(buttNum){
 		case 1:

@@ -44,6 +44,8 @@ public class Drive implements Runnable {
 		backLeftMotor1 = new Spark(t2);
 		frontRightMotor1 = new Spark(t3);
 		backRightMotor1 = new Spark(t4);
+		frontRightMotor1.setInverted(true);
+		backRightMotor1.setInverted(true);
 		numMotors = 4;
 	}
 	
@@ -97,6 +99,8 @@ public class Drive implements Runnable {
 		  }
 	 /**
 	   * Rotate a vector in Cartesian space.
+	   * 
+	   * TODO: Document units (deg/rad??) for angle
 	   */
 	  protected double[] rotateVector(double x, double y, double angle) {
 	    double cosA = Math.cos(angle * (Math.PI / 180.0));
@@ -146,7 +150,7 @@ public class Drive implements Runnable {
 			    backLeftMotor1.set(wheelSpeeds[2]);		    
 			    backRightMotor1.set(wheelSpeeds[3]);
 			    
-		    }else{
+		    } else {
 		    	double[] wheelSpeeds = new double[numMotors];
 			    wheelSpeeds[0] = xIn + yIn + raxis;	
 			    wheelSpeeds[1] = xIn + yIn + raxis;	
@@ -170,6 +174,7 @@ public class Drive implements Runnable {
 
 		  
 		  }
+	//TODO Why is this code commented out??????? -Sheldon
 //		double r = Math.hypot(xaxis, yaxis);
 //		double robotAngle = Math.atan2(yaxis, xaxis) - Math.PI / 4;
 //		double cosu = Math.cos(robotAngle);
@@ -192,7 +197,7 @@ public class Drive implements Runnable {
 	 */
 	public void driveDirection(double angleDeg) {
 
-		mecanumDrive(1.0, 0, 0, -angleDeg);
+		mecanumDrive(0, .5, 0, -angleDeg);
 
 	}
 
@@ -208,11 +213,12 @@ public class Drive implements Runnable {
 		double timer = System.currentTimeMillis();
 		
 		while (System.currentTimeMillis() - timer < time) {
-			drive(-.5, 0, 0, -angleDeg);
+			drive(0, .5, 0, -angleDeg);
 		}
 		
 		drive(0, 0, 0, 0);
 		
+		//TODO Why is this code commented out??????? -Sheldon
 //		topleft.set(0.0);
 //		topright.set(0.0);
 //		bottomleft.set(0.0);
@@ -254,11 +260,17 @@ public class Drive implements Runnable {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				// TODO: Remove the TODO
 				e.printStackTrace();
 			}
 
 		}
+<<<<<<< HEAD
+		//TODO Why is this code commented out????? -Sheldon
+		
+=======
+		mecanumDrive(0, 0, 0, 0);
+>>>>>>> 5e42336a6ff130a95bde25d90027f363e6c86c6f
 //		topleft.set(0.0);
 //		topright.set(0.0);
 //		bottomleft.set(0.0);
@@ -325,25 +337,17 @@ public class Drive implements Runnable {
 	public double getHeading(){
 		double angle = ahrs.getAngle();
 		
-		if (angle > 0){
-		
+		if (angle > 0){	
 			angle %= 360;
-			
 		} else if(angle < 0){
-			
 			angle =-(Math.abs(angle) % 360 ) + 360;
-		
 		}
 		return angle;
 	}
 	
 	public void angleLock(double xaxis, double zaxis, double currentAngle){
-		
 		if(xaxis > 0 && zaxis == 0){
-			
 			driveAngle(currentAngle);
-			
 		}
-		
 	}
 }
