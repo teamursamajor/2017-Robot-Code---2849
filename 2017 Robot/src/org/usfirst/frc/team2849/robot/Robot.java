@@ -4,11 +4,8 @@ package org.usfirst.frc.team2849.robot;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -18,14 +15,7 @@ import edu.wpi.first.wpilibj.Talon;
  * directory.
  */
 public class Robot extends IterativeRobot {
-	public static XboxController joy = new XboxController(0);
-	private int frontrightstate = 0;
-	private int frontleftstate = 0;
-	private int backrightstate = 0;
-	private int backleftstate = 0;
-	private int buttonstate = 0;
-	private int povAngle = -1;
-	private double displacement = 0.0;
+	public static LogitechFlightStick joy = new LogitechFlightStick(0);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	private Vision vision;
 	private double currentAngle = 0.0;
@@ -40,12 +30,12 @@ public class Robot extends IterativeRobot {
 	 */
 	public void robotInit() {
 		//create camera feeds
-		//Vision vision = new Vision();
+		Vision vision = new Vision();
 		// System.out.println("Test 2");
-	
+		//Vision.visionInit();
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
-		drive = new Drive(0, 1, 2, 3);
+		drive = new Drive(0, 1, 3, 2);
 		drive.startDrive();
 		
 		
@@ -79,77 +69,53 @@ public class Robot extends IterativeRobot {
 	}
 
 	/**
-	 * This function is called periodically during operator control
+	 * This function is called periodically during operator control.
+	 * Only write final code into this method. Place test code into testPeriodic().
 	 */
 	public void teleopPeriodic() {
+		// PLACE NO TEST CODE INTO HERE
 		
-		drive.drive(joy.getX(), joy.getY(), joy.getZ(), drive.getHeading());
+		Drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), drive.getHeading());
 		
-		Shooter.shoot(joy.getButton(1));
+		Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
 		
-		Shooter.setPower((joy.getAxis(3) - 1) * -.5);
-		
-//		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
-//		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X), joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
-//		
-//		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)){
-//			Shooter.clearIntake();
-//		}
-//		
-//		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
-//			vision.run();
-//			System.out.println("yay buttons");
-//		}
-//		
-//		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-//			Vision.setPegSide("left");
-//			System.out.println("left");
-//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-//			Vision.setPegSide("middle");
-//			System.out.println("middle");
-//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-//			Vision.setPegSide("right");
-//			System.out.println("right");
-//		}
+		// Use slider axis to set Shooter power. Change range of slider from (-1)-(1) to (0)-(1)
+		Shooter.setPower((joy.getAxis(3) - 1) * -0.5d);
 	}
 
 	/**
 	 * This function is called periodically during test mode
+	 * Place all non-final code here instead of teleopPeriodic().
 	 */
 	public void testPeriodic() {
+		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
+		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X), joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
 		
+		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)){
+			Shooter.clearIntake();
+		}
+		
+		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
+			vision.run();
+		}
+		
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+			Vision.setPegSide("left");
+			System.out.println("left");
+		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+			Vision.setPegSide("middle");
+			System.out.println("middle");
+		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+			Vision.setPegSide("right");
+			System.out.println("right");
+		}
 	}
 
 	public void disabledPeriodic() {
-//		displacement += ahrs.getDisplacementX() * 100;
-//		ahrs.resetDisplacement();
-//		System.out.println(displacement);
-//		boolean isConnected = ahrs.isConnected();
-//		double yaw = ahrs.getYaw();
-//		double pitch = ahrs.getPitch();
-//		double roll = ahrs.getRate();
-//		SmartDashboard.putBoolean("IMU_Connected", ahrs.isConnected());
-//		SmartDashboard.putBoolean("IMU_IsCalibrating", ahrs.isCalibrating());
-//		SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
-//		SmartDashboard.putNumber("IMU_Pitch", ahrs.getPitch());
-//		SmartDashboard.putNumber("IMU_Roll", ahrs.getRoll());
-		
-//		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side)) {
-//			vision.run();
-//		}
-		
-		// System.out.println("Test 3");
-		// System.out.println("Angle: " + drive.getHeading() % 360);
-		// System.out.println("Displacement: " + ahrs.getDisplacementX());
-
-//		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-//			Vision.setPegSide("left");
-//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-//			Vision.setPegSide("middle");
-//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-//			Vision.setPegSide("right");
-//		}
-
-
+		SmartDashboard.putBoolean("IMU_Connected", ahrs.isConnected());
+		SmartDashboard.putBoolean("IMU_IsCalibrating", ahrs.isCalibrating());
+		SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
+		SmartDashboard.putNumber("IMU_Pitch", ahrs.getPitch());
+		SmartDashboard.putNumber("IMU_Roll", ahrs.getRoll());
 	}
 }
