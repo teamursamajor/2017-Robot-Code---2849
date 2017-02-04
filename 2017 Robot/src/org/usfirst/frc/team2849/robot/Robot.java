@@ -32,13 +32,13 @@ public class Robot extends IterativeRobot {
 	 */
 	public void robotInit() {
 		//create camera feeds
-		Vision vision = new Vision();
+		//Vision vision = new Vision();
 		// System.out.println("Test 2");
-		//Vision.visionInit();
+		Vision.visionInit();
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
-		drive = new Drive(0, 1, 3, 2);
-		drive.startDrive();
+		//drive = new Drive(0, 1, 3, 2);
+		//drive.startDrive();
 		
 		
 	}

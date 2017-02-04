@@ -2,6 +2,7 @@ package org.usfirst.frc.team2849.robot;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -9,18 +10,22 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
+
+import com.kauailabs.navx.frc.AHRS;
+
 //why can't I own a Canadian?
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode;
+import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.SPI;
-import com.kauailabs.navx.frc.AHRS;
 
-public class Vision implements Runnable{
+public class Vision implements Runnable {
 
-// VISION II: ELECTRIC BOOGALOO
-// **cue Star Wars music**
+	// VISION II: ELECTRIC BOOGALOO
+	// **cue Star Wars music**
 
 	private static List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 	private static List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
@@ -60,56 +65,95 @@ public class Vision implements Runnable{
 
 	// String for the peg side the robot is going to auto align to
 	private static String pegSide = "middle";
-	
-	//Declares CvSink and CvSource so that they can be passed values in Vision constructor
+
+	// Declares CvSink and CvSource so that they can be passed values in Vision
+	// constructor
 	private static CvSink cvSink;
 	private static CvSource outputStream;
-	
+
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
-	
-	private Drive drive = new Drive(0,1,2,3);
-	
-	public Vision(){
+	private static boolean switchCamera = false;
+
+	private UsbCamera camera0;
+	private UsbCamera camera1;
+	private UsbCamera camera2;
+	private int nextPort = 1181;
+
+	private Drive drive = new Drive(0, 1, 2, 3);
+
+	public Vision() {
 		pegSide = "middle";
+
+		camera0 = new UsbCamera("USB Camera 0", 0);
+		camera1 = new UsbCamera("USB Camera 1", 1);
+		camera2 = new UsbCamera("USB Camera 2", 2);
+		camera0.setResolution(160, 120);
+		camera1.setResolution(160, 120);
+		camera2.setResolution(160, 120);
+		CameraServer.getInstance().addCamera(camera0);
+		CameraServer.getInstance().addCamera(camera1);
+		CameraServer.getInstance().addCamera(camera2);
+		VideoSink server = CameraServer.getInstance().addServer("serve_USB Camera 0");
+		server.setSource(camera0);
+
+		
 		
 		/*
-		 * This code creates a USBCamera (so that the automatic capture can be initialized) and then starts
-		 * the automatic capture. CvSink forwards frames, CvSource obtains
-		 * the frames and provides name/resolution.
+		 * This code creates a USBCamera (so that the automatic capture can be
+		 * initialized) and then starts the automatic capture. CvSink forwards
+		 * frames, CvSource obtains the frames and provides name/resolution.
 		 */
-		
-		CameraServer.getInstance().startAutomaticCapture();
-		CameraServer.getInstance().startAutomaticCapture();
-		CameraServer.getInstance().startAutomaticCapture();
-		cvSink = CameraServer.getInstance().getVideo();
-		// test different resolutions
-		outputStream = CameraServer.getInstance().putVideo("Gear Cam", 160, 120);
-		outputStream.free();
+
+		cvSink = CameraServer.getInstance().getVideo(camera2);
+		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+		CameraServer.getInstance().addCamera(outputStream);
+		server = CameraServer.getInstance().addServer("serve_Gear Cam");
+		server.setSource(outputStream);
+		//outputStream.free();
 	}
-	
-	public static void visionInit(){
+
+	public static void visionInit() {
 		visionRun = new Thread(new Vision(), "visionThread");
 		visionRun.start();
 	}
-	
-	public void run(){
-		//and instantiation goes here?
-		while(true){
-			
-			if(runAutoAlign){
-				System.out.println("running auto align");
-				autoAlign();
-				//only for testing purposes; delete for competition
+
+	public void run() {
+		// and instantiation goes here?
+		while (true) {
+
+			// if(runAutoAlign){
+			// System.out.println("running auto align");
+			// autoAlign();
+			// //only for testing purposes; delete for competition
+			// outputStream.putFrame(output);
+			// //outputStream.free();
+			// runAutoAlign = false;
+			// }
+			try {
+				long error = cvSink.grabFrame(source);
+				if(error==0){
+					System.out.println(cvSink.getError());
+				} else{
+					System.out.println(error);
+				}
+				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 				outputStream.putFrame(output);
-				//outputStream.free();
-				// be free outputStream!!!
-				runAutoAlign = false;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			if (switchCamera) {
+				//do this in button loop: videosink = getInstance.getServer(serve-UsbCamera 0)
+				//set source to different cameras depending on button
+				//im not sure this is what charlie meant?
+				VideoSink videoSink = CameraServer.getInstance().getServer("serve_UsbCamera 0");
+				videoSink.setSource(camera1);
 			}
 		}
-			
+
 	}
-	
+
 	public void autoAlign() {
 
 		/*
@@ -144,18 +188,16 @@ public class Vision implements Runnable{
 
 			break;
 		}
-			System.out.println(pegSide);
-			
+		System.out.println(pegSide);
+
 		// doesn't need to be a while loop in competition, only for testing
 		/*
-		 * when not in a while loop: 
-		 * 1. getDistance 
-		 * 2. move that distance 
-		 * 3. check getDistance again to make sure were aligned w/in a margin of error 
-		 * 4. move forward
+		 * when not in a while loop: 1. getDistance 2. move that distance 3.
+		 * check getDistance again to make sure were aligned w/in a margin of
+		 * error 4. move forward
 		 */
 
-		//System.out.println("Continuous print");
+		// System.out.println("Continuous print");
 		// returns distance that the robot needs to move
 		distance = getDistance(cvSink, outputStream);
 
@@ -169,13 +211,13 @@ public class Vision implements Runnable{
 
 		/*
 		 * checks to see if the horizontal distance we need to move is greater
-		 * than 3.25 inches (.08255 meters)
-		 * Ends after 3 attempts and stops auto align
+		 * than 3.25 inches (.08255 meters) Ends after 3 attempts and stops auto
+		 * align
 		 */
-		
-		for(int i = 3; distance > 0.08255 && i > 0; i--){
+
+		for (int i = 3; distance > 0.08255 && i > 0; i--) {
 			distance = getDistance(cvSink, outputStream);
-			
+
 			if (distance > 0) {
 				// if the tapes are to the right of the center, then move right
 				drive.mechDriveDistance(distance, 90);
@@ -183,15 +225,15 @@ public class Vision implements Runnable{
 				// if the tapes are to the left of center, then move left
 				drive.mechDriveDistance(distance, 270);
 			}
-		
-			if(distance < 0.0825){
-				//move forward
-				drive.mechDriveDistance(1 , 180);
+
+			if (distance < 0.0825) {
+				// move forward
+				drive.mechDriveDistance(1, 180);
 			}
-		} 
+		}
 		System.out.println(distance);
-		
-	} //end autoAlign
+
+	} // end autoAlign
 
 	/**
 	 * Uses contours to find centerOfTapes and centerOfFrame, then calculates
@@ -303,7 +345,8 @@ public class Vision implements Runnable{
 		// find center of the frame
 		centerOfFrame = output.width() / 2.0;
 
-		// finds distance you need to move by subtracting frame from center and convert to meters
+		// finds distance you need to move by subtracting frame from center and
+		// convert to meters
 		return ((centerOfTapes - centerOfFrame) * conversion) * 0.0254;
 	}// end getDistance
 
@@ -314,7 +357,11 @@ public class Vision implements Runnable{
 	public static void setRunAutoAlign(boolean runAutoAlign) {
 		Vision.runAutoAlign = runAutoAlign;
 		System.out.println(runAutoAlign);
-	}//end setRunAutoAlign
+	}// end setRunAutoAlign
+
+	public static void switchCamera(boolean switchCamera) {
+		Vision.switchCamera = switchCamera;
+	}
 }
 // VISION III: PLEASE HELP ME coming to theaters near you January 2018
 // (tentative name)

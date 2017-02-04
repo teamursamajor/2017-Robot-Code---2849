@@ -1,7 +1,5 @@
 package org.usfirst.frc.team2849.robot;
 
-import edu.wpi.first.wpilibj.Talon;
-
 public class Climber implements Runnable {
 
 	// two cims, opposite directions
@@ -11,9 +9,7 @@ public class Climber implements Runnable {
 	private static Boolean bool = false;
 	
 	private static EndCondition ending = null;
-	
-//	private Talon climber = new Talon(9);
-	
+		
 	private Climber(EndCondition ending) {
 		Climber.ending = ending;
 	}
