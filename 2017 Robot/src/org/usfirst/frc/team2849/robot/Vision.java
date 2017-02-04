@@ -74,6 +74,9 @@ public class Vision implements Runnable {
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
 	private static boolean switchCamera = false;
+	private static boolean switchCamera2 = false;
+	private static boolean switchBack = false;
+	private static VideoSink server;
 
 	private UsbCamera camera0;
 	private UsbCamera camera1;
@@ -85,6 +88,7 @@ public class Vision implements Runnable {
 	public Vision() {
 		pegSide = "middle";
 
+		//this is in place of the startAutomaticCapture lines, bcos they were creating bandwidth problems
 		camera0 = new UsbCamera("USB Camera 0", 0);
 		camera1 = new UsbCamera("USB Camera 1", 1);
 		camera2 = new UsbCamera("USB Camera 2", 2);
@@ -94,23 +98,17 @@ public class Vision implements Runnable {
 		CameraServer.getInstance().addCamera(camera0);
 		CameraServer.getInstance().addCamera(camera1);
 		CameraServer.getInstance().addCamera(camera2);
-		VideoSink server = CameraServer.getInstance().addServer("serve_USB Camera 0");
+		server = CameraServer.getInstance().addServer("serve_USB Camera 0");
 		server.setSource(camera0);
-
+//		server = CameraServer.getInstance().addServer("serve_USB Camera 1");
+//		server.setSource(camera1);
 		
-		
-		/*
-		 * This code creates a USBCamera (so that the automatic capture can be
-		 * initialized) and then starts the automatic capture. CvSink forwards
-		 * frames, CvSource obtains the frames and provides name/resolution.
-		 */
-
-		cvSink = CameraServer.getInstance().getVideo(camera2);
-		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-		CameraServer.getInstance().addCamera(outputStream);
-		server = CameraServer.getInstance().addServer("serve_Gear Cam");
-		server.setSource(outputStream);
-		//outputStream.free();
+//		cvSink = CameraServer.getInstance().getVideo(camera2);
+//		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+//		CameraServer.getInstance().addCamera(outputStream);
+//		server = CameraServer.getInstance().addServer("serve_Gear Cam");
+//		server.setSource(outputStream);
+		//DONT NEED OUTPUTSTREAM.FREE
 	}
 
 	public static void visionInit() {
@@ -127,28 +125,53 @@ public class Vision implements Runnable {
 			// autoAlign();
 			// //only for testing purposes; delete for competition
 			// outputStream.putFrame(output);
-			// //outputStream.free();
 			// runAutoAlign = false;
 			// }
-			try {
-				long error = cvSink.grabFrame(source);
-				if(error==0){
-					System.out.println(cvSink.getError());
-				} else{
-					System.out.println(error);
-				}
-				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-				outputStream.putFrame(output);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
+//			try {
+//				long error = cvSink.grabFrame(source);
+//				if(error==0){
+//					System.out.println(cvSink.getError());
+//				}
+//				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+//				outputStream.putFrame(output);
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//System.out.println("switch camera is: " + switchCamera);
 			if (switchCamera) {
+				
+				//im not sure this is what charlie meant?
+//				CameraServer.getInstance().removeServer("serve_USB Camera 1");
+	//			CameraServer.getInstance().removeCamera("USB Camera 1");
+				cvSink = CameraServer.getInstance().getVideo(camera2);
+				outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+				CameraServer.getInstance().addCamera(outputStream);
+				//VideoSink videoSink = CameraServer.getInstance().addServer("serve_Gear Cam");
+//				videoSink.setSource(outputStream);
+				System.out.println("test");
+				System.out.println(getDistance(cvSink, outputStream));
+//				try {
+//					long error = cvSink.grabFrame(source);
+//					if(error==0){
+//						System.out.println(cvSink.getError());
+//					}
+//					Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+//					outputStream.putFrame(output);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+			switchCamera = false;
+			}
+			
+			else if(switchCamera2){
 				//do this in button loop: videosink = getInstance.getServer(serve-UsbCamera 0)
 				//set source to different cameras depending on button
-				//im not sure this is what charlie meant?
-				VideoSink videoSink = CameraServer.getInstance().getServer("serve_UsbCamera 0");
-				videoSink.setSource(camera1);
+				//VideoSink vSink = CameraServer.getInstance().getServer("serve_USB Camera 0");
+				server.setSource(camera1);
+			}
+			
+			else if(switchBack){
+				server.setSource(camera0);
 			}
 		}
 
@@ -302,16 +325,16 @@ public class Vision implements Runnable {
 		}
 
 		if (contours.size() == 0) {
-			outputStream.putFrame(output);
+			//outputStream.putFrame(output);
 			return Double.NaN;
 		}
 
 		maxContours.add(contours.get(maxIndex));
 		maxContours.add(contours.get(almostMaxIndex));
 
-		for (int i = 0; i < maxContours.size(); i++) {
-			Imgproc.drawContours(output, maxContours, i, new Scalar(942.0d));
-		}
+//		for (int i = 0; i < maxContours.size(); i++) {
+//			Imgproc.drawContours(output, maxContours, i, new Scalar(942.0d));
+//		}
 
 		// draw rectangles around the max contours
 		Rect rec1 = Imgproc.boundingRect(maxContours.get(0));
@@ -361,6 +384,22 @@ public class Vision implements Runnable {
 
 	public static void switchCamera(boolean switchCamera) {
 		Vision.switchCamera = switchCamera;
+	}
+	
+	public static void switchCamera2(boolean switchCamera2) {
+		Vision.switchCamera2 = switchCamera2;
+	}
+	
+	public static void switchBack(boolean switchBack) {
+		Vision.switchBack = switchBack;
+	}
+	
+	public static boolean getSwitchCamera(){
+		return switchCamera;
+	}
+	
+	public static boolean getSwitchCamera2(){
+		return switchCamera2;
 	}
 }
 // VISION III: PLEASE HELP ME coming to theaters near you January 2018
