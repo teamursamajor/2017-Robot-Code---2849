@@ -41,7 +41,7 @@ public class Vision implements Runnable {
 
 	// AHRS stands for something (according to Charlie) but we don't know what
 	// Its for the IMU sensor NavX MXP
-	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	//private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	// coordinates of the center between the two tapes (peg location)
 	private static double centerOfTapes;
@@ -73,41 +73,38 @@ public class Vision implements Runnable {
 
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
+	private static boolean runGetDistance = false;
 	private static boolean switchCamera = false;
-	private static boolean switchCamera2 = false;
 	private static boolean switchBack = false;
 	private static VideoSink server;
 
 	private UsbCamera camera0;
 	private UsbCamera camera1;
 	private UsbCamera camera2;
-	private int nextPort = 1181;
 	
 	private static Drive drive;
 	
 	public Vision(Drive drive){
 		pegSide = "middle";
-
-		//this is in place of the startAutomaticCapture lines, bcos they were creating bandwidth problems
+		//camera0 = CameraServer.getInstance().startAutomaticCapture();
+		//this is in place of the startAutomaticCapture lines, b/c they were creating bandwidth problems
+		//System.out.println("<1> " + camera0.getName());
 		camera0 = new UsbCamera("USB Camera 0", 0);
 		camera1 = new UsbCamera("USB Camera 1", 1);
 		camera2 = new UsbCamera("USB Camera 2", 2);
 		camera0.setResolution(160, 120);
 		camera1.setResolution(160, 120);
 		camera2.setResolution(160, 120);
-		CameraServer.getInstance().addCamera(camera0);
+    	CameraServer.getInstance().addCamera(camera0);
 		CameraServer.getInstance().addCamera(camera1);
 		CameraServer.getInstance().addCamera(camera2);
-		server = CameraServer.getInstance().addServer("serve_USB Camera 0");
-		server.setSource(camera0);
-//		server = CameraServer.getInstance().addServer("serve_USB Camera 1");
-//		server.setSource(camera1);
-		
-//		cvSink = CameraServer.getInstance().getVideo(camera2);
-//		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//		CameraServer.getInstance().addCamera(outputStream);
-//		server = CameraServer.getInstance().addServer("serve_Gear Cam");
-//		server.setSource(outputStream);
+		VideoSink server = CameraServer.getInstance().addServer("serve_USB Camera 0");
+		server.setSource(camera0);		
+		cvSink = CameraServer.getInstance().getVideo(camera2);
+		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+		CameraServer.getInstance().addCamera(outputStream);
+		server = CameraServer.getInstance().addServer("serve_Gear Cam");
+		server.setSource(outputStream);
 		//DONT NEED OUTPUTSTREAM.FREE
 	}
 
@@ -127,29 +124,17 @@ public class Vision implements Runnable {
 			// outputStream.putFrame(output);
 			// runAutoAlign = false;
 			// }
-//			try {
-//				long error = cvSink.grabFrame(source);
-//				if(error==0){
-//					System.out.println(cvSink.getError());
-//				}
-//				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-//				outputStream.putFrame(output);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//System.out.println("switch camera is: " + switchCamera);
-			if (switchCamera) {
-				
-				//im not sure this is what charlie meant?
+
+			if (runGetDistance) {
 //				CameraServer.getInstance().removeServer("serve_USB Camera 1");
-	//			CameraServer.getInstance().removeCamera("USB Camera 1");
-				cvSink = CameraServer.getInstance().getVideo(camera2);
-				outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-				CameraServer.getInstance().addCamera(outputStream);
-				//VideoSink videoSink = CameraServer.getInstance().addServer("serve_Gear Cam");
+//				CameraServer.getInstance().removeCamera("USB Camera 1");
+//				cvSink = CameraServer.getInstance().getVideo(camera0);
+//				outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+//				CameraServer.getInstance().addCamera(outputStream);
+//				VideoSink videoSink = CameraServer.getInstance().addServer("serve_Gear Cam");
 //				videoSink.setSource(outputStream);
-				System.out.println("test");
-				System.out.println(getDistance(cvSink, outputStream));
+//				System.out.println("test");
+//				System.out.println(getDistance(cvSink, outputStream));
 //				try {
 //					long error = cvSink.grabFrame(source);
 //					if(error==0){
@@ -160,18 +145,21 @@ public class Vision implements Runnable {
 //				} catch (Exception e) {
 //					e.printStackTrace();
 //				}
-			switchCamera = false;
+				runGetDistance = false;
 			}
 			
-			else if(switchCamera2){
-				//do this in button loop: videosink = getInstance.getServer(serve-UsbCamera 0)
+			else if(switchCamera){
+				//do this in button loop: VideoSink name = getInstance.getServer(serve_UsbCamera 0)
 				//set source to different cameras depending on button
 				//VideoSink vSink = CameraServer.getInstance().getServer("serve_USB Camera 0");
-				server.setSource(camera1);
+//				server = CameraServer.getInstance().addServer("serve_USB Camera 0");
+//				server.setSource(camera1);
 			}
 			
 			else if(switchBack){
-				server.setSource(camera0);
+//				server = CameraServer.getInstance().addServer("serve_USB Camera 0");
+//				server.setSource(camera0);
+//				switchBack = false;
 			}
 		}
 
@@ -190,15 +178,13 @@ public class Vision implements Runnable {
 		// GEAR IS ON THE BACK OF THE ROBOT ;-;
 		switch (pegSide) {
 		case "left":
-			// find angle to be head-on with the leftmost peg - if regular
-			// hexagon, 240 degrees
+			// find angle to be head-on with the leftmost peg - if regular hexagon, 240 degrees
 			// turns the robot to angle ___ when the user presses the button set
 			// to right
 			drive.driveAngle(240.0);
 			break;
 		case "right":
-			// find angle to be head-on with the rightmost peg - if regular
-			// hexagon, 120 degrees
+			// find angle to be head-on with the rightmost peg - if regular hexagon, 120 degrees
 			// turns the robot to angle ___ when the user presses the button set
 			// to right
 			drive.driveAngle(120.0);
@@ -213,14 +199,12 @@ public class Vision implements Runnable {
 		}
 		System.out.println(pegSide);
 
-		// doesn't need to be a while loop in competition, only for testing
 		/*
 		 * when not in a while loop: 1. getDistance 2. move that distance 3.
 		 * check getDistance again to make sure were aligned w/in a margin of
 		 * error 4. move forward
 		 */
 
-		// System.out.println("Continuous print");
 		// returns distance that the robot needs to move
 		distance = getDistance(cvSink, outputStream);
 
@@ -286,9 +270,7 @@ public class Vision implements Runnable {
 
 		/*
 		 * Theres a light shining on green reflective tape & we need to find the
-		 * location of the tape: Does stuff to the frames captured. Temp exists
-		 * so that the original source can be preserved and outputted after
-		 * changes have been made but we didn't use that Color changes it to
+		 * location of the tape: Does stuff to the frames captured. cvtColor changes it to
 		 * HSV, extract channel makes it only show one of those channels (H, S,
 		 * or V) we don't know which one Threshold makes it only show stuff at a
 		 * certain brightness Canny makes it only show outlines find contours
@@ -382,24 +364,24 @@ public class Vision implements Runnable {
 		System.out.println(runAutoAlign);
 	}// end setRunAutoAlign
 
-	public static void switchCamera(boolean switchCamera) {
+	public static void setRunGetDistance(boolean runGetDistance) {
+		Vision.runGetDistance = runGetDistance;
+	}
+	
+	public static void setSwitchCamera(boolean switchCamera) {
 		Vision.switchCamera = switchCamera;
 	}
 	
-	public static void switchCamera2(boolean switchCamera2) {
-		Vision.switchCamera2 = switchCamera2;
+	public static void setSwitchBack(boolean switchBack) {
+		Vision.switchBack = switchBack;
 	}
 	
-	public static void switchBack(boolean switchBack) {
-		Vision.switchBack = switchBack;
+	public static boolean getRunGetDistance(){
+		return runGetDistance;
 	}
 	
 	public static boolean getSwitchCamera(){
 		return switchCamera;
-	}
-	
-	public static boolean getSwitchCamera2(){
-		return switchCamera2;
 	}
 }
 // VISION III: PLEASE HELP ME coming to theaters near you January 2018

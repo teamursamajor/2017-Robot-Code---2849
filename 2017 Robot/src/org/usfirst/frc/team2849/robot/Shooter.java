@@ -24,7 +24,7 @@ public class Shooter implements Runnable {
 
 	private static boolean powerSet = true;
 
-	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	private static AHRS ahrs;
 
 	private static boolean shooting = false;
 	
@@ -34,9 +34,10 @@ public class Shooter implements Runnable {
 	 * Initialize a new shooter. Only use inside the Shooter class to pass into
 	 * a new Thread().
 	 */
-	private Shooter(EndCondition ending) {
+	private Shooter(EndCondition ending, AHRS ahrs) {
 		rightShooter.setInverted(true);
 		this.ending = ending;
+		this.ahrs = ahrs;
 	}
 
 	/**
@@ -60,14 +61,14 @@ public class Shooter implements Runnable {
 	 * Start the shooter thread. Automatically runs run() after starting the
 	 * thread.
 	 */
-	public static void startShoot(EndCondition ending) {
+	public static void startShoot(EndCondition ending, AHRS ahrs) {
 		synchronized (shooterLock) {
 			if (shooterLock) {
 				return;
 			}
 			shooterLock = true;
 		}
-		new Thread(new Shooter(ending), "shooter").start();
+		new Thread(new Shooter(ending, ahrs), "shooter").start();
 	}
 
 	/**

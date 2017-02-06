@@ -20,6 +20,7 @@ public class Robot extends IterativeRobot {
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
 	public static XboxController xbox = new XboxController(0);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+
 	private Vision vision;
 	private Drive drive;
 	private int povAngle = 0; 
@@ -35,9 +36,8 @@ public class Robot extends IterativeRobot {
 	 */
 	public void robotInit() {
 		//create camera feeds
-		drive = new Drive(0, 1, 3, 2);
+		drive = new Drive(0, 1, 3, 2, ahrs);
 		drive.startDrive();
-		Vision vision = new Vision(drive);
 		// TODO please clean up after yourself -Sheldon
 		// System.out.println("Test 2");
 		Vision.visionInit(drive);
@@ -85,15 +85,18 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
-		if(xbox.getButton(XboxController.BUTTON_A)){
-			Vision.switchCamera(true);
+		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)){
+			System.out.println("************************************* runGetDistance");
+			Vision.setRunGetDistance(true);
 		}
-		else if(xbox.getButton(XboxController.BUTTON_B) && !Vision.getSwitchCamera2()){
-			Vision.switchCamera2(true);
+		else if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12) && !Vision.getSwitchCamera()){
+			System.out.println("************************************* setSwitchCamera");
+			Vision.setSwitchCamera(true);
 		}
-		else if(xbox.getButton(XboxController.BUTTON_B) && Vision.getSwitchCamera2()){
-			Vision.switchBack(true);
-			Vision.switchCamera2(false);
+		else if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12) && Vision.getSwitchCamera()){
+			System.out.println("************************************* setSwitchBack");
+			Vision.setSwitchBack(true);
+			Vision.setSwitchCamera(false);
 		}
 //		Drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), drive.getHeading());
 		
@@ -178,7 +181,7 @@ public class Robot extends IterativeRobot {
 		}
 				
 //		Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
-		Shooter.startShoot(() -> !joy.getButton(1));
+		Shooter.startShoot(() -> !joy.getButton(1), ahrs);
 
 		
 		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
@@ -201,14 +204,14 @@ public class Robot extends IterativeRobot {
 		}
 		
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-			Vision.setPegSide("left");
 			System.out.println("left");
+			Vision.setPegSide("left");
 		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-			Vision.setPegSide("middle");
 			System.out.println("middle");
+			Vision.setPegSide("middle");
 		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-			Vision.setPegSide("right");
 			System.out.println("right");
+			Vision.setPegSide("right");
 		}
 	}
 
