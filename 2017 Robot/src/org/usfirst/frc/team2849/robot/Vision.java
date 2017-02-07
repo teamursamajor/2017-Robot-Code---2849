@@ -18,6 +18,7 @@ import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
+import edu.wpi.cscore.VideoProperty;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.SPI;
@@ -41,7 +42,7 @@ public class Vision implements Runnable {
 
 	// AHRS stands for something (according to Charlie) but we don't know what
 	// Its for the IMU sensor NavX MXP
-	//private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	private static AHRS ahrs;
 
 	// coordinates of the center between the two tapes (peg location)
 	private static double centerOfTapes;
@@ -76,19 +77,18 @@ public class Vision implements Runnable {
 	private static boolean runGetDistance = false;
 	private static boolean switchCamera = false;
 	private static boolean switchBack = false;
+	private static boolean isSwitched = false;
 	private static VideoSink server;
 
-	private UsbCamera camera0;
-	private UsbCamera camera1;
-	private UsbCamera camera2;
+	private static UsbCamera camera0;
+	private static UsbCamera camera1;
+	private static UsbCamera camera2;
 	
 	private static Drive drive;
 	
-	public Vision(Drive drive){
+	public Vision(Drive drive, AHRS ahrs){
+		this.ahrs = ahrs;
 		pegSide = "middle";
-		//camera0 = CameraServer.getInstance().startAutomaticCapture();
-		//this is in place of the startAutomaticCapture lines, b/c they were creating bandwidth problems
-		//System.out.println("<1> " + camera0.getName());
 		camera0 = new UsbCamera("USB Camera 0", 0);
 		camera1 = new UsbCamera("USB Camera 1", 1);
 		camera2 = new UsbCamera("USB Camera 2", 2);
@@ -101,15 +101,17 @@ public class Vision implements Runnable {
 		VideoSink server = CameraServer.getInstance().addServer("serve_USB Camera 0");
 		server.setSource(camera0);		
 		cvSink = CameraServer.getInstance().getVideo(camera2);
+//		outputStream = CameraServer.getInstance().putVideo("Gear Cam", 160, 120);
 		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
 		CameraServer.getInstance().addCamera(outputStream);
 		server = CameraServer.getInstance().addServer("serve_Gear Cam");
 		server.setSource(outputStream);
-		//DONT NEED OUTPUTSTREAM.FREE
+		cvSink.grabFrame(source);
+		Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 	}
 
-	public static void visionInit(Drive drive){
-		visionRun = new Thread(new Vision(drive), "visionThread");
+	public static void visionInit(Drive drive, AHRS ahrs){
+		visionRun = new Thread(new Vision(drive, ahrs), "visionThread");
 		visionRun.start();
 	}
 
@@ -124,42 +126,17 @@ public class Vision implements Runnable {
 			// outputStream.putFrame(output);
 			// runAutoAlign = false;
 			// }
-
+			cvSink.grabFrame(source);
+			
 			if (runGetDistance) {
-//				CameraServer.getInstance().removeServer("serve_USB Camera 1");
-//				CameraServer.getInstance().removeCamera("USB Camera 1");
-//				cvSink = CameraServer.getInstance().getVideo(camera0);
-//				outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//				CameraServer.getInstance().addCamera(outputStream);
-//				VideoSink videoSink = CameraServer.getInstance().addServer("serve_Gear Cam");
-//				videoSink.setSource(outputStream);
-//				System.out.println("test");
-//				System.out.println(getDistance(cvSink, outputStream));
-//				try {
-//					long error = cvSink.grabFrame(source);
-//					if(error==0){
-//						System.out.println(cvSink.getError());
-//					}
-//					Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-//					outputStream.putFrame(output);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
+				System.out.println(getDistance(cvSink, outputStream));
 				runGetDistance = false;
 			}
 			
-			else if(switchCamera){
-				//do this in button loop: VideoSink name = getInstance.getServer(serve_UsbCamera 0)
-				//set source to different cameras depending on button
-				//VideoSink vSink = CameraServer.getInstance().getServer("serve_USB Camera 0");
-//				server = CameraServer.getInstance().addServer("serve_USB Camera 0");
-//				server.setSource(camera1);
-			}
-			
-			else if(switchBack){
-//				server = CameraServer.getInstance().addServer("serve_USB Camera 0");
-//				server.setSource(camera0);
-//				switchBack = false;
+			try {
+				outputStream.putFrame(output);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 
@@ -260,13 +237,13 @@ public class Vision implements Runnable {
 		maxContours.clear();
 		contours.clear();
 
-		if (cvSink.grabFrame(source) == 0) {
-
-			// Send the output the error.
-			outputStream.notifyError(cvSink.getError());
-			// skip the rest of the current iteration
-			return Double.NaN;
-		}
+//		if (cvSink.grabFrame(source) == 0) {
+//
+//			// Send the output the error.
+//			outputStream.notifyError(cvSink.getError());
+//			// skip the rest of the current iteration
+//			return Double.NaN;
+//		}
 
 		/*
 		 * Theres a light shining on green reflective tape & we need to find the
@@ -368,20 +345,24 @@ public class Vision implements Runnable {
 		Vision.runGetDistance = runGetDistance;
 	}
 	
-	public static void setSwitchCamera(boolean switchCamera) {
-		Vision.switchCamera = switchCamera;
+	public static void setSwitchCamera() {
+		isSwitched = true;
+		server = CameraServer.getInstance().getServer("serve_USB Camera 0");
+		server.setSource(camera1);
 	}
 	
-	public static void setSwitchBack(boolean switchBack) {
-		Vision.switchBack = switchBack;
+	public static void setSwitchBack() {
+		isSwitched = false;
+		server = CameraServer.getInstance().getServer("serve_USB Camera 0");
+		server.setSource(camera0);
 	}
 	
 	public static boolean getRunGetDistance(){
 		return runGetDistance;
 	}
 	
-	public static boolean getSwitchCamera(){
-		return switchCamera;
+	public static boolean getIsSwitched(){
+		return isSwitched;
 	}
 }
 // VISION III: PLEASE HELP ME coming to theaters near you January 2018
