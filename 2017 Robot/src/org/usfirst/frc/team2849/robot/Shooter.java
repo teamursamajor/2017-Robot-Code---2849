@@ -1,8 +1,12 @@
 package org.usfirst.frc.team2849.robot;
 
 import com.kauailabs.navx.frc.AHRS;
-
-import edu.wpi.first.wpilibj.SPI;
+/*
+ * "What does IDE stand for?" -Hershal 
+ * "Uhhh Integrated Development Environment. But I'm not sure, so don't quote me on that." -Charlie
+ * "I'm gonna quote you on that." -Hershal
+ * UPDATE: "Oh it is Integrated Development Environment! You can quote me on that now!" -Charlie
+*/
 import edu.wpi.first.wpilibj.Spark;
 
 public class Shooter implements Runnable {
@@ -13,7 +17,7 @@ public class Shooter implements Runnable {
 	private static Spark intake = new Spark(7);
 
 	private EndCondition ending = null;
-	
+
 	// TODO please clean up your code!!! -Sheldon
 	// AnalogInput encoder = new AnalogInput(0);
 
@@ -23,12 +27,14 @@ public class Shooter implements Runnable {
 	private static double rightPower = 0.5;
 
 	private static boolean powerSet = true;
-
+//TODO why are these yellow? If they aren't needed delete them
 	private static AHRS ahrs;
 
 	private static boolean shooting = false;
-	
+
 	private static Boolean shooterLock = false;
+
+	private static Drive drive;
 
 	/**
 	 * Initialize a new shooter. Only use inside the Shooter class to pass into
@@ -94,9 +100,10 @@ public class Shooter implements Runnable {
 			setRightPower(power);
 		}
 	}
-	
+
 	public static void switchPower(boolean switched) {
-		if (switched) powerSet = !powerSet;
+		if (switched)
+			powerSet = !powerSet;
 	}
 
 	/**
@@ -133,7 +140,8 @@ public class Shooter implements Runnable {
 	}
 
 	/**
-	 * TODO: Write better documentation.
+	 * If the angle the joystick is at is within 30 degrees of the robot's
+	 * heading, turn on ball intake.
 	 * 
 	 * @param xaxis
 	 *            Reading from the x-axis of the joystick.
@@ -141,43 +149,42 @@ public class Shooter implements Runnable {
 	 *            Reading from the y-axis of the joystick.
 	 */
 	public static void ballIntake(double xaxis, double yaxis) {
-		// TODO _WHY_ SO MANY NEWLINES???? -Sheldon
-		if (Math.abs(joystickAngle(xaxis, yaxis) - (ahrs.getAngle() % 360)) <= 30) {
 
+		if (Math.abs(joystickAngle(xaxis, yaxis) - (drive.getHeading())) <= 30) {
 			intake.set(1.0);
-
 		} else {
-
 			intake.set(0.0);
-
 		}
 
 	}
 
 	/**
-	 * TODO: Write better documentation.
+	 * Gets the joystick's x and y values and does arctan then converts to
+	 * degrees from radians to find the joystick's angle
 	 * 
 	 * @param joyX
+	 *            X-coordinate of the joystick
 	 * @param joyY
-	 * @return
+	 *            Y-coordinate of the joystick
+	 * @return The angle of the joystick
 	 */
 	public static double joystickAngle(double joyX, double joyY) {
-		// gets joystick's x/y values and does arc tan, then converts to degrees
-		// from radians
+
 		return Math.atan((-joyY / joyX) * (180 / Math.PI));
 	}
 
 	/**
 	 * Clears the intake in case of a ball problem.
+	 * 
+	 * @param The
+	 *            joystick
 	 */
-	public static void clearIntake() {
-		// TODO: Integrate this into the shooter thread. This won't work as-is.
-		intake.set(-1.0);
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+	public static void clearIntake(LogitechFlightStick joy) {
+
+		if (joy.getButton(11)) {
+			intake.set(-1.0);
 		}
+
 		intake.set(0.0);
 	}
 }

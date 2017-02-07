@@ -2,11 +2,17 @@ package org.usfirst.frc.team2849.robot;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Spark;
 
 public class Drive implements Runnable {
-
+	
+	
+	
+//TODO NICK YOU SHOULD CLEAN UP THIS CODE THANKS
+//TODO ALSO GET RID OF THE YELLOW TRIANGLES THANKS AGAIN NICK	
+	
+	
+	
 	/**
 	 * can't have Sparks and RobotDrive inside another robot drive
 	 * you would have to dig in to find out why, but that's the issue
