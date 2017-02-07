@@ -2,9 +2,7 @@
 package org.usfirst.frc.team2849.robot;
 
 import java.util.LinkedList;
-
 import com.kauailabs.navx.frc.AHRS;
-
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,31 +16,34 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
+	public static XboxController xbox = new XboxController(0);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	
 	private Vision vision;
 	private Drive drive;
 	private int povAngle = 0;
+	private double currentAngle = 0.0;
 
 	Latch b1 = new Latch();
 	Latch shooterLatch = new Latch();
 
-	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
+	//private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
-		// create camera feeds
-		drive = new Drive(0, 1, 3, 2);
+		drive = new Drive(0, 1, 3, 2, ahrs);
 		drive.startDrive();
-		Vision vision = new Vision(drive);
-		// TODO please clean up after yourself -Sheldon
-		// System.out.println("Test 2");
-		// Vision.visionInit();
+		// TODO please clean up after yourself -Sheldon		
+		
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
-
+		
+		//creates camera feeds
+		Vision.visionInit(drive, ahrs);
+				
 	}
 
 	/**
@@ -81,26 +82,70 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
-
 		Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
 
 		Shooter.shoot(joy.getButton(1));
 
 		// Use slider axis to set Shooter power. Change range of slider from
 		// (-1)-(1) to (0)-(1)
-		Shooter.setPower((joy.getAxis(3) - 1) * -0.5d);
+		Shooter.setPower((joy.getAxis(3) - 1) * -0.5);
+		
+		currentAngle = drive.getHeading();
+		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
+		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X), joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
+
+		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)){
+			Vision.setRunGetDistance(true);
+		}
+		else if(!Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)){
+//			System.out.println("button 12 pressed 1");
+			Vision.setSwitchCamera();
+		}
+		else if(Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)){
+//			System.out.println("button 12 pressed 2");
+			Vision.setSwitchBack();
+		}
+//  TODO decide which buttons will be used for what
+//	if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)){
+//		Shooter.clearIntake();
+//	}
+//	
+//	if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
+//		vision.run();
+//	}
+//	
+//	if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+//		Vision.setPegSide("left");
+//		//System.out.println("left");
+//	} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+//		Vision.setPegSide("middle");
+//		//System.out.println("middle");
+//	} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+//		Vision.setPegSide("right");
+//		//System.out.println("right");
+//	}
+
+//		Drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(), drive.getHeading());
+		
+//		Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
+		
+//		Shooter.shoot(joy.getButton(1));
+		
+		// Use slider axis to set Shooter power. Change range of slider from (-1)-(1) to (0)-(1)
+//		Shooter.setPower((joy.getAxis(3) - 1) * -0.5d);
 	}
 
 	public void testInit() {
 		ahrs.zeroYaw();
 		ahrs.reset();
 	}
-
+	
 	/**
 	 * This function is called periodically during test mode Place all non-final
 	 * code here instead of teleopPeriodic().
 	 */
 	public void testPeriodic() {
+
 		if (joy.getButton(5)) {
 			Climber.climb(() -> !joy.getButton(5));
 		}
@@ -141,10 +186,13 @@ public class Robot extends IterativeRobot {
 		} else {
 			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
 		}
+		
+		// Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
+		Shooter.startShoot(() -> !joy.getButton(1), ahrs);
 
 		// Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
 		if (shooterLatch.buttonPress(joy.getButton(1)))
-			Shooter.startShoot(() -> joy.getButton(1));
+			Shooter.startShoot(() -> joy.getButton(1), ahrs);
 
 		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
 
@@ -167,14 +215,14 @@ public class Robot extends IterativeRobot {
 		}
 
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-			Vision.setPegSide("left");
 			System.out.println("left");
+			Vision.setPegSide("left");
 		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-			Vision.setPegSide("middle");
 			System.out.println("middle");
+			Vision.setPegSide("middle");
 		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-			Vision.setPegSide("right");
 			System.out.println("right");
+			Vision.setPegSide("right");
 		}
 	}
 

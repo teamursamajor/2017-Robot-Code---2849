@@ -13,7 +13,7 @@ public class Drive implements Runnable {
 	 * 
 	 * - other charlie
 	 */
-	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
+	private static AHRS ahrs;
 	
 	private static double xaxis = 0.0;
 	private static double yaxis = 0.0;
@@ -38,7 +38,7 @@ public class Drive implements Runnable {
 	 * @param t3 Port of the front right motor.
 	 * @param t4 Port of the back right motor.
 	 */
-	public Drive(int t1, int t2, int t3, int t4) {
+	public Drive(int t1, int t2, int t3, int t4, AHRS ahrs) {
 		
 		frontLeftMotor1 = new Spark(t1);
 		backLeftMotor1 = new Spark(t2);
@@ -47,6 +47,7 @@ public class Drive implements Runnable {
 		frontRightMotor1.setInverted(true);
 		backRightMotor1.setInverted(true);
 		numMotors = 4;
+		this.ahrs = ahrs;
 	}
 	
 	/**
@@ -65,7 +66,7 @@ public class Drive implements Runnable {
 				 int t2, int t4,
 				 
 				 int t5, int t7, 
-				 int t6, int t8) {
+				 int t6, int t8, AHRS ahrs) {
 		
 		frontLeftMotor1 = new Spark(t1);
 		frontLeftMotor2 = new Spark(t2);
@@ -76,7 +77,7 @@ public class Drive implements Runnable {
 		backRightMotor1 = new Spark(t7);
 		backRightMotor2 = new Spark(t8);
 		numMotors = 8;
-		
+		this.ahrs = ahrs;
 	}
 	
 	
