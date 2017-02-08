@@ -109,25 +109,23 @@ public class Robot extends IterativeRobot {
 		}
 		// TODO decide which buttons will be used for what -Guy without a
 		// programming nickname because you guys are lazy and uncreative
-		
-		 if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
-			 Vision.setRunAutoAlign(true);
-		 }
-		
-		 if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-		 Vision.setPegSide("left");
-		 //System.out.println("left");
-		 } else if
-		 (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-		 Vision.setPegSide("middle");
-		 //System.out.println("middle");
-		 } else if
-		 (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-		 Vision.setPegSide("right");
-		 //System.out.println("right");
-		 }
 
-		 //TODO Is this code needed?
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
+			Vision.setRunAutoAlign(true);
+		}
+
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+			Vision.setPegSide("left");
+			// System.out.println("left");
+		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+			Vision.setPegSide("middle");
+			// System.out.println("middle");
+		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+			Vision.setPegSide("right");
+			// System.out.println("right");
+		}
+
+		// TODO Is this code needed?
 		// Drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(),
 		// drive.getHeading());
 
@@ -193,7 +191,7 @@ public class Robot extends IterativeRobot {
 			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
 		}
 
-		//TODO Needed?
+		// TODO Needed?
 		// Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
 		Shooter.startShoot(() -> !joy.getButton(1), ahrs);
 

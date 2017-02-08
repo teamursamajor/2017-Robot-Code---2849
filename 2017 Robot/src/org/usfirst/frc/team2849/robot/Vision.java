@@ -37,7 +37,7 @@ public class Vision implements Runnable {
 
 	// AHRS stands for something (according to Charlie) but we don't know what
 	// Its for the IMU sensor NavX MXP
-	//TODO figure out if we actually need this
+	// TODO figure out if we actually need this
 	private static AHRS ahrs;
 
 	// coordinates of the center between the two tapes (peg location)
