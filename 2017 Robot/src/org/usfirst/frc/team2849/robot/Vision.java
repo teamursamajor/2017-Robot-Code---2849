@@ -2,7 +2,6 @@ package org.usfirst.frc.team2849.robot;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -10,21 +9,17 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-
 import com.kauailabs.navx.frc.AHRS;
-
 //why can't I own a Canadian?
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
-import edu.wpi.cscore.VideoProperty;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.SPI;
 
 public class Vision implements Runnable {
-
+	// code is basically clean!
 	// VISION II: ELECTRIC BOOGALOO
 	// **cue Star Wars music**
 
@@ -42,6 +37,7 @@ public class Vision implements Runnable {
 
 	// AHRS stands for something (according to Charlie) but we don't know what
 	// Its for the IMU sensor NavX MXP
+	// TODO figure out if we actually need this
 	private static AHRS ahrs;
 
 	// coordinates of the center between the two tapes (peg location)
@@ -75,43 +71,39 @@ public class Vision implements Runnable {
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
 	private static boolean runGetDistance = false;
-	private static boolean switchCamera = false;
-	private static boolean switchBack = false;
 	private static boolean isSwitched = false;
 	private static VideoSink server;
 
 	private static UsbCamera camera0;
 	private static UsbCamera camera1;
 	private static UsbCamera camera2;
-	
+
 	private static Drive drive;
-	
-	public Vision(Drive drive, AHRS ahrs){
+
+	public Vision(Drive drive, AHRS ahrs) {
 		this.ahrs = ahrs;
 		pegSide = "middle";
-		//UNCOMMENT
-//		camera0 = new UsbCamera("USB Camera 0", 0);
-//		camera1 = new UsbCamera("USB Camera 1", 1);
-//		camera2 = new UsbCamera("USB Camera 2", 2);
-//		camera0.setResolution(160, 120);
-//		camera1.setResolution(160, 120);
-//		camera2.setResolution(160, 120);
-//    	CameraServer.getInstance().addCamera(camera0);
-//		CameraServer.getInstance().addCamera(camera1);
-//		CameraServer.getInstance().addCamera(camera2);
-//		VideoSink server = CameraServer.getInstance().addServer("serve_USB Camera 0");
-//		server.setSource(camera0);		
-//		cvSink = CameraServer.getInstance().getVideo(camera2);
-////		outputStream = CameraServer.getInstance().putVideo("Gear Cam", 160, 120);
-//		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//		CameraServer.getInstance().addCamera(outputStream);
-//		server = CameraServer.getInstance().addServer("serve_Gear Cam");
-//		server.setSource(outputStream);
-//		cvSink.grabFrame(source);
-//		Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+		camera0 = new UsbCamera("USB Camera 0", 0);
+		camera1 = new UsbCamera("USB Camera 1", 1);
+		camera2 = new UsbCamera("USB Camera 2", 2);
+		camera0.setResolution(160, 120);
+		camera1.setResolution(160, 120);
+		camera2.setResolution(160, 120);
+		CameraServer.getInstance().addCamera(camera0);
+		CameraServer.getInstance().addCamera(camera1);
+		CameraServer.getInstance().addCamera(camera2);
+		VideoSink server = CameraServer.getInstance().addServer("serve_USB Camera 0");
+		server.setSource(camera0);
+		cvSink = CameraServer.getInstance().getVideo(camera2);
+		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+		CameraServer.getInstance().addCamera(outputStream);
+		server = CameraServer.getInstance().addServer("serve_Gear Cam");
+		server.setSource(outputStream);
+		cvSink.grabFrame(source);
+		Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 	}
 
-	public static void visionInit(Drive drive, AHRS ahrs){
+	public static void visionInit(Drive drive, AHRS ahrs) {
 		visionRun = new Thread(new Vision(drive, ahrs), "visionThread");
 		visionRun.start();
 	}
@@ -120,50 +112,46 @@ public class Vision implements Runnable {
 		// and instantiation goes here?
 		while (true) {
 
-			// if(runAutoAlign){
-			// System.out.println("running auto align");
-			// autoAlign();
-			// //only for testing purposes; delete for competition
-			// outputStream.putFrame(output);
-			// runAutoAlign = false;
-			// }
+			if (runAutoAlign) {
+				System.out.println("running auto align");
+				// autoAlign();
+				// //only for testing purposes; delete for competition
+				// outputStream.putFrame(output);
+				runAutoAlign = false;
+			}
+
 			cvSink.grabFrame(source);
-			
+
 			if (runGetDistance) {
 				System.out.println(getDistance(cvSink, outputStream));
 				runGetDistance = false;
 			}
-			
+
 			try {
 				outputStream.putFrame(output);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-
 	}
 
 	public void autoAlign() {
 
 		/*
 		 * This uses the IMU sensor Navx MXP to find the angle the robot is
-		 * facing relative to a default angle (0 degrees) set at robotInit. We
-		 * take that angle and do % 360 because getAngle() is accumulative, not
-		 * just heading. ahrs.getCompassHeading requires calibration of the
-		 * sensor for every test location, so this is easier.
+		 * facing relative to a default angle (0 degrees) set at robotInit and
+		 * set it to a specific angle depending on which side we are on
 		 */
 
-		// GEAR IS ON THE BACK OF THE ROBOT ;-;
+		// GEAR IS ON THE BACK OF THE ROBOT
 		switch (pegSide) {
 		case "left":
-			// find angle to be head-on with the leftmost peg - if regular hexagon, 240 degrees
-			// turns the robot to angle ___ when the user presses the button set
-			// to right
+			// turns the robot to angle 240 when the user presses the button set
+			// to left
 			drive.driveAngle(240.0);
 			break;
 		case "right":
-			// find angle to be head-on with the rightmost peg - if regular hexagon, 120 degrees
-			// turns the robot to angle ___ when the user presses the button set
+			// turns the robot to angle 120 when the user presses the button set
 			// to right
 			drive.driveAngle(120.0);
 			break;
@@ -176,12 +164,6 @@ public class Vision implements Runnable {
 			break;
 		}
 		System.out.println(pegSide);
-
-		/*
-		 * when not in a while loop: 1. getDistance 2. move that distance 3.
-		 * check getDistance again to make sure were aligned w/in a margin of
-		 * error 4. move forward
-		 */
 
 		// returns distance that the robot needs to move
 		distance = getDistance(cvSink, outputStream);
@@ -200,6 +182,11 @@ public class Vision implements Runnable {
 		 * align
 		 */
 
+		if (distance < 0.0825) {
+			// move forward
+			drive.mechDriveDistance(1, 180);
+		}
+
 		for (int i = 3; distance > 0.08255 && i > 0; i--) {
 			distance = getDistance(cvSink, outputStream);
 
@@ -211,18 +198,16 @@ public class Vision implements Runnable {
 				drive.mechDriveDistance(distance, 270);
 			}
 
-			if (distance < 0.0825) {
-				// move forward
-				drive.mechDriveDistance(1, 180);
-			}
 		}
+
 		System.out.println(distance);
 
 	} // end autoAlign
 
 	/**
-	 * Uses contours to find centerOfTapes and centerOfFrame, then calculates
-	 * and returns distance between them in meters. Might return Double.NaN
+	 * Uses contours to find centerOfTapes (peg location) and
+	 * centerOfFrame(robot location), then calculates and returns distance
+	 * between them in meters. Might return Double.NaN
 	 * 
 	 * @param cvSink
 	 * @param outputStream
@@ -238,39 +223,26 @@ public class Vision implements Runnable {
 		maxContours.clear();
 		contours.clear();
 
-//		if (cvSink.grabFrame(source) == 0) {
-//
-//			// Send the output the error.
-//			outputStream.notifyError(cvSink.getError());
-//			// skip the rest of the current iteration
-//			return Double.NaN;
-//		}
-
 		/*
-		 * Theres a light shining on green reflective tape & we need to find the
-		 * location of the tape: Does stuff to the frames captured. cvtColor changes it to
-		 * HSV, extract channel makes it only show one of those channels (H, S,
-		 * or V) we don't know which one Threshold makes it only show stuff at a
-		 * certain brightness Canny makes it only show outlines find contours
-		 * finds the info for those lines
+		 * We need to find rectangles by shining a green light from our camera
+		 * onto the reflective tape next to the peg, so we grab an image and
+		 * process it
 		 */
-
+		// changes image from BGR to HSV (hue, saturation value)
 		Imgproc.cvtColor(source, temp, Imgproc.COLOR_BGR2HSV);
+		// extracts one of those values (H, S, or V & idk which is which)
 		Core.extractChannel(temp, temp, 2);
+		// only shows images of a certain brightness
 		Imgproc.threshold(temp, temp, 200, 600, Imgproc.THRESH_BINARY);
+		// only shows the outlines of each object seen in the image (rectangles
+		// from tape and/or lights)
 		Imgproc.Canny(temp, output, 210, 215);
+		// finds the information for those lines which we can use for autoalign
 		Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
-		/*
-		 * Goes through each of the contours and finds the largest and second
-		 * largest areas and their index in the matrix contourArea finds the
-		 * area i is the index number of the contour in the matrix
-		 * maxContours.add adds the areas of the contours into a matrix which
-		 * gives you the contours you can use for auto align
-		 */
-
+		// Finds the contours w/ largest and second largest areas and their
+		// index in the matrix
 		for (int i = 0; i < contours.size(); i++) {
-
 			area = Imgproc.contourArea(contours.get(i));
 
 			if (area > maxArea) {
@@ -283,18 +255,19 @@ public class Vision implements Runnable {
 			}
 
 		}
-
+		// if there are no contours, return nothing
 		if (contours.size() == 0) {
-			//outputStream.putFrame(output);
+			// outputStream.putFrame(output);
 			return Double.NaN;
 		}
 
 		maxContours.add(contours.get(maxIndex));
 		maxContours.add(contours.get(almostMaxIndex));
 
-//		for (int i = 0; i < maxContours.size(); i++) {
-//			Imgproc.drawContours(output, maxContours, i, new Scalar(942.0d));
-//		}
+		// draws the contours so we can see them for testing purposes only
+		// for (int i = 0; i < maxContours.size(); i++) {
+		// Imgproc.drawContours(output, maxContours, i, new Scalar(942.0d));
+		// }
 
 		// draw rectangles around the max contours
 		Rect rec1 = Imgproc.boundingRect(maxContours.get(0));
@@ -304,8 +277,8 @@ public class Vision implements Runnable {
 		Imgproc.rectangle(output, new Point(rec2.x, rec2.y), new Point(rec2.x + rec2.width, rec2.y + rec2.height),
 				new Scalar(500.0d));
 
-		// conversion factor for pixels to inches
-		// 2 inches over average of widths (simplify to get 4)
+		// conversion factor for pixels to inches 2 inches over average of
+		// widths (simplify to get 4)
 		conversion = 4.0 / (rec1.width + rec2.width);
 
 		// if rec1 is on the right
@@ -317,8 +290,8 @@ public class Vision implements Runnable {
 			perceivedPx = (rec2.x + rec2.width) - rec1.x;
 		}
 
-		// find center of 2 tapes by adding half the distance to the
-		// left x coordinate
+		// find center of 2 tapes by adding half the distance to the left x
+		// coordinate
 		if (rec1.x > rec2.x) {
 			centerOfTapes = rec2.x + (perceivedPx / 2.0);
 		} else {
@@ -329,7 +302,7 @@ public class Vision implements Runnable {
 		centerOfFrame = output.width() / 2.0;
 
 		// finds distance you need to move by subtracting frame from center and
-		// convert to meters
+		// converts to meters
 		return ((centerOfTapes - centerOfFrame) * conversion) * 0.0254;
 	}// end getDistance
 
@@ -345,24 +318,20 @@ public class Vision implements Runnable {
 	public static void setRunGetDistance(boolean runGetDistance) {
 		Vision.runGetDistance = runGetDistance;
 	}
-	
-	public static void setSwitchCamera() {
+
+	public static void switchCamera() {
 		isSwitched = true;
 		server = CameraServer.getInstance().getServer("serve_USB Camera 0");
 		server.setSource(camera1);
 	}
-	
-	public static void setSwitchBack() {
+
+	public static void switchBack() {
 		isSwitched = false;
 		server = CameraServer.getInstance().getServer("serve_USB Camera 0");
 		server.setSource(camera0);
 	}
-	
-	public static boolean getRunGetDistance(){
-		return runGetDistance;
-	}
-	
-	public static boolean getIsSwitched(){
+
+	public static boolean getIsSwitched() {
 		return isSwitched;
 	}
 }
