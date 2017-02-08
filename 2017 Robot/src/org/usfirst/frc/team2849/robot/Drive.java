@@ -29,6 +29,8 @@ public class Drive implements Runnable {
 	private Spark backRightMotor2;
 	private int numMotors;
 	private Spark frontLeftMotor1;	
+	
+	private Boolean threadLock = false;
 
 	/**
 	 * Drive constructor for 4-motor drive.
@@ -210,14 +212,19 @@ public class Drive implements Runnable {
 	 * @param time
 	 * 			A time measurement in milliseconds.
 	 */
-	public static void driveDirection(double angleDeg, int time) {
+	public void driveDirection(double angleDeg, int time) {
 		double timer = System.currentTimeMillis();
-		
+		mecanumDrive(0, .5, 0, -angleDeg);
 		while (System.currentTimeMillis() - timer < time) {
-			drive(0, .5, 0, -angleDeg);
+			System.out.println("Driving in the loop");
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		
-		drive(0, 0, 0, 0);
+		mecanumDrive(0, 0, 0, 0);
 		
 		//TODO Why is this code commented out??????? -Sheldon
 //		topleft.set(0.0);
@@ -303,7 +310,7 @@ public class Drive implements Runnable {
 	 */
 	public void run() {
 		while (true) {
-			mecanumDrive(Drive.xaxis, Drive.yaxis, Drive.zaxis, Drive.angle);
+			mecanumDrive(this.xaxis, this.yaxis, this.zaxis, this.angle);
 		}
 	}
 	
@@ -311,6 +318,10 @@ public class Drive implements Runnable {
 	 * Starts the drive thread. Call this after initializing a Drive object and before any other Drive methods.
 	 */
 	public void startDrive() {
+		synchronized (threadLock) {
+			if (threadLock) return;
+			threadLock = true;
+		}
 		new Thread(this, "driveThread").start();
 	}
 	

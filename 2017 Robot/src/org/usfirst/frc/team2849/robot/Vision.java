@@ -89,25 +89,26 @@ public class Vision implements Runnable {
 	public Vision(Drive drive, AHRS ahrs){
 		this.ahrs = ahrs;
 		pegSide = "middle";
-		camera0 = new UsbCamera("USB Camera 0", 0);
-		camera1 = new UsbCamera("USB Camera 1", 1);
-		camera2 = new UsbCamera("USB Camera 2", 2);
-		camera0.setResolution(160, 120);
-		camera1.setResolution(160, 120);
-		camera2.setResolution(160, 120);
-    	CameraServer.getInstance().addCamera(camera0);
-		CameraServer.getInstance().addCamera(camera1);
-		CameraServer.getInstance().addCamera(camera2);
-		VideoSink server = CameraServer.getInstance().addServer("serve_USB Camera 0");
-		server.setSource(camera0);		
-		cvSink = CameraServer.getInstance().getVideo(camera2);
-//		outputStream = CameraServer.getInstance().putVideo("Gear Cam", 160, 120);
-		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-		CameraServer.getInstance().addCamera(outputStream);
-		server = CameraServer.getInstance().addServer("serve_Gear Cam");
-		server.setSource(outputStream);
-		cvSink.grabFrame(source);
-		Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+		//UNCOMMENT
+//		camera0 = new UsbCamera("USB Camera 0", 0);
+//		camera1 = new UsbCamera("USB Camera 1", 1);
+//		camera2 = new UsbCamera("USB Camera 2", 2);
+//		camera0.setResolution(160, 120);
+//		camera1.setResolution(160, 120);
+//		camera2.setResolution(160, 120);
+//    	CameraServer.getInstance().addCamera(camera0);
+//		CameraServer.getInstance().addCamera(camera1);
+//		CameraServer.getInstance().addCamera(camera2);
+//		VideoSink server = CameraServer.getInstance().addServer("serve_USB Camera 0");
+//		server.setSource(camera0);		
+//		cvSink = CameraServer.getInstance().getVideo(camera2);
+////		outputStream = CameraServer.getInstance().putVideo("Gear Cam", 160, 120);
+//		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+//		CameraServer.getInstance().addCamera(outputStream);
+//		server = CameraServer.getInstance().addServer("serve_Gear Cam");
+//		server.setSource(outputStream);
+//		cvSink.grabFrame(source);
+//		Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 	}
 
 	public static void visionInit(Drive drive, AHRS ahrs){

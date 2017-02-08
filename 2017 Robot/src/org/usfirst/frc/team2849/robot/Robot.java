@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
-	public static XboxController xbox = new XboxController(0);
+//	public static XboxController xbox = new XboxController(0);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	private Vision vision;
@@ -26,6 +26,7 @@ public class Robot extends IterativeRobot {
 	private int povAngle = 0; 
 	
 	Latch b1 = new Latch();
+	Latch xboxLatch = new Latch();
 	
 
 //	private PowerDistributionPanel board = new PowerDistributionPanel(0);
@@ -85,6 +86,9 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
+		if (xboxLatch.buttonPress(joy.getButton(7)))
+			drive.startDrive();
+		
 		if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)){
 			Vision.setRunGetDistance(true);
 		}
@@ -117,6 +121,7 @@ public class Robot extends IterativeRobot {
 	 * Place all non-final code here instead of teleopPeriodic().
 	 */
 	public void testPeriodic() {
+		
 //		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
 //		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X), joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
 //		
