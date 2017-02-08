@@ -42,6 +42,8 @@ public class LogitechFlightStick extends Joystick {
 	}
 
 	public boolean getButton(int buttonNumber) {
+		//TODO take out when done testing
+		System.out.println(buttonNumber);
 		return this.getRawButton(buttonNumber);
 	}
 
@@ -94,6 +96,13 @@ public class LogitechFlightStick extends Joystick {
 	//TODO - HERSHAL FIX UR DAMN CODE, it needs condensing
 	//TODO - Matt put $1 in the swear jar
 	public boolean getSingleButtonPress(int buttNum){
-		return buttonPresses[buttNum - 1].buttonPress(this.getButton(buttNum));
+		System.out.println(buttNum);
+		try {
+			return buttonPresses[buttNum - 1].buttonPress(this.getButton(buttNum));
+		} catch(NullPointerException e){
+			e.printStackTrace();
+		}
+		return false;
+		
 	}
 }

@@ -30,13 +30,9 @@ public class Drive implements Runnable {
 	private Spark backRightMotor1;
 	private Spark backRightMotor2;
 	private int numMotors;
-<<<<<<< HEAD
 	private Spark frontLeftMotor1;	
 	
 	private Boolean threadLock = false;
-=======
-	private Spark frontLeftMotor1;
->>>>>>> dcafbd7c29707ef11546489935e6f3a06e9e8e92
 
 	/**
 	 * Drive constructor for 4-motor drive.
@@ -59,7 +55,7 @@ public class Drive implements Runnable {
 		frontRightMotor1.setInverted(true);
 		backRightMotor1.setInverted(true);
 		numMotors = 4;
-		this.ahrs = ahrs;
+		Drive.ahrs = ahrs;
 	}
 
 	/**
@@ -95,7 +91,7 @@ public class Drive implements Runnable {
 		backRightMotor1 = new Spark(t7);
 		backRightMotor2 = new Spark(t8);
 		numMotors = 8;
-		this.ahrs = ahrs;
+		Drive.ahrs = ahrs;
 	}
 
 	/**
@@ -152,23 +148,24 @@ public class Drive implements Runnable {
 		// Negate y for the joystick.
 		yIn = -yIn;
 		raxis = -raxis;
-		// Compenstate for gyro angle.
+		// Compensate for gyro angle.
 		double[] rotated = rotateVector(xIn, yIn, gyroAngle);
 		xIn = rotated[0];
 		yIn = rotated[1];
 
 		if (numMotors == 4) {
-			double[] wheelSpeeds = new double[numMotors];
+			//TODO had to change new double[numMotors] to 14 so we can use motor #s > 4
+			double[] wheelSpeeds = new double[14];
 			wheelSpeeds[0] = xIn + yIn + raxis;
-			wheelSpeeds[1] = -xIn + yIn - raxis;
-			wheelSpeeds[2] = -xIn + yIn + raxis;
-			wheelSpeeds[3] = xIn + yIn - raxis;
+			wheelSpeeds[9] = -xIn + yIn - raxis;
+			wheelSpeeds[8] = -xIn + yIn + raxis;
+			wheelSpeeds[1] = xIn + yIn - raxis;
 
 			normalize(wheelSpeeds);
 			frontLeftMotor1.set(wheelSpeeds[0]);
-			frontRightMotor1.set(wheelSpeeds[1]);
-			backLeftMotor1.set(wheelSpeeds[2]);
-			backRightMotor1.set(wheelSpeeds[3]);
+			frontRightMotor1.set(wheelSpeeds[9]);
+			backLeftMotor1.set(wheelSpeeds[8]);
+			backRightMotor1.set(wheelSpeeds[1]);
 
 		} else {
 			double[] wheelSpeeds = new double[numMotors];
@@ -229,11 +226,8 @@ public class Drive implements Runnable {
 	 */
 	public void driveDirection(double angleDeg, int time) {
 		double timer = System.currentTimeMillis();
-<<<<<<< HEAD
 		mecanumDrive(0, .5, 0, -angleDeg);
-=======
 
->>>>>>> dcafbd7c29707ef11546489935e6f3a06e9e8e92
 		while (System.currentTimeMillis() - timer < time) {
 			System.out.println("Driving in the loop");
 			try {
@@ -242,7 +236,6 @@ public class Drive implements Runnable {
 				e.printStackTrace();
 			}
 		}
-<<<<<<< HEAD
 		
 		mecanumDrive(0, 0, 0, 0);
 		
@@ -251,7 +244,6 @@ public class Drive implements Runnable {
 //		topright.set(0.0);
 //		bottomleft.set(0.0);
 //		bottomright.set(0.0);
-=======
 
 		drive(0, 0, 0, 0);
 
@@ -260,7 +252,6 @@ public class Drive implements Runnable {
 		// topright.set(0.0);
 		// bottomleft.set(0.0);
 		// bottomright.set(0.0);
->>>>>>> dcafbd7c29707ef11546489935e6f3a06e9e8e92
 
 	}
 
@@ -302,12 +293,12 @@ public class Drive implements Runnable {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
-				// TODO: Remove the TODO
 				e.printStackTrace();
 			}
 
 		}
 		mecanumDrive(0, 0, 0, 0);
+		//TODO needed?
 		// topleft.set(0.0);
 		// topright.set(0.0);
 		// bottomleft.set(0.0);
