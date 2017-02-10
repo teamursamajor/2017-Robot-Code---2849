@@ -190,19 +190,6 @@ public class Drive implements Runnable {
 		}
 
 	}
-	// TODO Why is this code commented out??????? -Sheldon
-	// double r = Math.hypot(xaxis, yaxis);
-	// double robotAngle = Math.atan2(yaxis, xaxis) - Math.PI / 4;
-	// double cosu = Math.cos(robotAngle);
-	// double sinu = Math.sin(robotAngle);
-	// final double v1 = r * cosu + raxis;
-	// final double v2 = r * sinu - raxis;
-	// final double v3 = r * sinu + raxis;
-	// final double v4 = r * cosu - raxis;
-	// topleft.set(v1);
-	// topright.set(v2);
-	// bottomleft.set(v3);
-	// bottomright.set(v4);
 
 	/**
 	 * Drives the robot in a direction without a stop.
@@ -237,21 +224,11 @@ public class Drive implements Runnable {
 			}
 		}
 		
-		mecanumDrive(0, 0, 0, 0);
+		//TODO Why is this called twice? -backspac_
 		
-		//TODO Why is this code commented out??????? -Sheldon
-//		topleft.set(0.0);
-//		topright.set(0.0);
-//		bottomleft.set(0.0);
-//		bottomright.set(0.0);
-
+		mecanumDrive(0, 0, 0, 0);
 		drive(0, 0, 0, 0);
-
-		// TODO Why is this code commented out??????? -Sheldon
-		// topleft.set(0.0);
-		// topright.set(0.0);
-		// bottomleft.set(0.0);
-		// bottomright.set(0.0);
+		
 
 	}
 
@@ -298,35 +275,6 @@ public class Drive implements Runnable {
 
 		}
 		mecanumDrive(0, 0, 0, 0);
-		//TODO needed?
-		// topleft.set(0.0);
-		// topright.set(0.0);
-		// bottomleft.set(0.0);
-		// bottomright.set(0.0);
-
-		// VELOCITY
-		// driveDirection(angle);
-		// while(displacement <= distance){
-		// long time = System.currentTimeMillis();
-		// Math.sqrt(Math.pow(ahrs.getVelocityX(), 2) +
-		// Math.pow(ahrs.getVelocityZ(),
-		// 2))*((System.currentTimeMillis()/1000)-time)
-		// }
-		// topleft.set(0.0);
-		// topright.set(0.0);
-		// bottomleft.set(0.0);
-		// bottomright.set(0.0);
-
-		// DISPLACEMENT
-		// driveDirection(angle);
-		// while(Math.sqrt(Math.pow(ahrs.getDisplacementX(), 2) +
-		// Math.pow(ahrs.getDisplacementZ(), 2)) < distance){
-		//
-		// }
-		// topleft.set(0.0);
-		// topright.set(0.0);
-		// bottomleft.set(0.0);
-		// bottomright.set(0.0);
 	}
 
 	/**
