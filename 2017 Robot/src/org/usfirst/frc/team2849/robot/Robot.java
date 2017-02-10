@@ -8,27 +8,30 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* TODO Organize layout and resolve button conflicts
- * Control Scheme
+ * Control Scheme **Currently ideas, code does NOT match**
  * Dpad Up:
  * Dpad Down:
  * Dpad Left:
  * Dpad Right:
  * Trigger: Shooter
- * Side: GetPOV (whatever that means)
- * Button 3:
- * Button 4:
- * Button 5:
- * Button 6:
- * Button 7: Sets Peg Side to Left
- * Button 8: Auto Align to Gear / Climber
- * Button 9: Sets Peg Side to Middle
- * Button 10:
- * Button 11: Clear Intake / Sets Peg Side to Right
- * Button 12: Switch Camera
- * Slider:
+ * Side: 
+ * Button 3: Switch Camera
+ * Button 4: Climber
+ * Button 5: Gear Auto Align
+ * Button 6: Clear Intake
+ * Button 7: Peg Left
+ * Button 8:
+ * Button 9: Peg Middle
+ * Button 10: 
+ * Button 11: Peg Right
+ * Button 12: 
+ * Slider: Setting shooter power (?)
  * 
  */
-
+/*
+ * Shooter, Climber, Gear Auto Align, Peg Left, Peg Middle, Peg Right, 
+ * Switch Camera, Clear Intake, Shooter Power,
+ */
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -59,17 +62,19 @@ public class Robot extends IterativeRobot {
 	 */
 	public void robotInit() {
 		/*
-		 * Front Left motor: 0 Back Left motor: 9 Front Right motor: 1 Back
-		 * Right motor: 8
+		 * Front Left motor: 9
+		 * Back Left motor: 0 
+		 * Front Right motor: 8 
+		 * Back Right motor: 1
 		 */
-		drive = new Drive(0, 9, 1, 8, ahrs);
+		drive = new Drive(9, 0, 8, 1, ahrs);
 		drive.startDrive();
 
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
 
 		// creates camera feeds
-		// Vision.visionInit(drive, ahrs);
+		Vision.visionInit(drive);
 
 	}
 
@@ -130,15 +135,14 @@ public class Robot extends IterativeRobot {
 		currentAngle = drive.getHeading();
 		//TODO add a y deadzone for anglelock
 		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
-		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
-				joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
+//		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
+//				joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
 
 		if (joy.getButton(LogitechFlightStick.BUTTON_Side11)) {
 			Shooter.clearIntake(joy);
 		}
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)) {
-			Vision.setRunGetDistance(true);
-		} else if (!Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
+		
+		if (!Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
 			// System.out.println("button 12 pressed 1");
 			Vision.switchCamera();
 		} else if (Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
@@ -146,7 +150,7 @@ public class Robot extends IterativeRobot {
 			Vision.switchBack();
 		}
 
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)) {
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
 			Vision.setRunAutoAlign(true);
 		}
 
@@ -178,6 +182,7 @@ public class Robot extends IterativeRobot {
 	public void testInit() {
 		ahrs.zeroYaw();
 		ahrs.reset();
+		Vision.setRunAutoAlign(true);
 	}
 
 	/**
@@ -196,7 +201,6 @@ public class Robot extends IterativeRobot {
 		// }
 		//
 		// if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
-		// vision.run();
 		// }
 		//
 		// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
@@ -211,84 +215,82 @@ public class Robot extends IterativeRobot {
 		// Vision.setPegSide("right");
 		// System.out.println("right");
 
-		if (joy.getButton(5)) {
-			Climber.climb(() -> !joy.getButton(5));
-		}
-
-		if (joy.getButton(2)) {
-			povAngle = joy.getPOV(0);
-			// TODO This code looks like it wants to be written with trig
-			// -Sheldon
-			switch (povAngle) {
-			case 0:
-				Drive.drive(0, -1, 0, 0);
-				break;
-			case 45:
-				Drive.drive(.5, -.5, 0, 0);
-				break;
-			case 90:
-				Drive.drive(.75, 0, 0, 0);
-				break;
-			case 135:
-				Drive.drive(.5, .5, 0, 0);
-				break;
-			case 180:
-				Drive.drive(0, .5, 0, 0);
-				break;
-			case 225:
-				Drive.drive(-.5, .5, 0, 0);
-				break;
-			case 270:
-				Drive.drive(-.75, 0, 0, 0);
-				break;
-			case 315:
-				Drive.drive(-.5, -.5, 0, 0);
-				break;
-			default:
-				Drive.drive(0, 0, 0, 0);
-				break;
-			}
-		} else {
-			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
-		}
-
-		// TODO Needed?
-		// Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
-		Shooter.startShoot(() -> !joy.getButton(1), ahrs);
-
-		if (shooterLatch.buttonPress(joy.getButton(1)))
-			Shooter.startShoot(() -> joy.getButton(1), ahrs);
-
-		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
-
-		Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
-
-		// TODO Why is this code commented out??????? -Sheldon
-		// drive.angleLock(joy.getAxisGreaterThan(0, 0.1),
-		// joy.getAxisGreaterThan(2, 0.1), currentAngle);
-		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
-		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
-
-		if (joy.getButton(3)) {
-			Shooter.ballIntake(1, 1);
-		} else {
-			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
-		}
-
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
-			vision.run();
-		}
-
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-			System.out.println("left");
-			Vision.setPegSide("left");
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-			System.out.println("middle");
-			Vision.setPegSide("middle");
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-			System.out.println("right");
-			Vision.setPegSide("right");
-		}
+//		if (joy.getButton(5)) {
+//			Climber.climb(() -> !joy.getButton(5));
+//		}
+//
+//		if (joy.getButton(2)) {
+//			povAngle = joy.getPOV(0);
+//			// TODO This code looks like it wants to be written with trig
+//			// -Sheldon
+//			switch (povAngle) {
+//			case 0:
+//				Drive.drive(0, -1, 0, 0);
+//				break;
+//			case 45:
+//				Drive.drive(.5, -.5, 0, 0);
+//				break;
+//			case 90:
+//				Drive.drive(.75, 0, 0, 0);
+//				break;
+//			case 135:
+//				Drive.drive(.5, .5, 0, 0);
+//				break;
+//			case 180:
+//				Drive.drive(0, .5, 0, 0);
+//				break;
+//			case 225:
+//				Drive.drive(-.5, .5, 0, 0);
+//				break;
+//			case 270:
+//				Drive.drive(-.75, 0, 0, 0);
+//				break;
+//			case 315:
+//				Drive.drive(-.5, -.5, 0, 0);
+//				break;
+//			default:
+//				Drive.drive(0, 0, 0, 0);
+//				break;
+//			}
+//		} else {
+//			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
+//		}
+//
+//		// TODO Needed?
+//		// Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
+////		Shooter.startShoot(() -> !joy.getButton(1), ahrs);
+//
+//		if (joy.getSingleButtonPress(1))
+//			Shooter.startShoot(() -> joy.getButton(1));
+//
+//		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
+//
+//		Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
+//		
+//
+//		// TODO Why is this code commented out??????? -Sheldon
+//		// drive.angleLock(joy.getAxisGreaterThan(0, 0.1),
+//		// joy.getAxisGreaterThan(2, 0.1), currentAngle);
+//		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
+//		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
+//
+//		if (joy.getButton(3)) {
+//			Shooter.ballIntake(1, 1);
+//		} 
+////		else {
+////			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+////		}
+//
+////		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+////			System.out.println("left");
+////			Vision.setPegSide("left");
+////		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+////			System.out.println("middle");
+////			Vision.setPegSide("middle");
+////		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+////			System.out.println("right");
+////			Vision.setPegSide("right");
+////		}
 	}
 
 	public void disabledPeriodic() {

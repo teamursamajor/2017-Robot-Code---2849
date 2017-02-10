@@ -16,7 +16,7 @@ public class Shooter implements Runnable {
 
 	private static Spark intake = new Spark(7);
 
-	private EndCondition ending = null;
+	private static EndCondition ending = null;
 
 	// TODO please clean up your code!!! -Sheldon
 	// AnalogInput encoder = new AnalogInput(0);
@@ -28,7 +28,6 @@ public class Shooter implements Runnable {
 
 	private static boolean powerSet = true;
 	// TODO why are these yellow? If they aren't needed delete them
-	private static AHRS ahrs;
 
 	private static boolean shooting = false;
 
@@ -40,10 +39,9 @@ public class Shooter implements Runnable {
 	 * Initialize a new shooter. Only use inside the Shooter class to pass into
 	 * a new Thread().
 	 */
-	private Shooter(EndCondition ending, AHRS ahrs) {
+	private Shooter(EndCondition ending) {
 		rightShooter.setInverted(true);
-		this.ending = ending;
-		this.ahrs = ahrs;
+		Shooter.ending = ending;
 	}
 
 	/**
@@ -52,13 +50,22 @@ public class Shooter implements Runnable {
 	 */
 	@Override
 	public void run() {
+		System.out.println(ending.done());
 		while (!ending.done()) {
+			System.out.println("LOOPING");
 			leftShooter.set(leftPower);
 			rightShooter.set(rightPower);
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		leftShooter.set(0);
 		rightShooter.set(0);
 		synchronized (shooterLock) {
+			System.out.println("Releasing shooter thread");
 			shooterLock = false;
 		}
 	}
@@ -67,14 +74,15 @@ public class Shooter implements Runnable {
 	 * Start the shooter thread. Automatically runs run() after starting the
 	 * thread.
 	 */
-	public static void startShoot(EndCondition ending, AHRS ahrs) {
+	public static void startShoot(EndCondition ending) {
 		synchronized (shooterLock) {
 			if (shooterLock) {
 				return;
 			}
+			System.out.println("Taking shooter thread");
 			shooterLock = true;
 		}
-		new Thread(new Shooter(ending, ahrs), "shooter").start();
+		new Thread(new Shooter(ending), "shooter").start();
 	}
 
 	/**
@@ -124,7 +132,7 @@ public class Shooter implements Runnable {
 	 *            Power of the left motor. Should be in the range 0-1.
 	 */
 	public static void setLeftPower(double leftPower) {
-		System.out.println("Left: " + leftPower);
+//		System.out.println("Left: " + leftPower);
 		Shooter.leftPower = leftPower;
 	}
 
@@ -135,7 +143,7 @@ public class Shooter implements Runnable {
 	 *            Power of the right motor. Should be in range 0-1.
 	 */
 	public static void setRightPower(double rightPower) {
-		System.out.println("Right: " + rightPower);
+//		System.out.println("Right: " + rightPower);
 		Shooter.rightPower = rightPower;
 	}
 

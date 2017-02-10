@@ -100,6 +100,8 @@ public class Vision implements Runnable {
 		server = CameraServer.getInstance().addServer("serve_Gear Cam");
 		server.setSource(outputStream);
 		cvSink.grabFrame(source);
+		//WE NEED THIS
+		Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 	}
 
 	public static void visionInit(Drive drive) {
@@ -111,15 +113,16 @@ public class Vision implements Runnable {
 		// and instantiation goes here?
 		while (true) {
 
+			cvSink.grabFrame(source);
+			
 			if (runAutoAlign) {
 				System.out.println("running auto align");
-				// autoAlign();
+				System.out.println(getDistance(cvSink, outputStream));
+				//autoAlign();
 				// //only for testing purposes; delete for competition
 				// outputStream.putFrame(output);
-				runAutoAlign = false;
+//				runAutoAlign = false;
 			}
-
-			cvSink.grabFrame(source);
 
 			if (runGetDistance) {
 				System.out.println(getDistance(cvSink, outputStream));
