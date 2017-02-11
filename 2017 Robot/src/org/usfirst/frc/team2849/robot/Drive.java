@@ -30,9 +30,11 @@ public class Drive implements Runnable {
 	private Spark backRightMotor1;
 	private Spark backRightMotor2;
 	private int numMotors;
-	private Spark frontLeftMotor1;	
-	
+	private Spark frontLeftMotor1;
+
 	private Boolean threadLock = false;
+
+	private boolean headless = true;
 
 	/**
 	 * Drive constructor for 4-motor drive.
@@ -154,7 +156,8 @@ public class Drive implements Runnable {
 		yIn = rotated[1];
 
 		if (numMotors == 4) {
-			//TODO had to change new double[numMotors] to 14 so we can use motor #s > 4
+			// TODO had to change new double[numMotors] to 14 so we can use
+			// motor #s > 4
 			double[] wheelSpeeds = new double[14];
 			wheelSpeeds[0] = xIn + yIn + raxis;
 			wheelSpeeds[9] = -xIn + yIn - raxis;
@@ -213,7 +216,7 @@ public class Drive implements Runnable {
 	 */
 	public void driveDirection(double angleDeg, int time) {
 		double timer = System.currentTimeMillis();
-		mecanumDrive(0, .5, 0, -angleDeg);
+		drive(0, -.5, 0, -angleDeg);
 
 		while (System.currentTimeMillis() - timer < time) {
 			System.out.println("Driving in the loop");
@@ -223,12 +226,10 @@ public class Drive implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		
-		//TODO Why is this called twice? -backspac_
-		
-		mecanumDrive(0, 0, 0, 0);
+
+		// TODO Why is this called twice? -backspac_
+
 		drive(0, 0, 0, 0);
-		
 
 	}
 
@@ -284,7 +285,7 @@ public class Drive implements Runnable {
 	 */
 	public void run() {
 		while (true) {
-			mecanumDrive(this.xaxis, this.yaxis, this.zaxis, this.angle);
+			mecanumDrive(Drive.xaxis, Drive.yaxis, Drive.zaxis, Drive.angle);
 		}
 	}
 
@@ -294,7 +295,8 @@ public class Drive implements Runnable {
 	 */
 	public void startDrive() {
 		synchronized (threadLock) {
-			if (threadLock) return;
+			if (threadLock)
+				return;
 			threadLock = true;
 		}
 		new Thread(this, "driveThread").start();
@@ -322,12 +324,17 @@ public class Drive implements Runnable {
 	}
 
 	public double getHeading() {
-		double angle = ahrs.getAngle();
+		double angle;
+		if (headless) {
+			angle = ahrs.getAngle();
 
-		if (angle > 0) {
-			angle %= 360;
-		} else if (angle < 0) {
-			angle = -(Math.abs(angle) % 360) + 360;
+			if (angle > 0) {
+				angle %= 360;
+			} else if (angle < 0) {
+				angle = -(Math.abs(angle) % 360) + 360;
+			}
+		} else {
+			angle = 0;
 		}
 		return angle;
 	}
@@ -336,5 +343,13 @@ public class Drive implements Runnable {
 		if (xaxis > 0 && zaxis == 0) {
 			driveAngle(currentAngle);
 		}
+	}
+
+	public void switchHeadless() {
+		this.headless = !this.headless;
+	}
+	
+	public boolean getHeadless() {
+		return this.headless;
 	}
 }

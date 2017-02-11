@@ -43,9 +43,7 @@ public class Autonomous implements Runnable {
 	}
 
 	public void cross(AutoMode previousMode) {
-		while (!ending.done()) {
-			//Drive.drive(3, 0);
-		}
+		drive.driveDirection(0, 5000);
 	}
 
 	public void shoot(AutoMode previousMode) {

@@ -62,19 +62,19 @@ public class Robot extends IterativeRobot {
 	 */
 	public void robotInit() {
 		/*
-		 * Front Left motor: 9
-		 * Back Left motor: 0 
-		 * Front Right motor: 8 
-		 * Back Right motor: 1
+		 * Front Left motor: 7
+		 * Back Left motor: 1
+		 * Front Right motor: 5 
+		 * Back Right motor: 0
 		 */
-		drive = new Drive(9, 0, 8, 1, ahrs);
+		drive = new Drive(7, 1, 5, 0, ahrs);
 		drive.startDrive();
 
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
 
 		// creates camera feeds
-		Vision.visionInit(drive);
+//		Vision.visionInit(drive);
 
 	}
 
@@ -91,7 +91,7 @@ public class Robot extends IterativeRobot {
 	 */
 	public void autonomousInit() {
 		LinkedList<AutoMode> modes = new LinkedList<AutoMode>();
-		modes.add(AutoMode.GEAR);
+		modes.add(AutoMode.CROSS);
 		Autonomous.auto(() -> !this.isAutonomous(), modes, StartPosition.CENTER, drive);
 	}
 
@@ -126,11 +126,11 @@ public class Robot extends IterativeRobot {
 			e.printStackTrace();
 		}
 		
-		Shooter.shoot(joy.getButton(1));
+		//Shooter.shoot(joy.getButton(1));
 
 		// Use slider axis to set Shooter power. Change range of slider from
 		// (-1)-(1) to (0)-(1)
-		Shooter.setPower((joy.getAxis(3) - 1) * -0.5);
+		//Shooter.setPower((joy.getAxis(3) - 1) * -0.5);
 
 		currentAngle = drive.getHeading();
 		//TODO add a y deadzone for anglelock
@@ -138,21 +138,21 @@ public class Robot extends IterativeRobot {
 //		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
 //				joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
 
-		if (joy.getButton(LogitechFlightStick.BUTTON_Side11)) {
-			Shooter.clearIntake(joy);
-		}
-		
-		if (!Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
-			// System.out.println("button 12 pressed 1");
-			Vision.switchCamera();
-		} else if (Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
-			// System.out.println("button 12 pressed 2");
-			Vision.switchBack();
-		}
-
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-			Vision.setRunAutoAlign(true);
-		}
+//		if (joy.getButton(LogitechFlightStick.BUTTON_Side11)) {
+//			Shooter.clearIntake(joy);
+//		}
+//		
+//		if (!Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
+//			// System.out.println("button 12 pressed 1");
+//			Vision.switchCamera();
+//		} else if (Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
+//			// System.out.println("button 12 pressed 2");
+//			Vision.switchBack();
+//		}
+//
+//		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+//			Vision.setRunAutoAlign(true);
+//		}
 
 //		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
 //			Vision.setPegSide("left");
@@ -166,11 +166,11 @@ public class Robot extends IterativeRobot {
 //		}
 
 		// TODO Is this code needed?
-		// Drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(),
-		// drive.getHeading());
-
-		// Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(),
-		// ahrs.getHeading());
+//		 Drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(),
+//		 drive.getHeading());
+//
+//		 Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(),
+//		 ahrs.getHeading());
 
 		// Shooter.shoot(joy.getButton(1));
 
@@ -182,7 +182,7 @@ public class Robot extends IterativeRobot {
 	public void testInit() {
 		ahrs.zeroYaw();
 		ahrs.reset();
-		Vision.setRunAutoAlign(true);
+//		Vision.setRunAutoAlign(true);
 	}
 
 	/**
@@ -215,46 +215,58 @@ public class Robot extends IterativeRobot {
 		// Vision.setPegSide("right");
 		// System.out.println("right");
 
-//		if (joy.getButton(5)) {
-//			Climber.climb(() -> !joy.getButton(5));
-//		}
-//
-//		if (joy.getButton(2)) {
-//			povAngle = joy.getPOV(0);
-//			// TODO This code looks like it wants to be written with trig
-//			// -Sheldon
-//			switch (povAngle) {
-//			case 0:
-//				Drive.drive(0, -1, 0, 0);
-//				break;
-//			case 45:
-//				Drive.drive(.5, -.5, 0, 0);
-//				break;
-//			case 90:
-//				Drive.drive(.75, 0, 0, 0);
-//				break;
-//			case 135:
-//				Drive.drive(.5, .5, 0, 0);
-//				break;
-//			case 180:
-//				Drive.drive(0, .5, 0, 0);
-//				break;
-//			case 225:
-//				Drive.drive(-.5, .5, 0, 0);
-//				break;
-//			case 270:
-//				Drive.drive(-.75, 0, 0, 0);
-//				break;
-//			case 315:
-//				Drive.drive(-.5, -.5, 0, 0);
-//				break;
-//			default:
-//				Drive.drive(0, 0, 0, 0);
-//				break;
-//			}
-//		} else {
-//			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
-//		}
+		//run climber to wind up rope
+		if (joy.getButton(5)) {
+			Climber.setForwards(true);
+			Climber.climb(() -> !joy.getButton(5));
+		}
+		
+		//run climber to unwind rope
+		if (joy.getButton(6)) {
+			Climber.setBackwards(true);
+			Climber.climb(() -> !joy.getButton(6));
+		}
+
+		if (joy.getButton(2)) {
+			povAngle = joy.getPOV(0);
+			// TODO This code looks like it wants to be written with trig
+			switch (povAngle) {
+			case 0:
+				Drive.drive(0, -1, 0, 0);
+				break;
+			case 45:
+				Drive.drive(.5, -.5, 0, 0);
+				break;
+			case 90:
+				Drive.drive(.75, 0, 0, 0);
+				break;
+			case 135:
+				Drive.drive(.5, .5, 0, 0);
+				break;
+			case 180:
+				Drive.drive(0, .5, 0, 0);
+				break;
+			case 225:
+				Drive.drive(-.5, .5, 0, 0);
+				break;
+			case 270:
+				Drive.drive(-.75, 0, 0, 0);
+				break;
+			case 315:
+				Drive.drive(-.5, -.5, 0, 0);
+				break;
+			default:
+				Drive.drive(0, 0, 0, 0);
+				break;
+			}
+		} else {
+			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
+		}
+		
+		if (joy.getSingleButtonPress(12)) {
+			drive.switchHeadless();
+			System.out.println("Headless: " + drive.getHeadless());
+		}
 //
 //		// TODO Needed?
 //		// Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
