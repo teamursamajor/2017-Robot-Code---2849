@@ -66,12 +66,11 @@ public class Vision implements Runnable {
 
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
-	private static boolean runGetDistance = false;
 	private static boolean isSwitched = false;
 	private static VideoSink server;
 
-//	private static UsbCamera camera0;
-//	private static UsbCamera camera1;
+	private static UsbCamera camera0;
+	private static UsbCamera camera1;
 	private static UsbCamera camera2;
 
 	private static Drive drive;
@@ -83,21 +82,22 @@ public class Vision implements Runnable {
 		 * (one for shooter one for main/climber) 
 		 */
 		pegSide = "middle";
-//		camera0 = new UsbCamera("USB Camera 0", 0);
-//		camera1 = new UsbCamera("USB Camera 1", 1);
+		camera0 = new UsbCamera("USB Camera 0", 0);
+		camera1 = new UsbCamera("USB Camera 1", 1);
 		camera2 = new UsbCamera("USB Camera 2", 2);
-//		camera0.setResolution(160, 120);
-//		camera1.setResolution(160, 120);
+		camera0.setResolution(160, 120);
+		camera1.setResolution(160, 120);
 		camera2.setResolution(160, 120);
-//		CameraServer.getInstance().addCamera(camera0);
-//		CameraServer.getInstance().addCamera(camera1);
+		CameraServer.getInstance().addCamera(camera0);
+		CameraServer.getInstance().addCamera(camera1);
 		CameraServer.getInstance().addCamera(camera2);
-		VideoSink server = CameraServer.getInstance().addServer("serve_USB Camera 0");
+		server = CameraServer.getInstance().addServer("serve_USB Camera 0");
 //		server.setSource(camera0);
 		cvSink = CameraServer.getInstance().getVideo(camera2);
 		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
 		CameraServer.getInstance().addCamera(outputStream);
 		server = CameraServer.getInstance().addServer("serve_Gear Cam");
+		//this line is giving us a too many simultaneous client streams error, dont know why
 		server.setSource(outputStream);
 		cvSink.grabFrame(source);
 		//WE NEED THIS
@@ -120,13 +120,7 @@ public class Vision implements Runnable {
 				System.out.println(getDistance(cvSink, outputStream));
 				//autoAlign();
 				// //only for testing purposes; delete for competition
-				// outputStream.putFrame(output);
-//				runAutoAlign = false;
-			}
-
-			if (runGetDistance) {
-				System.out.println(getDistance(cvSink, outputStream));
-				runGetDistance = false;
+				runAutoAlign = false;
 			}
 
 			try {
@@ -316,10 +310,6 @@ public class Vision implements Runnable {
 		Vision.runAutoAlign = runAutoAlign;
 		System.out.println(runAutoAlign);
 	}// end setRunAutoAlign
-
-	public static void setRunGetDistance(boolean runGetDistance) {
-		Vision.runGetDistance = runGetDistance;
-	}
 
 	public static void switchCamera() {
 		isSwitched = true;

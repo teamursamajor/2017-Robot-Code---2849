@@ -11,10 +11,10 @@ import edu.wpi.first.wpilibj.Spark;
 
 public class Shooter implements Runnable {
 
-	private static Spark leftShooter = new Spark(5);
-	private static Spark rightShooter = new Spark(6);
+	private static Spark leftShooter = new Spark(6);
+	private static Spark rightShooter = new Spark(7);
 
-	private static Spark intake = new Spark(7);
+	private static Spark intake = new Spark(3);
 
 	private static EndCondition ending = null;
 
@@ -40,7 +40,7 @@ public class Shooter implements Runnable {
 	 * a new Thread().
 	 */
 	private Shooter(EndCondition ending) {
-		rightShooter.setInverted(true);
+		leftShooter.setInverted(true);
 		Shooter.ending = ending;
 	}
 
@@ -132,7 +132,7 @@ public class Shooter implements Runnable {
 	 *            Power of the left motor. Should be in the range 0-1.
 	 */
 	public static void setLeftPower(double leftPower) {
-//		System.out.println("Left: " + leftPower);
+		System.out.println("Left: " + leftPower);
 		Shooter.leftPower = leftPower;
 	}
 
@@ -143,7 +143,7 @@ public class Shooter implements Runnable {
 	 *            Power of the right motor. Should be in range 0-1.
 	 */
 	public static void setRightPower(double rightPower) {
-//		System.out.println("Right: " + rightPower);
+		System.out.println("Right: " + rightPower);
 		Shooter.rightPower = rightPower;
 	}
 

@@ -12,7 +12,7 @@ public class Climber implements Runnable {
 	
 	private static EndCondition ending = null;
 	
-	private static Spark climber1 = new Spark(8);
+	private static Spark climber = new Spark(0);
 	
 	private static boolean forwards = false;
 	private static boolean backwards = false;
@@ -30,10 +30,10 @@ public class Climber implements Runnable {
 		// TODO get someone to write code. && clean up commented code!!! -Sheldon
 		while (!ending.done()) {
 			if(forwards){
-				climber1.set(1);
+				climber.set(1);
 				setForwards(false);
 			} else if(backwards){
-				climber1.set(-.5);
+				climber.set(-.5);
 				setBackwards(false);
 			}
 			try {
@@ -42,7 +42,7 @@ public class Climber implements Runnable {
 				e.printStackTrace();
 			}
 		}
-		climber1.set(0);
+		climber.set(0);
 		
 		synchronized (bool) {
 			bool = false;

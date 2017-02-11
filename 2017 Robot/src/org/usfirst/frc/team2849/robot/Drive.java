@@ -35,6 +35,8 @@ public class Drive implements Runnable {
 	private Boolean threadLock = false;
 
 	private boolean headless = true;
+	
+	private double headingOffset = 0.0;
 
 	/**
 	 * Drive constructor for 4-motor drive.
@@ -326,7 +328,7 @@ public class Drive implements Runnable {
 	public double getHeading() {
 		double angle;
 		if (headless) {
-			angle = ahrs.getAngle();
+			angle = ahrs.getAngle() + headingOffset;
 
 			if (angle > 0) {
 				angle %= 360;
@@ -351,5 +353,9 @@ public class Drive implements Runnable {
 	
 	public boolean getHeadless() {
 		return this.headless;
+	}
+	
+	public void setHeadingOffset(double offset) {
+		this.headingOffset = offset;
 	}
 }
