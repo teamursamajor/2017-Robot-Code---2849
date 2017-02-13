@@ -55,6 +55,12 @@ public class Shooter implements Runnable {
 		while (!ending.done()) {
 			leftShooter.set(leftPower);
 			rightShooter.set(rightPower);
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		leftShooter.set(0);
 		rightShooter.set(0);

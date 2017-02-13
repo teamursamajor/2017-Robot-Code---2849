@@ -42,7 +42,7 @@ public class Robot extends IterativeRobot {
 		ahrs.zeroYaw();
 
 		// creates camera feeds
-		Vision.visionInit(drive, ahrs);
+//		Vision.visionInit(drive, ahrs);
 
 	}
 
@@ -192,11 +192,15 @@ public class Robot extends IterativeRobot {
 		}
 
 		// TODO Needed?
-		// Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
-		Shooter.startShoot(() -> !joy.getButton(1), ahrs);
-
-		if (shooterLatch.buttonPress(joy.getButton(1)))
-			Shooter.startShoot(() -> joy.getButton(1), ahrs);
+//		 Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
+		 
+		 if (joy.getButton(1)) {
+			 Shooter.startShoot(() -> !joy.getButton(1), ahrs);
+		 }
+//		Shooter.startShoot(() -> !joy.getButton(1), ahrs);
+//
+//		if (shooterLatch.buttonPress(joy.getButton(1)))
+//			Shooter.startShoot(() -> joy.getButton(1), ahrs);
 
 		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
 
@@ -208,26 +212,24 @@ public class Robot extends IterativeRobot {
 		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
 		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
 
-		if (joy.getButton(3)) {
-			Shooter.ballIntake(1, 1);
-		} else {
-			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
-		}
+//		if (joy.getButton(3)) {
+//			Shooter.ballIntake(1, 1);
+//		} else {
+//			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+//		}
 
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
-			vision.run();
-		}
+//		if 
 
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-			System.out.println("left");
-			Vision.setPegSide("left");
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-			System.out.println("middle");
-			Vision.setPegSide("middle");
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-			System.out.println("right");
-			Vision.setPegSide("right");
-		}
+//		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+//			System.out.println("left");
+//			Vision.setPegSide("left");
+//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+//			System.out.println("middle");
+//			Vision.setPegSide("middle");
+//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+//			System.out.println("right");
+//			Vision.setPegSide("right");
+//		}
 	}
 
 	public void disabledPeriodic() {
