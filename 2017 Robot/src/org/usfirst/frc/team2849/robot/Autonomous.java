@@ -43,9 +43,9 @@ public class Autonomous implements Runnable {
 	}
 
 	public void cross(AutoMode previousMode) {
-		while (!ending.done()) {
-			//Drive.drive(3, 0);
-		}
+		drive.driveDirection(drive.getHeading(), 3000);
+		drive.switchHeadless();
+		drive.driveDirection(-180, 500);
 	}
 
 	public void shoot(AutoMode previousMode) {
@@ -55,16 +55,16 @@ public class Autonomous implements Runnable {
 	public void gear(AutoMode previousMode) {
 		if (previousMode == AutoMode.GEAR) {
 			if (position == StartPosition.LEFT) {
-				Drive.driveDirection(0, 1000);
-				Drive.driveDirection(90, 1000);
+				drive.driveDirection(0, 1000);
+				drive.driveDirection(90, 1000);
 			} else if (position == StartPosition.RIGHT) {
-				Drive.driveDirection(0, 1000);
-				Drive.driveDirection(-90, 1000);
+				drive.driveDirection(0, 1000);
+				drive.driveDirection(-90, 1000);
 			} else if (position == StartPosition.CENTER) {
-				Drive.driveDirection(0, 1000);
+				drive.driveDirection(0, 1000);
 			}
 		} else if (previousMode == AutoMode.SHOOT){
-			Drive.driveDirection(180, 2000);
+			drive.driveDirection(180, 2000);
 		} else if (previousMode == AutoMode.CROSS) {
 			
 		}

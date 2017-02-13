@@ -32,6 +32,12 @@ public class Drive implements Runnable {
 	private int numMotors;
 	private Spark frontLeftMotor1;
 
+	private Boolean threadLock = false;
+
+	private boolean headless = true;
+	
+	private double headingOffset = 0.0;
+
 	/**
 	 * Drive constructor for 4-motor drive.
 	 * 
@@ -53,7 +59,7 @@ public class Drive implements Runnable {
 		frontRightMotor1.setInverted(true);
 		backRightMotor1.setInverted(true);
 		numMotors = 4;
-		this.ahrs = ahrs;
+		Drive.ahrs = ahrs;
 	}
 
 	/**
@@ -89,7 +95,7 @@ public class Drive implements Runnable {
 		backRightMotor1 = new Spark(t7);
 		backRightMotor2 = new Spark(t8);
 		numMotors = 8;
-		this.ahrs = ahrs;
+		Drive.ahrs = ahrs;
 	}
 
 	/**
@@ -146,23 +152,25 @@ public class Drive implements Runnable {
 		// Negate y for the joystick.
 		yIn = -yIn;
 		raxis = -raxis;
-		// Compenstate for gyro angle.
+		// Compensate for gyro angle.
 		double[] rotated = rotateVector(xIn, yIn, gyroAngle);
 		xIn = rotated[0];
 		yIn = rotated[1];
 
 		if (numMotors == 4) {
-			double[] wheelSpeeds = new double[numMotors];
+			// TODO had to change new double[numMotors] to 14 so we can use
+			// motor #s > 4
+			double[] wheelSpeeds = new double[14];
 			wheelSpeeds[0] = xIn + yIn + raxis;
-			wheelSpeeds[1] = -xIn + yIn - raxis;
-			wheelSpeeds[2] = -xIn + yIn + raxis;
-			wheelSpeeds[3] = xIn + yIn - raxis;
+			wheelSpeeds[9] = -xIn + yIn - raxis;
+			wheelSpeeds[8] = -xIn + yIn + raxis;
+			wheelSpeeds[1] = xIn + yIn - raxis;
 
 			normalize(wheelSpeeds);
 			frontLeftMotor1.set(wheelSpeeds[0]);
-			frontRightMotor1.set(wheelSpeeds[1]);
-			backLeftMotor1.set(wheelSpeeds[2]);
-			backRightMotor1.set(wheelSpeeds[3]);
+			frontRightMotor1.set(wheelSpeeds[9]);
+			backLeftMotor1.set(wheelSpeeds[8]);
+			backRightMotor1.set(wheelSpeeds[1]);
 
 		} else {
 			double[] wheelSpeeds = new double[numMotors];
@@ -187,19 +195,6 @@ public class Drive implements Runnable {
 		}
 
 	}
-	// TODO Why is this code commented out??????? -Sheldon
-	// double r = Math.hypot(xaxis, yaxis);
-	// double robotAngle = Math.atan2(yaxis, xaxis) - Math.PI / 4;
-	// double cosu = Math.cos(robotAngle);
-	// double sinu = Math.sin(robotAngle);
-	// final double v1 = r * cosu + raxis;
-	// final double v2 = r * sinu - raxis;
-	// final double v3 = r * sinu + raxis;
-	// final double v4 = r * cosu - raxis;
-	// topleft.set(v1);
-	// topright.set(v2);
-	// bottomleft.set(v3);
-	// bottomright.set(v4);
 
 	/**
 	 * Drives the robot in a direction without a stop.
@@ -221,20 +216,22 @@ public class Drive implements Runnable {
 	 * @param time
 	 *            A time measurement in milliseconds.
 	 */
-	public static void driveDirection(double angleDeg, int time) {
+	public void driveDirection(double angleDeg, int time) {
 		double timer = System.currentTimeMillis();
+		drive(0, -.5, 0, -angleDeg);
 
 		while (System.currentTimeMillis() - timer < time) {
-			drive(0, .5, 0, -angleDeg);
+			System.out.println("Driving in the loop");
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 
-		drive(0, 0, 0, 0);
+		// TODO Why is this called twice? -backspac_
 
-		// TODO Why is this code commented out??????? -Sheldon
-		// topleft.set(0.0);
-		// topright.set(0.0);
-		// bottomleft.set(0.0);
-		// bottomright.set(0.0);
+		drive(0, 0, 0, 0);
 
 	}
 
@@ -276,40 +273,11 @@ public class Drive implements Runnable {
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
-				// TODO: Remove the TODO
 				e.printStackTrace();
 			}
 
 		}
 		mecanumDrive(0, 0, 0, 0);
-		// topleft.set(0.0);
-		// topright.set(0.0);
-		// bottomleft.set(0.0);
-		// bottomright.set(0.0);
-
-		// VELOCITY
-		// driveDirection(angle);
-		// while(displacement <= distance){
-		// long time = System.currentTimeMillis();
-		// Math.sqrt(Math.pow(ahrs.getVelocityX(), 2) +
-		// Math.pow(ahrs.getVelocityZ(),
-		// 2))*((System.currentTimeMillis()/1000)-time)
-		// }
-		// topleft.set(0.0);
-		// topright.set(0.0);
-		// bottomleft.set(0.0);
-		// bottomright.set(0.0);
-
-		// DISPLACEMENT
-		// driveDirection(angle);
-		// while(Math.sqrt(Math.pow(ahrs.getDisplacementX(), 2) +
-		// Math.pow(ahrs.getDisplacementZ(), 2)) < distance){
-		//
-		// }
-		// topleft.set(0.0);
-		// topright.set(0.0);
-		// bottomleft.set(0.0);
-		// bottomright.set(0.0);
 	}
 
 	/**
@@ -328,6 +296,11 @@ public class Drive implements Runnable {
 	 * before any other Drive methods.
 	 */
 	public void startDrive() {
+		synchronized (threadLock) {
+			if (threadLock)
+				return;
+			threadLock = true;
+		}
 		new Thread(this, "driveThread").start();
 	}
 
@@ -353,12 +326,17 @@ public class Drive implements Runnable {
 	}
 
 	public double getHeading() {
-		double angle = ahrs.getAngle();
+		double angle;
+		if (headless) {
+			angle = ahrs.getAngle() + headingOffset;
 
-		if (angle > 0) {
-			angle %= 360;
-		} else if (angle < 0) {
-			angle = -(Math.abs(angle) % 360) + 360;
+			if (angle > 0) {
+				angle %= 360;
+			} else if (angle < 0) {
+				angle = -(Math.abs(angle) % 360) + 360;
+			}
+		} else {
+			angle = 0;
 		}
 		return angle;
 	}
@@ -367,5 +345,17 @@ public class Drive implements Runnable {
 		if (xaxis > 0 && zaxis == 0) {
 			driveAngle(currentAngle);
 		}
+	}
+
+	public void switchHeadless() {
+		this.headless = !this.headless;
+	}
+	
+	public boolean getHeadless() {
+		return this.headless;
+	}
+	
+	public void setHeadingOffset(double offset) {
+		this.headingOffset = offset;
 	}
 }

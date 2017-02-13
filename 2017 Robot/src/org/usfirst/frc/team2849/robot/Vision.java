@@ -2,6 +2,7 @@ package org.usfirst.frc.team2849.robot;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -9,7 +10,7 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-import com.kauailabs.navx.frc.AHRS;
+
 //why can't I own a Canadian?
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
@@ -34,11 +35,6 @@ public class Vision implements Runnable {
 	private static double area;
 	private static int maxIndex = 0;
 	private static int almostMaxIndex = 0;
-
-	// AHRS stands for something (according to Charlie) but we don't know what
-	// Its for the IMU sensor NavX MXP
-	// TODO figure out if we actually need this
-	private static AHRS ahrs;
 
 	// coordinates of the center between the two tapes (peg location)
 	private static double centerOfTapes;
@@ -70,7 +66,6 @@ public class Vision implements Runnable {
 
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
-	private static boolean runGetDistance = false;
 	private static boolean isSwitched = false;
 	private static VideoSink server;
 
@@ -80,8 +75,12 @@ public class Vision implements Runnable {
 
 	private static Drive drive;
 
-	public Vision(Drive drive, AHRS ahrs) {
-		this.ahrs = ahrs;
+	public Vision(Drive drive) {
+		/*
+		 * Creates 3 cameras for use. Because of bandwidth issues, only
+		 * 1 is always active (gear cam) and we switch beween the other two
+		 * (one for shooter one for main/climber) 
+		 */
 		pegSide = "middle";
 		camera0 = new UsbCamera("USB Camera 0", 0);
 		camera1 = new UsbCamera("USB Camera 1", 1);
@@ -92,19 +91,21 @@ public class Vision implements Runnable {
 		CameraServer.getInstance().addCamera(camera0);
 		CameraServer.getInstance().addCamera(camera1);
 		CameraServer.getInstance().addCamera(camera2);
-		VideoSink server = CameraServer.getInstance().addServer("serve_USB Camera 0");
-		server.setSource(camera0);
+		server = CameraServer.getInstance().addServer("serve_USB Camera 0");
+//		server.setSource(camera0);
 		cvSink = CameraServer.getInstance().getVideo(camera2);
 		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
 		CameraServer.getInstance().addCamera(outputStream);
 		server = CameraServer.getInstance().addServer("serve_Gear Cam");
+		//this line is giving us a too many simultaneous client streams error, dont know why
 		server.setSource(outputStream);
 		cvSink.grabFrame(source);
+		//WE NEED THIS
 		Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 	}
 
-	public static void visionInit(Drive drive, AHRS ahrs) {
-		visionRun = new Thread(new Vision(drive, ahrs), "visionThread");
+	public static void visionInit(Drive drive) {
+		visionRun = new Thread(new Vision(drive), "visionThread");
 		visionRun.start();
 	}
 
@@ -112,19 +113,14 @@ public class Vision implements Runnable {
 		// and instantiation goes here?
 		while (true) {
 
+			cvSink.grabFrame(source);
+			
 			if (runAutoAlign) {
 				System.out.println("running auto align");
-				// autoAlign();
-				// //only for testing purposes; delete for competition
-				// outputStream.putFrame(output);
-				runAutoAlign = false;
-			}
-
-			cvSink.grabFrame(source);
-
-			if (runGetDistance) {
 				System.out.println(getDistance(cvSink, outputStream));
-				runGetDistance = false;
+				//autoAlign();
+				// //only for testing purposes; delete for competition
+				runAutoAlign = false;
 			}
 
 			try {
@@ -315,20 +311,16 @@ public class Vision implements Runnable {
 		System.out.println(runAutoAlign);
 	}// end setRunAutoAlign
 
-	public static void setRunGetDistance(boolean runGetDistance) {
-		Vision.runGetDistance = runGetDistance;
-	}
-
 	public static void switchCamera() {
 		isSwitched = true;
 		server = CameraServer.getInstance().getServer("serve_USB Camera 0");
-		server.setSource(camera1);
+//		server.setSource(camera1);
 	}
 
 	public static void switchBack() {
 		isSwitched = false;
 		server = CameraServer.getInstance().getServer("serve_USB Camera 0");
-		server.setSource(camera0);
+//		server.setSource(camera0);
 	}
 
 	public static boolean getIsSwitched() {

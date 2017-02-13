@@ -39,10 +39,14 @@ public class LogitechFlightStick extends Joystick {
 
 	public LogitechFlightStick (int port) {
 		super(port);
+		for (int i = 0; i < buttonPresses.length; i++) {
+			buttonPresses[i] = new Latch();
+		}
 	}
 
 	public boolean getButton(int buttonNumber) {
-		return this.getRawButton(buttonNumber);
+		//TODO take out when done testing
+		return super.getRawButton(buttonNumber);
 	}
 
 	public double getAxis(int axisNumber) {
@@ -94,6 +98,12 @@ public class LogitechFlightStick extends Joystick {
 	//TODO - HERSHAL FIX UR DAMN CODE, it needs condensing
 	//TODO - Matt put $1 in the swear jar
 	public boolean getSingleButtonPress(int buttNum){
-		return buttonPresses[buttNum - 1].buttonPress(this.getButton(buttNum));
+		try {
+			return buttonPresses[buttNum - 1].buttonPress(this.getButton(buttNum));
+		} catch(NullPointerException e){
+			e.printStackTrace();
+		}
+		return false;
+		
 	}
 }

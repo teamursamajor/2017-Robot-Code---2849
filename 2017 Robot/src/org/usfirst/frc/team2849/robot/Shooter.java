@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj.Spark;
 
 public class Shooter implements Runnable {
 
-	private static Spark leftShooter = new Spark(5);
-	private static Spark rightShooter = new Spark(6);
+	private static Spark leftShooter = new Spark(6);
+	private static Spark rightShooter = new Spark(7);
 
-	private static Spark intake = new Spark(7);
+	private static Spark intake = new Spark(3);
 
-	private EndCondition ending = null;
+	private static EndCondition ending = null;
 
 	// TODO please clean up your code!!! -Sheldon
 	// AnalogInput encoder = new AnalogInput(0);
@@ -28,7 +28,6 @@ public class Shooter implements Runnable {
 
 	private static boolean powerSet = true;
 	// TODO why are these yellow? If they aren't needed delete them
-	private static AHRS ahrs;
 
 	private static boolean shooting = false;
 
@@ -40,10 +39,9 @@ public class Shooter implements Runnable {
 	 * Initialize a new shooter. Only use inside the Shooter class to pass into
 	 * a new Thread().
 	 */
-	private Shooter(EndCondition ending, AHRS ahrs) {
-		rightShooter.setInverted(true);
-		this.ending = ending;
-		this.ahrs = ahrs;
+	private Shooter(EndCondition ending) {
+		leftShooter.setInverted(true);
+		Shooter.ending = ending;
 	}
 
 	/**
@@ -52,7 +50,9 @@ public class Shooter implements Runnable {
 	 */
 	@Override
 	public void run() {
+		System.out.println(ending.done());
 		while (!ending.done()) {
+			System.out.println("LOOPING");
 			leftShooter.set(leftPower);
 			rightShooter.set(rightPower);
 			try {
@@ -65,6 +65,7 @@ public class Shooter implements Runnable {
 		leftShooter.set(0);
 		rightShooter.set(0);
 		synchronized (shooterLock) {
+			System.out.println("Releasing shooter thread");
 			shooterLock = false;
 		}
 	}
@@ -73,14 +74,15 @@ public class Shooter implements Runnable {
 	 * Start the shooter thread. Automatically runs run() after starting the
 	 * thread.
 	 */
-	public static void startShoot(EndCondition ending, AHRS ahrs) {
+	public static void startShoot(EndCondition ending) {
 		synchronized (shooterLock) {
 			if (shooterLock) {
 				return;
 			}
+			System.out.println("Taking shooter thread");
 			shooterLock = true;
 		}
-		new Thread(new Shooter(ending, ahrs), "shooter").start();
+		new Thread(new Shooter(ending), "shooter").start();
 	}
 
 	/**

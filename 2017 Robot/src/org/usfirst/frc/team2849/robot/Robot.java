@@ -2,11 +2,39 @@
 package org.usfirst.frc.team2849.robot;
 
 import java.util.LinkedList;
+
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/* TODO Organize layout and resolve button conflicts
+ * Control Scheme **Currently ideas, code does NOT match**
+ * Dpad Up:
+ * Dpad Down:
+ * Dpad Left:
+ * Dpad Right:
+ * Trigger: Shooter
+ * Side: 
+ * Button 3: Switch Camera
+ * Button 4: Climber
+ * Button 5: Gear Auto Align
+ * Button 6: Clear Intake
+ * Button 7: Peg Left
+ * Button 8:
+ * Button 9: Peg Middle
+ * Button 10: 
+ * Button 11: Peg Right
+ * Button 12: 
+ * Slider: Setting shooter power (?)
+ * 
+ */
+/*
+ * Shooter, Climber, Gear Auto Align, Peg Left, Peg Middle, Peg Right, 
+ * Switch Camera, Clear Intake, Shooter Power,
+ */
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -16,7 +44,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
-	public static XboxController xbox = new XboxController(0);
+	// public static XboxController xbox = new XboxController(0);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	private Vision vision;
@@ -25,6 +53,8 @@ public class Robot extends IterativeRobot {
 	private double currentAngle = 0.0;
 
 	Latch b1 = new Latch();
+	Latch xboxLatch = new Latch();
+
 	Latch shooterLatch = new Latch();
 
 	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
@@ -34,15 +64,18 @@ public class Robot extends IterativeRobot {
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
-		drive = new Drive(0, 1, 3, 2, ahrs);
+		/*
+		 * Front Left motor: 2 Back Left motor: 8 Front Right motor: 1 Back
+		 * Right motor: 9
+		 */
+		drive = new Drive(2, 8, 1, 9, ahrs);
 		drive.startDrive();
-		// TODO please clean up after yourself -Sheldon
 
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
 
 		// creates camera feeds
-//		Vision.visionInit(drive, ahrs);
+		Vision.visionInit(drive);
 
 	}
 
@@ -58,22 +91,27 @@ public class Robot extends IterativeRobot {
 	 * SendableChooser make sure to add them to the chooser code above as well.
 	 */
 	public void autonomousInit() {
+		ahrs.reset();
+		ahrs.zeroYaw();
 		LinkedList<AutoMode> modes = new LinkedList<AutoMode>();
-		modes.add(AutoMode.GEAR);
+		modes.add(AutoMode.CROSS);
 		Autonomous.auto(() -> !this.isAutonomous(), modes, StartPosition.CENTER, drive);
+		drive.setHeadingOffset(225);
+
 	}
 
 	/**
 	 * This function is called periodically during autonomous
 	 */
 	public void autonomousPeriodic() {
-
+		System.out.println(drive.getHeading());
 	}
 
 	public void teleopInit() {
 		ahrs.reset();
 		ahrs.zeroYaw();
 		ahrs.resetDisplacement();
+		drive.setHeadingOffset(225);
 	}
 
 	/**
@@ -82,53 +120,65 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
-		Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
+		// if (xboxLatch.buttonPress(joy.getButton(7))){
+		// drive.startDrive();
+		// }
+		// drive.startDrive();
+		try {
+			if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)) {
+				Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
+			}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 
-		Shooter.shoot(joy.getButton(1));
+		// Shooter.shoot(joy.getButton(1));
 
 		// Use slider axis to set Shooter power. Change range of slider from
 		// (-1)-(1) to (0)-(1)
-		Shooter.setPower((joy.getAxis(3) - 1) * -0.5);
+		// Shooter.setPower((joy.getAxis(3) - 1) * -0.5);
 
 		currentAngle = drive.getHeading();
+		// TODO add a y deadzone for anglelock
 		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
-		Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
-				joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
+		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
+		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
 
-		if (joy.getButton(LogitechFlightStick.BUTTON_Side11)) {
-			Shooter.clearIntake(joy);
-		}
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)) {
-			Vision.setRunGetDistance(true);
-		} else if (!Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
-			// System.out.println("button 12 pressed 1");
-			Vision.switchCamera();
-		} else if (Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
-			// System.out.println("button 12 pressed 2");
-			Vision.switchBack();
-		}
-		// TODO decide which buttons will be used for what -Guy without a
-		// programming nickname because you guys are lazy and uncreative
+		// if (joy.getButton(LogitechFlightStick.BUTTON_Side11)) {
+		// Shooter.clearIntake(joy);
+		// }
+		//
+		 if (!Vision.getIsSwitched() &&
+				 joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
+			 // System.out.println("button 12 pressed 1");
+			 Vision.switchCamera();
+		 } else if (Vision.getIsSwitched() &&
+				 joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side12)) {
+			 // System.out.println("button 12 pressed 2");
+			 Vision.switchBack();
+		 }
+		
+		 if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+			 Vision.setRunAutoAlign(true);
+		 }
 
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
-			Vision.setRunAutoAlign(true);
-		}
-
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-			Vision.setPegSide("left");
-			// System.out.println("left");
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-			Vision.setPegSide("middle");
-			// System.out.println("middle");
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-			Vision.setPegSide("right");
-			// System.out.println("right");
-		}
+		// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+		// Vision.setPegSide("left");
+		// // System.out.println("left");
+		// } else if
+		// (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+		// Vision.setPegSide("middle");
+		// // System.out.println("middle");
+		// } else if
+		// (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+		// Vision.setPegSide("right");
+		// // System.out.println("right");
+		// }
 
 		// TODO Is this code needed?
 		// Drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(),
 		// drive.getHeading());
-
+		//
 		// Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(),
 		// ahrs.getHeading());
 
@@ -142,6 +192,8 @@ public class Robot extends IterativeRobot {
 	public void testInit() {
 		ahrs.zeroYaw();
 		ahrs.reset();
+		drive.setHeadingOffset(225);
+		// Vision.setRunAutoAlign(true);
 	}
 
 	/**
@@ -150,14 +202,47 @@ public class Robot extends IterativeRobot {
 	 */
 	public void testPeriodic() {
 
+		// System.out.println(drive.getHeading());
+
+		// drive.angleLock(joy.getAxisGreaterThan(0, 0.1),
+		// joy.getAxisGreaterThan(2, 0.1), currentAngle);
+		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
+		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
+		//
+		// if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)){
+		// Shooter.clearIntake();
+		// }
+		//
+		// if(joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side8)) {
+		// }
+		//
+		// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+		// Vision.setPegSide("left");
+		// System.out.println("left");
+		// } else if
+		// (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+		// Vision.setPegSide("middle");
+		// System.out.println("middle");
+		// } else if
+		// (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+		// Vision.setPegSide("right");
+		// System.out.println("right");
+
+		// run climber to wind up rope
 		if (joy.getButton(5)) {
+			Climber.setForwards(true);
 			Climber.climb(() -> !joy.getButton(5));
+		}
+
+		// run climber to unwind rope
+		if (joy.getButton(6)) {
+			Climber.setBackwards(true);
+			Climber.climb(() -> !joy.getButton(6));
 		}
 
 		if (joy.getButton(2)) {
 			povAngle = joy.getPOV(0);
 			// TODO This code looks like it wants to be written with trig
-			// -Sheldon
 			switch (povAngle) {
 			case 0:
 				Drive.drive(0, -1, 0, 0);
@@ -191,45 +276,49 @@ public class Robot extends IterativeRobot {
 			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
 		}
 
-		// TODO Needed?
-//		 Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
-		 
-		 if (joy.getButton(1)) {
-			 Shooter.startShoot(() -> !joy.getButton(1), ahrs);
-		 }
-//		Shooter.startShoot(() -> !joy.getButton(1), ahrs);
-//
-//		if (shooterLatch.buttonPress(joy.getButton(1)))
-//			Shooter.startShoot(() -> joy.getButton(1), ahrs);
+		if (joy.getSingleButtonPress(12)) {
+			drive.switchHeadless();
+			System.out.println("Headless: " + drive.getHeadless());
+		}
+		//
+		// // TODO Needed?
+		// // Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
+		//// Shooter.startShoot(() -> !joy.getButton(1), ahrs);
+		//
+		if (joy.getButton(1))
+			Shooter.startShoot(() -> !joy.getButton(1));
 
 		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
 
 		Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
 
-		// TODO Why is this code commented out??????? -Sheldon
-		// drive.angleLock(joy.getAxisGreaterThan(0, 0.1),
-		// joy.getAxisGreaterThan(2, 0.1), currentAngle);
+		//
+		// // TODO Why is this code commented out??????? -Sheldon
+		// // drive.angleLock(joy.getAxisGreaterThan(0, 0.1),
+		// // joy.getAxisGreaterThan(2, 0.1), currentAngle);
+		// //
 		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
-		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
-
-//		if (joy.getButton(3)) {
-//			Shooter.ballIntake(1, 1);
-//		} else {
-//			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
-//		}
-
-//		if 
-
-//		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-//			System.out.println("left");
-//			Vision.setPegSide("left");
-//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-//			System.out.println("middle");
-//			Vision.setPegSide("middle");
-//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-//			System.out.println("right");
-//			Vision.setPegSide("right");
-//		}
+		// // joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
+		//
+		// if (joy.getButton(3)) {
+		// Shooter.ballIntake(1, 1);
+		// }
+		//// else {
+		//// Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+		//// }
+		//
+		//// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+		//// System.out.println("left");
+		//// Vision.setPegSide("left");
+		//// } else if
+		// (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+		//// System.out.println("middle");
+		//// Vision.setPegSide("middle");
+		//// } else if
+		// (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+		//// System.out.println("right");
+		//// Vision.setPegSide("right");
+		//// }
 	}
 
 	public void disabledPeriodic() {
