@@ -18,7 +18,8 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.wpilibj.CameraServer;
-//TODO test switching camera 2
+
+//TODO fix switching between cameras
 public class Vision implements Runnable {
 	// code is basically clean!
 	// VISION II: ELECTRIC BOOGALOO
@@ -63,12 +64,17 @@ public class Vision implements Runnable {
 	// constructor
 	private static CvSink cvSink;
 	private static CvSource outputStream;
+	private static CvSink cvSink1;
+	private static CvSource outputStream1;
+	private static CvSink cvSink2;
+	private static CvSource outputStream2;
 
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
 	private static boolean isSwitched = false;
 	private static VideoSink server;
-	private static VideoSink gearCam;
+	private static VideoSink server1;
+	private static VideoSink server2;
 
 	private static UsbCamera camera0;
 	private static UsbCamera camera1;
@@ -76,42 +82,65 @@ public class Vision implements Runnable {
 
 	private static Drive drive;
 
-	private static CvSink cvSink2;
-	private static CvSource outputStream2;
+	private static Mat image = new Mat();
+
 	public Vision(Drive drive) {
 		/*
-		 * Creates 3 cameras for use. Because of bandwidth issues, only
-		 * 1 is always active (gear cam) and we switch beween the other two
-		 * (one for shooter one for main/climber) 
+		 * Creates 3 cameras for use. Because of bandwidth issues, only 1 is
+		 * always active (gear cam) and we switch beween the other two (one for
+		 * shooter one for main/climber)
 		 */
 		pegSide = "middle";
+		//gear cam
 		camera0 = new UsbCamera("USB Camera 0", 0);
+		//front & shooter cams
 		camera1 = new UsbCamera("USB Camera 1", 1);
 		camera2 = new UsbCamera("USB Camera 2", 2);
-		
+
 		camera0.setResolution(160, 120);
 		camera1.setResolution(160, 120);
 		camera2.setResolution(160, 120);
-		
+
 		CameraServer.getInstance().addCamera(camera0);
 		CameraServer.getInstance().addCamera(camera1);
 		CameraServer.getInstance().addCamera(camera2);
 		
-		cvSink2 = CameraServer.getInstance().getVideo(camera2);
-//		outputStream2 = new CvSource("Camera 2", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//		CameraServer.getInstance().addCamera(outputStream2);
-		server = CameraServer.getInstance().addServer("serve_USB Camera 2");
-		server.setSource(camera2);
+		cvSink1 = CameraServer.getInstance().getVideo(camera1);
+		outputStream1 = new CvSource("Camera 1 test", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+		CameraServer.getInstance().addCamera(outputStream1);
+		server1 = CameraServer.getInstance().addServer("serve_USB Camera 1");
+		server1.setSource(camera1);
 		
-		//sets up the gear camera
 		cvSink = CameraServer.getInstance().getVideo(camera0);
 		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
 		CameraServer.getInstance().addCamera(outputStream);
-		gearCam = CameraServer.getInstance().addServer("serve_Gear Cam");
-		//this line is giving us a too many simultaneous client streams error, dont know why
-		gearCam.setSource(outputStream);
-		
-//		cvSink.grabFrame(source);
+		server = CameraServer.getInstance().addServer("serve_Gear Cam");
+		server.setSource(camera0);
+
+////		cvSink = CameraServer.getInstance().getVideo(camera1);
+////		outputStream = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+////		CameraServer.getInstance().addCamera(outputStream);
+////		server = CameraServer.getInstance().addServer("serve_USB Camera 1");
+////		server.setSource(outputStream);
+//		
+//		cvSink2 = CameraServer.getInstance().getVideo(camera2);
+//		outputStream2 = new CvSource("Camera 2", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+//		CameraServer.getInstance().addCamera(outputStream2);
+////		outputStream = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+////		CameraServer.getInstance().addCamera(outputStream);
+//		server2 = CameraServer.getInstance().addServer("serve_USB Camera 2");
+//		server2.setSource(outputStream2);
+//
+//		// sets up the gear camera, keep uncommented for now 
+//		cvSink3 = CameraServer.getInstance().getVideo(camera0);
+//		outputStream3 = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+//		CameraServer.getInstance().addCamera(outputStream3);
+//		server3 = CameraServer.getInstance().addServer("serve_Gear Cam");
+//		// this line is giving us a too many simultaneous client streams error,
+//		// dont know why
+////		server2.setSource(outputStream);
+//
+//		// cvSink.grabFrame(source);
 	}
 
 	public static void visionInit(Drive drive) {
@@ -120,31 +149,42 @@ public class Vision implements Runnable {
 	}
 
 	public void run() {
-		
+
 		while (true) {
 			cvSink.grabFrame(source);
-//			server.setSource(outputStream2);
-//			gearCam.setSource(outputStream);
+			cvSink1.grabFrame(image);
 			if (runAutoAlign) {
-				System.out.println("running auto align");
+				System.out.println("Running Auto Align");
 				System.out.println(getDistance(cvSink, outputStream));
-				//autoAlign();
+				// autoAlign();
 				// //only for testing purposes; delete for competition
 				runAutoAlign = false;
+				try {
+					outputStream.putFrame(output);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-
+			else {
+				try {
+					outputStream.putFrame(source);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+				
 			try {
-				outputStream.putFrame(source);
+				outputStream1.putFrame(image);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
+
 	/**
-	 * AutoAligns the robot to the peg between the two reflective tapes
-	 * by using the distance from getDistance to move left or right a certain
-	 * amount and moving
+	 * AutoAligns the robot to the peg between the two reflective tapes by using
+	 * the distance from getDistance to move left or right a certain amount and
+	 * moving
 	 */
 	public void autoAlign() {
 
@@ -207,10 +247,10 @@ public class Vision implements Runnable {
 				// if the tapes are to the left of center, then move left
 				drive.mechDriveDistance(distance, 270);
 			}
-			if(i == 0){
+			if (i == 0) {
 				System.out.println("ERROR: AUTO ALIGN FAILED :( ");
 			}
-			
+
 		}
 
 		System.out.println(distance);
@@ -234,10 +274,10 @@ public class Vision implements Runnable {
 		almostMaxIndex = 0;
 		maxContours.clear();
 		contours.clear();
-		//TODO if any errors come up this grabFrame is a possible suspect
-		//we're keeping an eye on you cvSink.grabFrame(source);....
+		// TODO if any errors come up this grabFrame is a possible suspect
+		// we're keeping an eye on you cvSink.grabFrame(source);....
 		cvSink.grabFrame(source);
-		
+
 		/*
 		 * We need to find rectangles by shining a green light from our camera
 		 * onto the reflective tape next to the peg, so we grab an image and
@@ -327,19 +367,17 @@ public class Vision implements Runnable {
 
 	public static void setRunAutoAlign(boolean runAutoAlign) {
 		Vision.runAutoAlign = runAutoAlign;
-		System.out.println(runAutoAlign);
 	}// end setRunAutoAlign
 
+	//TODO delete if still unused
 	public static void switchCamera() {
 		isSwitched = true;
-		server = CameraServer.getInstance().getServer("serve_USB Camera 2");
-		server.setSource(camera1);
+		server1.setSource(outputStream2);
 	}
 
 	public static void switchBack() {
 		isSwitched = false;
-		server = CameraServer.getInstance().getServer("serve_USB Camera 2");
-		server.setSource(camera0);
+		server1.setSource(outputStream1);
 	}
 
 	public static boolean getIsSwitched() {

@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team2849.robot;
 
+import java.awt.datatransfer.SystemFlavorMap;
 import java.util.LinkedList;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -51,7 +52,6 @@ public class Robot extends IterativeRobot {
 
 	Latch b1 = new Latch();
 	Latch xboxLatch = new Latch();
-
 	Latch shooterLatch = new Latch();
 
 	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
@@ -131,13 +131,16 @@ public class Robot extends IterativeRobot {
 
 		Shooter.shoot(joy.getButton(1));
 
-		// if the camera is on shooter cam when shooting is done, switch it back
-		// to front cam
-		if (!Vision.getIsSwitched() && joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Trigger)) {
-			Vision.switchCamera();
-		} else if (Vision.getIsSwitched() && !joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Trigger)) {
-			Vision.switchBack();
-		}
+//		// if the camera is on shooter cam when shooting is done, switch it back
+//		// to front cam
+//		//This should be getButton, not getSingleButtonPress
+//		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
+//			System.out.println("switch camera");
+//			Vision.switchCamera();
+//		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
+//			System.out.println("switch back");
+//			Vision.switchBack();
+//		}
 
 		// Use slider axis to set Shooter power. Change range of slider from
 		// (-1)-(1) to (0)-(1)
