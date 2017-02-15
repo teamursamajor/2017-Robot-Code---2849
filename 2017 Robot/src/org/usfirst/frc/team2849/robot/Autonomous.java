@@ -18,7 +18,7 @@ public class Autonomous implements Runnable {
 			return;
 		}
 		previousMode = mode.get(0);
-		for (int i = 0; i<mode.size(); i++) {
+		for (int i = 0; i < mode.size(); i++) {
 			currentMode = mode.get(i);
 			switch (currentMode) {
 			case CROSS:
@@ -44,8 +44,9 @@ public class Autonomous implements Runnable {
 
 	public void cross(AutoMode previousMode) {
 		drive.driveDirection(drive.getHeading(), 3000);
-		drive.switchHeadless();
-		drive.driveDirection(-180, 500);
+		//headless is default true
+//		drive.switchHeadless();
+//		drive.driveDirection(-180, 500);
 	}
 
 	public void shoot(AutoMode previousMode) {
