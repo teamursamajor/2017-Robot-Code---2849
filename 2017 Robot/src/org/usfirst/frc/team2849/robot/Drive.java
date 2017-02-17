@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Spark;
 
+
 public class Drive implements Runnable {
 
 	// TODO NICK YOU SHOULD CLEAN UP THIS CODE THANKS
@@ -161,10 +162,10 @@ public class Drive implements Runnable {
 			// TODO had to change new double[numMotors] to 14 so we can use
 			// motor #s > 4
 			double[] wheelSpeeds = new double[14];
-			wheelSpeeds[0] = xIn + yIn + raxis;
-			wheelSpeeds[9] = -xIn + yIn - raxis;
-			wheelSpeeds[8] = -xIn + yIn + raxis;
-			wheelSpeeds[1] = xIn + yIn - raxis;
+			wheelSpeeds[0] = xIn + yIn + raxis;  
+			wheelSpeeds[9] = -xIn + yIn - raxis; 
+			wheelSpeeds[8] = -xIn + yIn + raxis; 
+			wheelSpeeds[1] = xIn + yIn - raxis; 
 
 			normalize(wheelSpeeds);
 			frontLeftMotor1.set(wheelSpeeds[0]);
@@ -321,7 +322,7 @@ public class Drive implements Runnable {
 	public static void drive(double xaxis, double yaxis, double zaxis, double angle) {
 		Drive.xaxis = xaxis;
 		Drive.yaxis = yaxis;
-		Drive.zaxis = zaxis;
+		Drive.zaxis = zaxis; 
 		Drive.angle = angle;
 	}
 

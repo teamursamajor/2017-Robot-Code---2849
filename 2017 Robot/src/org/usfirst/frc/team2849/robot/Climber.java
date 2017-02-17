@@ -39,7 +39,7 @@ public class Climber implements Runnable {
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				e.printStackTrace(); 
 			}
 		}
 		climber.set(0);

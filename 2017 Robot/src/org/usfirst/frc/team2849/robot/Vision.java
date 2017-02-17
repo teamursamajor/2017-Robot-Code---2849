@@ -69,8 +69,8 @@ public class Vision implements Runnable {
 	private static boolean isSwitched = false;
 	private static VideoSink server;
 
-	private static UsbCamera camera0;
-	private static UsbCamera camera1;
+//	private static UsbCamera camera0;
+//	private static UsbCamera camera1;
 	private static UsbCamera camera2;
 
 	private static Drive drive;
@@ -82,16 +82,16 @@ public class Vision implements Runnable {
 		 * (one for shooter one for main/climber) 
 		 */
 		pegSide = "middle";
-		camera0 = new UsbCamera("USB Camera 0", 0);
-		camera1 = new UsbCamera("USB Camera 1", 1);
-		camera2 = new UsbCamera("USB Camera 2", 2);
-		camera0.setResolution(160, 120);
-		camera1.setResolution(160, 120);
+//		camera0 = new UsbCamera("USB Camera 0", 0);
+//		camera1 = new UsbCamera("USB Camera 1", 1);
+		camera2 = new UsbCamera("USB Camera 0", 0);
+//		camera0.setResolution(160, 120);
+//		camera1.setResolution(160, 120);
 		camera2.setResolution(160, 120);
-		CameraServer.getInstance().addCamera(camera0);
-		CameraServer.getInstance().addCamera(camera1);
+//		CameraServer.getInstance().addCamera(camera0);
+//		CameraServer.getInstance().addCamera(camera1);
 		CameraServer.getInstance().addCamera(camera2);
-		server = CameraServer.getInstance().addServer("serve_USB Camera 0");
+//		server = CameraServer.getInstance().addServer("serve_USB Camera 0");
 //		server.setSource(camera0);
 		cvSink = CameraServer.getInstance().getVideo(camera2);
 		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
@@ -115,8 +115,8 @@ public class Vision implements Runnable {
 
 			cvSink.grabFrame(source);
 			
-			if (runAutoAlign) {
-				System.out.println("running auto align");
+			if (true) {
+//				System.out.println("running auto align");
 				System.out.println(getDistance(cvSink, outputStream));
 				//autoAlign();
 				// //only for testing purposes; delete for competition

@@ -194,6 +194,7 @@ public class Robot extends IterativeRobot {
 		ahrs.reset();
 		drive.setHeadingOffset(225);
 		// Vision.setRunAutoAlign(true);
+		
 	}
 
 	/**
@@ -285,8 +286,11 @@ public class Robot extends IterativeRobot {
 		// // Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
 		//// Shooter.startShoot(() -> !joy.getButton(1), ahrs);
 		//
-		if (joy.getButton(1))
+		
+	
+		if (joy.getButton(1)){
 			Shooter.startShoot(() -> !joy.getButton(1));
+	}
 
 		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
 
