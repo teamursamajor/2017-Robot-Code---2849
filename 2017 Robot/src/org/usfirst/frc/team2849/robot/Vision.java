@@ -83,6 +83,10 @@ public class Vision implements Runnable {
 	private static Drive drive;
 
 	private static Mat image = new Mat();
+	//may not need this if switching cameras works
+	private static Mat image2 = new Mat();
+
+	private static int cameraNumber = 1;
 
 	public Vision(Drive drive) {
 		/*
@@ -104,18 +108,24 @@ public class Vision implements Runnable {
 		CameraServer.getInstance().addCamera(camera0);
 		CameraServer.getInstance().addCamera(camera1);
 		CameraServer.getInstance().addCamera(camera2);
-		
+		// use one set of cvSink/outputStream and redefine in methods as necessary
 		cvSink1 = CameraServer.getInstance().getVideo(camera1);
-		outputStream1 = new CvSource("Camera 1 test", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-		CameraServer.getInstance().addCamera(outputStream1);
+		outputStream1 = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+		//i dont think we need this, camera worked without it
+//		CameraServer.getInstance().addCamera(outputStream1);
 		server1 = CameraServer.getInstance().addServer("serve_USB Camera 1");
-		server1.setSource(camera1);
+		server1.setSource(outputStream1);
 		
-		cvSink = CameraServer.getInstance().getVideo(camera0);
-		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-		CameraServer.getInstance().addCamera(outputStream);
-		server = CameraServer.getInstance().addServer("serve_Gear Cam");
-		server.setSource(camera0);
+//		cvSink2 = CameraServer.getInstance().getVideo(camera2);
+//		outputStream2 = new CvSource("Camera 2", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+//		server2 = CameraServer.getInstance().addServer("serve_USB Camera 2");
+//		server2.setSource(outputStream2);
+//		//I set source to outputStream instead of camera0
+//		cvSink = CameraServer.getInstance().getVideo(camera0);
+//		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+//		CameraServer.getInstance().addCamera(outputStream);
+//		server = CameraServer.getInstance().addServer("serve_Gear Cam");
+//		server.setSource(outputStream);
 
 ////		cvSink = CameraServer.getInstance().getVideo(camera1);
 ////		outputStream = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
@@ -149,10 +159,15 @@ public class Vision implements Runnable {
 	}
 
 	public void run() {
-
 		while (true) {
-			cvSink.grabFrame(source);
 			cvSink1.grabFrame(image);
+			//cvSink.grabFrame(source);
+//			isSwitched = true;
+//			if (isSwitched) {
+//				switchCamera();
+//			} else {
+//				switchBack();
+//			}
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
 				System.out.println(getDistance(cvSink, outputStream));
@@ -160,21 +175,27 @@ public class Vision implements Runnable {
 				// //only for testing purposes; delete for competition
 				runAutoAlign = false;
 				try {
-					outputStream.putFrame(output);
+				//	outputStream.putFrame(output);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 			else {
 				try {
-					outputStream.putFrame(source);
+				//	outputStream.putFrame(source);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 				
 			try {
-				outputStream1.putFrame(image);
+				if(cameraNumber == 1){
+					outputStream1.putFrame(image);
+					System.out.println("camera 1 put");
+				} else if(cameraNumber == 2){
+					outputStream1.putFrame(image);
+					System.out.println("camera 2 put");
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -371,13 +392,17 @@ public class Vision implements Runnable {
 
 	//TODO delete if still unused
 	public static void switchCamera() {
+		cvSink1 = CameraServer.getInstance().getVideo(camera2);
+		System.out.println("camera 2");
+		cameraNumber = 2;
 		isSwitched = true;
-		server1.setSource(outputStream2);
 	}
 
 	public static void switchBack() {
+		cvSink1 = CameraServer.getInstance().getVideo(camera1);
+		System.out.println("camera 1");
+		cameraNumber = 1;
 		isSwitched = false;
-		server1.setSource(outputStream1);
 	}
 
 	public static boolean getIsSwitched() {
