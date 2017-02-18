@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.Spark;
 
 public class Shooter implements Runnable {
 
-	private static Spark leftShooter = new Spark(6);
-	private static Spark rightShooter = new Spark(7);
+	private static Spark leftShooter = new Spark(7);
+	private static Spark rightShooter = new Spark(6);
 
 	private static Spark intake = new Spark(3);
 
@@ -184,8 +184,8 @@ public class Shooter implements Runnable {
 	/**
 	 * Clears the intake in case of a ball problem.
 	 * 
-	 * @param The
-	 *            joystick
+	 * @param The joystick
+	 *            
 	 */
 	public static void clearIntake(LogitechFlightStick joy) {
 

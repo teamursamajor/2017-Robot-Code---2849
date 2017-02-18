@@ -12,7 +12,7 @@ public class Climber implements Runnable {
 	
 	private static EndCondition ending = null;
 	
-	private static Spark climber = new Spark(0);
+	private static Spark climber = new Spark(2);
 	
 	private static boolean forwards = false;
 	private static boolean backwards = false;
