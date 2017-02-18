@@ -53,7 +53,7 @@ public class Vision implements Runnable {
 	private static Mat temp = new Mat();
 
 	// String for the peg side the robot is going to auto align to
-	private static String pegSide = "middle";
+	private static String pegSide = "right";
 
 	private static CvSink cvSink;
 	private static CvSource outputStream;
@@ -79,7 +79,9 @@ public class Vision implements Runnable {
 
 	public Vision(Drive drive) {
 		// default peg side to middle
-		pegSide = "middle";
+		pegSide = "right";
+
+		Vision.drive = drive;
 
 		// gear camera
 		camera0 = new UsbCamera("USB Camera 0", 0);
@@ -106,17 +108,20 @@ public class Vision implements Runnable {
 			cvSink.grabFrame(source);
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
-				System.out.println(getDistance(cvSink, outputStream));
-				// autoAlign();
+				// TODO when we run autoAlign we get too many simultaneous
+				// client streams, but not when we run getDistance
+				// try commenting out all the drive code and see what happens?
+				// System.out.println(getDistance(cvSink, outputStream));
+				autoAlign();
 				runAutoAlign = false;
 			} else {
 				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 			}
 
+			// TODO test and see if code works without this
+			// we have a putVideo line 98, do we need putFrame?
 			try {
-				if (cameraNumber == 1) {
-					outputStream.putFrame(source);
-				} else if (cameraNumber == 0) {
+				if (cameraNumber == 0) {
 					outputStream.putFrame(output);
 				} else {
 					outputStream.putFrame(source);
@@ -141,15 +146,15 @@ public class Vision implements Runnable {
 		switch (pegSide) {
 		case "left":
 			// turns the robot to angle 240 when the left button is pressed
-			drive.driveAngle(240.0);
+			drive.turnToAngle(150.0);
 			break;
 		case "right":
 			// turns the robot to angle 120 when the right button is pressed
-			drive.driveAngle(120.0);
+			drive.turnToAngle(210.0);
 			break;
 		case "middle":
 			// turns the robot to angle 180 when the middle button is pressed
-			drive.driveAngle(180.0);
+			drive.turnToAngle(180.0);
 		default:
 			break;
 		}
@@ -157,14 +162,18 @@ public class Vision implements Runnable {
 
 		// TODO Why is this commented out? Do we need it?
 		// returns distance that the robot needs to move
-		// distance = getDistance(cvSink, outputStream);
+		distance = getDistance(cvSink, outputStream);
 
 		if (distance > 0) {
 			// if the tapes are to the right of the center, then move right
-			drive.mechDriveDistance(distance, 90);
+			// the robot wasn't moving with mechDriveDistance, so we want to try
+			// driveDistance to see if that fixes it
+			// drive.mechDriveDistance(distance, 270);
+			drive.driveDirection(270, 2000);
 		} else {
 			// if the tapes are to the left of center, then move left
-			drive.mechDriveDistance(distance, 270);
+			// drive.mechDriveDistance(distance, 90);
+			drive.driveDirection(90, 2000);
 		}
 
 		/*
@@ -175,20 +184,22 @@ public class Vision implements Runnable {
 		if (Math.abs(distance) < 0.0825) {
 			// move forward
 			drive.mechDriveDistance(1, 180);
-		}
-
-		for (int i = 3; Math.abs(distance) > 0.08255 && i > 0; i--) {
-			// TODO Why is this commented out? Do we need it?
-			// distance = getDistance(cvSink1, outputStream1);
-			if (distance > 0) {
-				// if the tapes are to the right of the center, then move right
-				drive.mechDriveDistance(distance, 90);
-			} else {
-				// if the tapes are to the left of center, then move left
-				drive.mechDriveDistance(distance, 270);
-			}
-			if (i == 0) {
-				System.out.println("ERROR: AUTO ALIGN FAILED :( ");
+		} else {
+			for (int i = 3; Math.abs(distance) > 0.08255 && i > 0; i--) {
+				distance = getDistance(cvSink, outputStream);
+				if (distance > 0) {
+					// if the tapes are to the right of the center, then move
+					// right
+					// drive.mechDriveDistance(distance, 270);
+					drive.driveDirection(270, 2000);
+				} else {
+					// if the tapes are to the left of center, then move left
+					// drive.mechDriveDistance(distance, 90);
+					drive.driveDirection(90, 2000);
+				}
+				if (i == 0) {
+					System.out.println("ERROR: AUTO ALIGN FAILED :( ");
+				}
 			}
 
 		}
@@ -207,7 +218,7 @@ public class Vision implements Runnable {
 	 * @param outputStream
 	 * @return double distance
 	 */
-	public static double getDistance(CvSink cvSink1, CvSource outputStream1) {
+	public static double getDistance(CvSink cvSink, CvSource outputStream) {
 		// clear stuff
 		maxArea = 0;
 		almostMaxArea = 0;
@@ -216,7 +227,7 @@ public class Vision implements Runnable {
 		maxContours.clear();
 		contours.clear();
 
-		cvSink1.grabFrame(source);
+		cvSink.grabFrame(source);
 
 		// changes image from BGR to HSV (hue, saturation value)
 		Imgproc.cvtColor(source, temp, Imgproc.COLOR_BGR2HSV);
@@ -247,7 +258,6 @@ public class Vision implements Runnable {
 
 		// if there are no contours, return nothing
 		if (contours.size() == 0) {
-			// outputStream.putFrame(output);
 			return Double.NaN;
 		}
 
@@ -294,7 +304,7 @@ public class Vision implements Runnable {
 
 	public static void setRunAutoAlign(boolean runAutoAlign) {
 		Vision.runAutoAlign = runAutoAlign;
-		switchCamera(0);
+		// switchCamera(0);
 	}
 
 	public static void switchCamera(int cameraNum) {

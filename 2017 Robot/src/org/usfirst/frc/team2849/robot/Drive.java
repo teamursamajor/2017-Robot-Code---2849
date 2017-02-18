@@ -4,7 +4,6 @@ import com.kauailabs.navx.frc.AHRS;
 //every program can be condensed into a single line of code that doesn't work
 import edu.wpi.first.wpilibj.Spark;
 
-
 public class Drive implements Runnable {
 
 	// TODO NICK YOU SHOULD CLEAN UP THIS CODE THANKS
@@ -36,7 +35,7 @@ public class Drive implements Runnable {
 	private Boolean threadLock = false;
 
 	private boolean headless = true;
-	
+
 	private double headingOffset = 0.0;
 
 	/**
@@ -162,10 +161,10 @@ public class Drive implements Runnable {
 			// TODO had to change new double[numMotors] to 14 so we can use
 			// motor #s > 4
 			double[] wheelSpeeds = new double[14];
-			wheelSpeeds[0] = xIn + yIn + raxis;  
-			wheelSpeeds[9] = -xIn + yIn - raxis; 
-			wheelSpeeds[8] = -xIn + yIn + raxis; 
-			wheelSpeeds[1] = xIn + yIn - raxis; 
+			wheelSpeeds[0] = xIn + yIn + raxis;
+			wheelSpeeds[9] = -xIn + yIn - raxis;
+			wheelSpeeds[8] = -xIn + yIn + raxis;
+			wheelSpeeds[1] = xIn + yIn - raxis;
 
 			normalize(wheelSpeeds);
 			frontLeftMotor1.set(wheelSpeeds[0]);
@@ -318,7 +317,7 @@ public class Drive implements Runnable {
 	public static void drive(double xaxis, double yaxis, double zaxis, double angle) {
 		Drive.xaxis = xaxis;
 		Drive.yaxis = yaxis;
-		Drive.zaxis = zaxis; 
+		Drive.zaxis = zaxis;
 		Drive.angle = angle;
 	}
 
@@ -337,32 +336,45 @@ public class Drive implements Runnable {
 		}
 		return angle;
 	}
-	private void turn (double degrees){
+
+	private void turn(double degrees) {
 		double heading = getHeading();
-		while (heading > (degrees + 0.5)|| heading < (degrees - 0.5)){
-		  if (heading < degrees){
-			  drive(0.0,0.0,-0.3,0);
-		  }
-		  else if (heading > degrees){
-			  drive(0.0,0.0,0.3,0);
-		  }
-		  heading = getHeading();
+		while (heading > (degrees + 0.5) || heading < (degrees - 0.5)) {
+			if (heading < degrees) {
+				drive(0.0, 0.0, -0.3, 0);
+			} else if (heading > degrees) {
+				drive(0.0, 0.0, 0.3, 0);
+			}
+			heading = getHeading();
 		}
-	}   
-    public void turnAngle(double degrees){
-    	double heading = getHeading();
-    double desired;
-        degrees = degrees % 360;
-    	desired = heading + degrees; 
-    	  if (desired < 0){
-    		  desired = 360 + desired;
-    	  }
-    	  else if (desired > 360){
-    		  desired = desired - 360;
-    	  }
-    	  turn (desired);
-    }
-    
+	}
+
+	public void turnAngle(double degrees) {
+		double heading = getHeading();
+		double desired;
+		degrees = degrees % 360;
+		desired = heading + degrees;
+		if (desired < 0) {
+			desired = 360 + desired;
+		} else if (desired > 360) {
+			desired = desired - 360;
+		}
+		turn(desired);
+	}
+	
+	public void turnToAngle(double degrees) {
+		double heading = 0;
+		double desired;
+		degrees = degrees % 360;
+		desired = heading + degrees;
+		if (desired < 0) {
+			desired = 360 + desired;
+		} else if (desired > 360) {
+			desired = desired - 360;
+		}
+		turn(desired);
+	}
+
 	public void angleLock(double xaxis, double zaxis, double currentAngle) {
 		if (xaxis > 0 && zaxis == 0) {
 			driveAngle(currentAngle);
@@ -372,11 +384,11 @@ public class Drive implements Runnable {
 	public void switchHeadless() {
 		this.headless = !this.headless;
 	}
-	
+
 	public boolean getHeadless() {
 		return this.headless;
 	}
-	
+
 	public void setHeadingOffset(double offset) {
 		this.headingOffset = offset;
 	}

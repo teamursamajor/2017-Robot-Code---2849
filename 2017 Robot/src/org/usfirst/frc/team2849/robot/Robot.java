@@ -109,8 +109,8 @@ public class Robot extends IterativeRobot {
 		ahrs.zeroYaw();
 		LinkedList<AutoMode> modes = new LinkedList<AutoMode>();
 		modes.add(AutoMode.CROSS);
-		Autonomous.auto(() -> !this.isAutonomous(), modes, StartPosition.CENTER, drive);
-		drive.setHeadingOffset(45);
+		Autonomous.auto(() -> !this.isAutonomous(), modes, StartPosition.RIGHT, drive);
+		drive.setHeadingOffset(0);
 
 	}
 
@@ -135,9 +135,10 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
 		try {
-			if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)) {
-				Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
-			}
+			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
+			// {
+			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
+			// }
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
@@ -146,14 +147,13 @@ public class Robot extends IterativeRobot {
 			Shooter.startShoot(() -> !joy.getButton(1));
 		}
 
-
 		/*
 		 * switch camera from gear to shooter when trigger is pressed and then
 		 * switch back to gear when trigger is released
 		 * 
 		 * This should be getButton, not getSingleButtonPress
 		 */
-		
+
 		// if the camera is on shooter cam when shooting is done, switch it back
 		// to front cam
 
@@ -168,14 +168,24 @@ public class Robot extends IterativeRobot {
 		// TODO add a y deadzone for anglelock
 		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
 
+		if (joy.getButton(3)) {
+			Shooter.ballIntake(1.0);
+		} else{
+			Shooter.ballIntake(0.0);
+		}
+		
+		// else {
+		// Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+		// }
+
 		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
 		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
-
+		//
 		// if (joy.getButton(LogitechFlightStick.BUTTON_Side8)) {
 		// Shooter.clearIntake(joy);
 		// }
-		
-		//run auto align for the three different gear pegs
+
+		// run auto align for the three different gear pegs
 
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
 			Vision.setPegSide("left");
@@ -188,6 +198,7 @@ public class Robot extends IterativeRobot {
 			Vision.setRunAutoAlign(true);
 		}
 	}
+
 	public void testInit() {
 		ahrs.zeroYaw();
 		ahrs.reset();
@@ -214,10 +225,10 @@ public class Robot extends IterativeRobot {
 
 		if (joy.getButton(2)) {
 			povAngle = joy.getPOV(0);
-			if( povAngle == -1){
+			if (povAngle == -1) {
 				Drive.drive(0, 0, 0, 0);
-			}else{
-				Drive.drive(Math.sin(povAngle*Math.PI/180), -Math.cos(povAngle*Math.PI/180), 0, 0);
+			} else {
+				Drive.drive(Math.sin(povAngle * Math.PI / 180), -Math.cos(povAngle * Math.PI / 180), 0, 0);
 			}
 		} else {
 			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
@@ -258,12 +269,12 @@ public class Robot extends IterativeRobot {
 
 		}
 
-		if (joy.getButton(1)){
+		if (joy.getButton(1)) {
 			Shooter.startShoot(() -> !joy.getButton(1));
-		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
+			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
 
-		Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
-		
+			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
+
 		}
 	}
 
