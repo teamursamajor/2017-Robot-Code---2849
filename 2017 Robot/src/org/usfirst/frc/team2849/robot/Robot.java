@@ -46,7 +46,6 @@ public class Robot extends IterativeRobot {
 //	public static XboxController xbox = new XboxController(0);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
-//	private Vision vision;
 	private Drive drive;
 	private int povAngle = 0;
 	private double currentAngle = 0.0;
@@ -145,13 +144,13 @@ public class Robot extends IterativeRobot {
 		// if the camera is on shooter cam when shooting is done, switch it back
 		// to front cam
 		//This should be getButton, not getSingleButtonPress
-//		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
-//			System.out.println("switch to shooter camera");
-//			Vision.switchCamera(2);
-//		}else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
-//			System.out.println("switch to front cam");
-//			Vision.switchCamera(1);
-//		}
+		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
+			System.out.println("switch to shooter camera");
+			Vision.switchCamera(1);
+		}else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
+			System.out.println("switch to front cam");
+			Vision.switchCamera(0);
+		}
 
 		// Use slider axis to set Shooter power. Change range of slider from
 		// (-1)-(1) to (0)-(1)

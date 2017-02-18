@@ -76,7 +76,10 @@ public class Vision implements Runnable {
 	
 	private static VideoSink server1;
 //	private static VideoSink server2;
-	
+
+
+//	private static UsbCamera camera0;
+//	private static UsbCamera camera1;
 //	private static UsbCamera camera2;
 	private static UsbCamera camera0;
 	private static UsbCamera camera1;
@@ -87,15 +90,9 @@ public class Vision implements Runnable {
 	//may not need this if switching cameras works
 //	private static Mat image2 = new Mat();
 
-	private static int cameraNumber = 1;
+	private static int cameraNumber = 0;
 
 	public Vision(Drive drive) {
-//		/*
-//		 * Creates 3 cameras for use. Because of bandwidth issues, only 1 is
-//		 * always active (gear cam) and we switch beween the other two (one for
-//		 * shooter one for main/climber)
-//		 */
-
 		/*
 		 * Creates 3 cameras for use. Because of bandwidth issues, only 1 is
 		 * always active (gear cam) and we switch beween the other two (one for
@@ -104,25 +101,24 @@ public class Vision implements Runnable {
 		pegSide = "middle";
 		//gear camera
 		camera0 = new UsbCamera("USB Camera 0", 0);
-		//front camera
-		camera1 = new UsbCamera("USB Camera 1", 1);
 		//shooter camera
-		camera2 = new UsbCamera("USB Camera 2", 1);
-
-		camera0.setResolution(160, 120);
-		camera1.setResolution(160, 120);
-		camera2.setResolution(160, 120);
+		camera1 = new UsbCamera("USB Camera 1", 1);
+		
+		
 
 		CameraServer.getInstance().addCamera(camera0);
 		CameraServer.getInstance().addCamera(camera1);
-		CameraServer.getInstance().addCamera(camera2);
-		// use one set of cvSink/outputStream and redefine in methods as necessary
+		
+		camera0.setResolution(160, 120);
+		camera1.setResolution(160, 120);
+				
 		cvSink1 = CameraServer.getInstance().getVideo(camera1);
-		outputStream1 = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
+		outputStream1 = CameraServer.getInstance().putVideo("Camera 1", 160, 120);
+//		outputStream1 = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
 		//i dont think we need this, camera worked without it
-		CameraServer.getInstance().addCamera(outputStream1);
-		server1 = CameraServer.getInstance().addServer("serve_USB Camera 1");
-		server1.setSource(outputStream1);
+//		CameraServer.getInstance().addCamera(outputStream1);
+//		server1 = CameraServer.getInstance().addServer("serve_USB Camera 1");
+//		server1.setSource(outputStream1);
 	}
 
 	public static void visionInit(Drive drive) {
@@ -135,11 +131,12 @@ public class Vision implements Runnable {
 			
 //			System.out.println("running auto align");
 			cvSink1.grabFrame(source);
-//			cvSink.grabFrame(source);
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
 				System.out.println(getDistance(cvSink1, outputStream1));
 //				 autoAlign();
+//				switchCamera(1);
+				runAutoAlign = false;
 			} else{
 				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 			}
@@ -150,19 +147,14 @@ public class Vision implements Runnable {
 //					System.out.println("camera 1 put");
 				} else if(cameraNumber == 0){
 					outputStream1.putFrame(output);
-					System.out.println("gear cam put");
-				} else if(cameraNumber == 2){
-					outputStream1.putFrame(source);
-					System.out.println("shooter cam put");
+//					System.out.println("gear cam put");
 				} else{
 					outputStream1.putFrame(source);
-					System.out.println("default to front cam");
+//					System.out.println("default to shooter cam");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
-//			System.out.println("after put frames");
 		}
 	}
 
@@ -359,17 +351,10 @@ public class Vision implements Runnable {
 		
 		switch(cameraNum){
 		case 1:
-			//front camera
+			//shooter camera
 			cvSink1 = CameraServer.getInstance().getVideo(camera1);
 			System.out.println("camera 1");
 			cameraNumber = 1;
-			isSwitched = false;
-			break;
-		case 2:
-			//shooter camera
-			cvSink1 = CameraServer.getInstance().getVideo(camera2);
-			System.out.println("camera 2");
-			cameraNumber = 2;
 			isSwitched = true;
 			break;
 		case 0:
@@ -377,6 +362,7 @@ public class Vision implements Runnable {
 			cvSink1 = CameraServer.getInstance().getVideo(camera0);
 			System.out.println("gear cam");
 			cameraNumber = 0;
+			isSwitched = false;
 			break;
 		default:
 			cvSink1 = CameraServer.getInstance().getVideo(camera1);
