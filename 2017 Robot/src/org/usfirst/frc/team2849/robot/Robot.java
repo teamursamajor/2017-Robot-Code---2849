@@ -42,7 +42,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
-	// public static XboxController xbox = new XboxController(0);
+//	public static XboxController xbox = new XboxController(0);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 //	private Vision vision;
@@ -135,15 +135,15 @@ public class Robot extends IterativeRobot {
 
 		Shooter.shoot(joy.getButton(1));
 
-//		// if the camera is on shooter cam when shooting is done, switch it back
-//		// to front cam
-//		//This should be getButton, not getSingleButtonPress
+		// if the camera is on shooter cam when shooting is done, switch it back
+		// to front cam
+		//This should be getButton, not getSingleButtonPress
 //		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
-//			System.out.println("switch camera");
-//			Vision.switchCamera();
-//		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
-//			System.out.println("switch back");
-//			Vision.switchBack();
+//			System.out.println("switch to shooter camera");
+//			Vision.switchCamera(2);
+//		}else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
+//			System.out.println("switch to front cam");
+//			Vision.switchCamera(1);
 //		}
 
 		// Use slider axis to set Shooter power. Change range of slider from
@@ -162,6 +162,7 @@ public class Robot extends IterativeRobot {
 		//
 
 //selecting peg to auto align to and running auto align
+<<<<<<< HEAD
 //		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
 //			Vision.setPegSide("left");
 //			Vision.setRunAutoAlign(true);
@@ -172,6 +173,18 @@ public class Robot extends IterativeRobot {
 //			Vision.setPegSide("right");
 //			Vision.setRunAutoAlign(true);
 //		}
+=======
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+			Vision.setPegSide("left");
+			Vision.setRunAutoAlign(true);
+		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+			Vision.setPegSide("middle");
+			Vision.setRunAutoAlign(true);
+		}else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+			Vision.setPegSide("right");
+			Vision.setRunAutoAlign(true);
+		}
+>>>>>>> 8616735bb72989aaf662e37adc46e77c1170dfe4
 
 		// TODO Is this code needed?
 		// Drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(),
