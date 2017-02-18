@@ -337,7 +337,32 @@ public class Drive implements Runnable {
 		}
 		return angle;
 	}
-
+	private void turn (double degrees){
+		double heading = getHeading();
+		while (heading > (degrees + 0.5)|| heading < (degrees - 0.5)){
+		  if (heading < degrees){
+			  drive(0.0,0.0,-0.3,0);
+		  }
+		  else if (heading > degrees){
+			  drive(0.0,0.0,0.3,0);
+		  }
+		  heading = getHeading();
+		}
+	}   
+    public void turnAngle(double degrees){
+    	double heading = getHeading();
+    double desired;
+        degrees = degrees % 360;
+    	desired = heading + degrees; 
+    	  if (desired < 0){
+    		  desired = 360 + desired;
+    	  }
+    	  else if (desired > 360){
+    		  desired = desired - 360;
+    	  }
+    	  turn (desired);
+    }
+    
 	public void angleLock(double xaxis, double zaxis, double currentAngle) {
 		if (xaxis > 0 && zaxis == 0) {
 			driveAngle(currentAngle);

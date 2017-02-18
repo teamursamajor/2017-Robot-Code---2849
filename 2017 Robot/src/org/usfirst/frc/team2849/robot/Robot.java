@@ -68,11 +68,7 @@ public class Robot extends IterativeRobot {
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
-		/*
-		 * Front Left motor: 2 Back Left motor: 8 Front Right motor: 1 Back
-		 * Right motor: 9
-		 * NOTE: Jamie said 0, 1, 8, 9 for drive
-		 * 
+		/* 
 		 * RTFD the correct order is Front Left, Back Left, Front Right, Back Right
 		 * It's in the documentation, read it for once
 		 * 
@@ -85,7 +81,7 @@ public class Robot extends IterativeRobot {
 		ahrs.zeroYaw();
 
 		// creates camera feeds
-//		Vision.visionInit(drive);
+		Vision.visionInit(drive);
 
 	}
 

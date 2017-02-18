@@ -95,24 +95,6 @@ public class Vision implements Runnable {
 //		 * always active (gear cam) and we switch beween the other two (one for
 //		 * shooter one for main/climber)
 //		 */
-//		pegSide = "middle";
-////		camera0 = new UsbCamera("USB Camera 0", 0);
-////		camera1 = new UsbCamera("USB Camera 1", 1);
-//		camera2 = new UsbCamera("USB Camera 0", 0);
-////		camera0.setResolution(160, 120);
-////		camera1.setResolution(160, 120);
-//		camera2.setResolution(160, 120);
-////		CameraServer.getInstance().addCamera(camera0);
-////		CameraServer.getInstance().addCamera(camera1);
-//		CameraServer.getInstance().addCamera(camera2);
-////		server = CameraServer.getInstance().addServer("serve_USB Camera 0");
-////		server.setSource(camera0);
-//		cvSink = CameraServer.getInstance().getVideo(camera2);
-//		//gear cam
-//		camera0 = new UsbCamera("USB Camera 0", 0);
-//		//front & shooter cams
-//		camera1 = new UsbCamera("USB Camera 1", 1);
-//		camera2 = new UsbCamera("USB Camera 2", 2);
 
 		/*
 		 * Creates 3 cameras for use. Because of bandwidth issues, only 1 is
@@ -120,93 +102,27 @@ public class Vision implements Runnable {
 		 * shooter one for main/climber)
 		 */
 		pegSide = "middle";
-		//gear cam
+		//gear camera
 		camera0 = new UsbCamera("USB Camera 0", 0);
-		//front & shooter cams
+		//front camera
 		camera1 = new UsbCamera("USB Camera 1", 1);
+		//shooter camera
+		camera2 = new UsbCamera("USB Camera 2", 1);
 
 		camera0.setResolution(160, 120);
 		camera1.setResolution(160, 120);
+		camera2.setResolution(160, 120);
 
 		CameraServer.getInstance().addCamera(camera0);
 		CameraServer.getInstance().addCamera(camera1);
+		CameraServer.getInstance().addCamera(camera2);
 		// use one set of cvSink/outputStream and redefine in methods as necessary
 		cvSink1 = CameraServer.getInstance().getVideo(camera1);
 		outputStream1 = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
 		//i dont think we need this, camera worked without it
-//		CameraServer.getInstance().addCamera(outputStream1);
+		CameraServer.getInstance().addCamera(outputStream1);
 		server1 = CameraServer.getInstance().addServer("serve_USB Camera 1");
 		server1.setSource(outputStream1);
-		
-//		cvSink2 = CameraServer.getInstance().getVideo(camera2);
-//		outputStream2 = new CvSource("Camera 2", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//		server2 = CameraServer.getInstance().addServer("serve_USB Camera 2");
-//		server2.setSource(outputStream2);
-//		//I set source to outputStream instead of camera0
-//		cvSink = CameraServer.getInstance().getVideo(camera0);
-//		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-////		CameraServer.getInstance().addCamera(outputStream);
-//		server = CameraServer.getInstance().addServer("serve_Gear Cam");
-//		server.setSource(outputStream);
-
-////		cvSink = CameraServer.getInstance().getVideo(camera1);
-////		outputStream = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-////		CameraServer.getInstance().addCamera(outputStream);
-////		server = CameraServer.getInstance().addServer("serve_USB Camera 1");
-////		server.setSource(outputStream);
-//		
-//		cvSink2 = CameraServer.getInstance().getVideo(camera2);
-//		outputStream2 = new CvSource("Camera 2", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//		CameraServer.getInstance().addCamera(outputStream2);
-////		outputStream = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-////		CameraServer.getInstance().addCamera(outputStream);
-//		server2 = CameraServer.getInstance().addServer("serve_USB Camera 2");
-//		server2.setSource(outputStream2);
-//
-//		camera0.setResolution(160, 120);
-//		camera1.setResolution(160, 120);
-//		camera2.setResolution(160, 120);
-//
-//		CameraServer.getInstance().addCamera(camera0);
-//		CameraServer.getInstance().addCamera(camera1);
-//		CameraServer.getInstance().addCamera(camera2);
-//		
-//		cvSink1 = CameraServer.getInstance().getVideo(camera1);
-//		outputStream1 = new CvSource("Camera 1 test", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//		CameraServer.getInstance().addCamera(outputStream1);
-//		server1 = CameraServer.getInstance().addServer("serve_USB Camera 1");
-//		server1.setSource(camera1);
-//		
-//		cvSink = CameraServer.getInstance().getVideo(camera0);
-//		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//		CameraServer.getInstance().addCamera(outputStream);
-//		server = CameraServer.getInstance().addServer("serve_Gear Cam");
-//		server.setSource(camera0);
-//
-//////		cvSink = CameraServer.getInstance().getVideo(camera1);
-//////		outputStream = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//////		CameraServer.getInstance().addCamera(outputStream);
-//////		server = CameraServer.getInstance().addServer("serve_USB Camera 1");
-//////		server.setSource(outputStream);
-////		
-////		cvSink2 = CameraServer.getInstance().getVideo(camera2);
-////		outputStream2 = new CvSource("Camera 2", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-////		CameraServer.getInstance().addCamera(outputStream2);
-//////		outputStream = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//////		CameraServer.getInstance().addCamera(outputStream);
-////		server2 = CameraServer.getInstance().addServer("serve_USB Camera 2");
-////		server2.setSource(outputStream2);
-////
-////		// sets up the gear camera, keep uncommented for now 
-////		cvSink3 = CameraServer.getInstance().getVideo(camera0);
-////		outputStream3 = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-////		CameraServer.getInstance().addCamera(outputStream3);
-////		server3 = CameraServer.getInstance().addServer("serve_Gear Cam");
-////		// this line is giving us a too many simultaneous client streams error,
-////		// dont know why
-//////		server2.setSource(outputStream);
-////
-////		// cvSink.grabFrame(source);
 	}
 
 	public static void visionInit(Drive drive) {
@@ -217,41 +133,27 @@ public class Vision implements Runnable {
 	public void run() {
 		while (true) {
 			
-			if (true) {
-//				System.out.println("running auto align");
-//			System.out.println("while loop at top of run");
+//			System.out.println("running auto align");
 			cvSink1.grabFrame(source);
-//			System.out.println("after grab frame");
 //			cvSink.grabFrame(source);
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
 				System.out.println(getDistance(cvSink1, outputStream1));
 //				 autoAlign();
-				try {
-//					Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
-					outputStream1.putFrame(output);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				runAutoAlign = false;
-				switchCamera(1);
+			} else{
+				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 			}
-			else {
-//				System.out.println("before else statement");
-//				try {
-//					outputStream1.putFrame(source);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-			}
-//			System.out.println("after if statement");
+			
 			try {
 				if(cameraNumber == 1){
 					outputStream1.putFrame(source);
 //					System.out.println("camera 1 put");
 				} else if(cameraNumber == 0){
-					outputStream1.putFrame(source);
+					outputStream1.putFrame(output);
 					System.out.println("gear cam put");
+				} else if(cameraNumber == 2){
+					outputStream1.putFrame(source);
+					System.out.println("shooter cam put");
 				} else{
 					outputStream1.putFrame(source);
 					System.out.println("default to front cam");
@@ -259,7 +161,7 @@ public class Vision implements Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			}
+			
 //			System.out.println("after put frames");
 		}
 	}
@@ -462,6 +364,13 @@ public class Vision implements Runnable {
 			System.out.println("camera 1");
 			cameraNumber = 1;
 			isSwitched = false;
+			break;
+		case 2:
+			//shooter camera
+			cvSink1 = CameraServer.getInstance().getVideo(camera2);
+			System.out.println("camera 2");
+			cameraNumber = 2;
+			isSwitched = true;
 			break;
 		case 0:
 			//gear camera
