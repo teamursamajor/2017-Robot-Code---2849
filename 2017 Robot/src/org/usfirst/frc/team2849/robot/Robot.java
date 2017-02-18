@@ -46,10 +46,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
-<<<<<<< HEAD
+
 	// public static XboxController xbox = new XboxController(0);
-=======
->>>>>>> 138a2dad256618ccf790a47282c7aec7805fbd47
+
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	private Drive drive;
@@ -65,13 +64,11 @@ public class Robot extends IterativeRobot {
 	private final int BACK_LEFT_DRIVE = 9;
 	private final int FRONT_RIGHT_DRIVE = 1;
 	private final int BACK_RIGHT_DRIVE = 8;
-<<<<<<< HEAD
+
 	private AutoSelector autoSelector;
 
 	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
-=======
->>>>>>> 138a2dad256618ccf790a47282c7aec7805fbd47
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
@@ -148,7 +145,7 @@ public class Robot extends IterativeRobot {
 		if (joy.getButton(1)) {
 			Shooter.startShoot(() -> !joy.getButton(1));
 		}
-<<<<<<< HEAD
+
 
 		/*
 		 * switch camera from gear to shooter when trigger is pressed and then
@@ -156,11 +153,10 @@ public class Robot extends IterativeRobot {
 		 * 
 		 * This should be getButton, not getSingleButtonPress
 		 */
-=======
 		
 		// if the camera is on shooter cam when shooting is done, switch it back
 		// to front cam
->>>>>>> 138a2dad256618ccf790a47282c7aec7805fbd47
+
 		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
 			System.out.println("switch to shooter camera");
 			Vision.switchCamera(1);
@@ -171,7 +167,7 @@ public class Robot extends IterativeRobot {
 		currentAngle = drive.getHeading();
 		// TODO add a y deadzone for anglelock
 		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
-<<<<<<< HEAD
+
 		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
 		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
 
@@ -180,8 +176,7 @@ public class Robot extends IterativeRobot {
 		// }
 		
 		//run auto align for the three different gear pegs
-=======
->>>>>>> 138a2dad256618ccf790a47282c7aec7805fbd47
+
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
 			Vision.setPegSide("left");
 			Vision.setRunAutoAlign(true);
@@ -197,12 +192,6 @@ public class Robot extends IterativeRobot {
 		ahrs.zeroYaw();
 		ahrs.reset();
 		drive.setHeadingOffset(0);
-<<<<<<< HEAD
-		// Vision.setRunAutoAlign(true);
-
-=======
-		
->>>>>>> 138a2dad256618ccf790a47282c7aec7805fbd47
 	}
 
 	/**
@@ -238,7 +227,7 @@ public class Robot extends IterativeRobot {
 			drive.switchHeadless();
 			System.out.println("Headless: " + drive.getHeadless());
 		}
-<<<<<<< HEAD
+
 		//
 		// // TODO Needed?
 		// // Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
@@ -268,14 +257,14 @@ public class Robot extends IterativeRobot {
 			//
 
 		}
-=======
+
 		if (joy.getButton(1)){
 			Shooter.startShoot(() -> !joy.getButton(1));
 		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
 
 		Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
 		
->>>>>>> 138a2dad256618ccf790a47282c7aec7805fbd47
+		}
 	}
 
 	public void disabledInit() {
