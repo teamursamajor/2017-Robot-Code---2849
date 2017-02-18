@@ -88,8 +88,12 @@ public class Autonomous implements Runnable {
 		autoRunner = new Thread(new Autonomous(ending, mode, position, drive), "auto");
 		autoRunner.start();
 	}
-}
+
 
 enum AutoMode {
 	CROSS, SHOOT, GEAR, NONE;
+}
+ enum StartPosition {
+	LEFT, RIGHT, CENTER
+}
 }
