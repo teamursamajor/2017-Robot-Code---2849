@@ -1,6 +1,5 @@
 package org.usfirst.frc.team2849.robot;
 
-import com.kauailabs.navx.frc.AHRS;
 /*
  * "What does IDE stand for?" -Hershal 
  * "Uhhh Integrated Development Environment. But I'm not sure, so don't quote me on that." -Charlie
@@ -28,8 +27,6 @@ public class Shooter implements Runnable {
 
 	private static boolean powerSet = true;
 	// TODO why are these yellow? If they aren't needed delete them
-
-	private static boolean shooting = false;
 
 	private static Boolean shooterLock = false;
 
@@ -84,17 +81,7 @@ public class Shooter implements Runnable {
 		}
 		new Thread(new Shooter(ending), "shooter").start();
 	}
-
-	/**
-	 * Call to shoot.
-	 * 
-	 * @param shooting
-	 *            true = powers shooter. false = no shooter.
-	 */
-	public static void shoot(boolean shooting) {
-		Shooter.shooting = shooting;
-	}
-
+	
 	/**
 	 * Sets power to one side according to the last call to switchPower().
 	 * 

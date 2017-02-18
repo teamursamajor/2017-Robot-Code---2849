@@ -73,13 +73,11 @@ public class Vision implements Runnable {
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
 	private static boolean isSwitched = false;
-//	private static VideoSink server;
+	
 	private static VideoSink server1;
 //	private static VideoSink server2;
-
-//	private static UsbCamera camera0;
-//	private static UsbCamera camera1;
-	private static UsbCamera camera2;
+	
+//	private static UsbCamera camera2;
 	private static UsbCamera camera0;
 	private static UsbCamera camera1;
 

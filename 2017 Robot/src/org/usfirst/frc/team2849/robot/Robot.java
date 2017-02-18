@@ -1,9 +1,10 @@
 
 package org.usfirst.frc.team2849.robot;
 
-import java.awt.datatransfer.SystemFlavorMap;
 import java.util.LinkedList;
+
 import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -54,6 +55,7 @@ public class Robot extends IterativeRobot {
 	Latch xboxLatch = new Latch();
 	Latch shooterLatch = new Latch();
 	
+	// Set these for motors
 	private final int FRONT_LEFT_DRIVE = 0;
 	private final int BACK_LEFT_DRIVE = 9;
 	private final int FRONT_RIGHT_DRIVE = 1;
@@ -140,8 +142,10 @@ public class Robot extends IterativeRobot {
 			e.printStackTrace();
 		}
 
-		Shooter.shoot(joy.getButton(1));
-
+		if (joy.getButton(1)) {
+			Shooter.startShoot(() -> !joy.getButton(1));
+		}
+		
 		// if the camera is on shooter cam when shooting is done, switch it back
 		// to front cam
 		//This should be getButton, not getSingleButtonPress
@@ -295,6 +299,10 @@ public class Robot extends IterativeRobot {
 	}
 }
 
+	public void disabledInit() {
+		
+	}
+	
 	public void disabledPeriodic() {
 		SmartDashboard.putBoolean("IMU_Connected", ahrs.isConnected());
 		SmartDashboard.putBoolean("IMU_IsCalibrating", ahrs.isCalibrating());

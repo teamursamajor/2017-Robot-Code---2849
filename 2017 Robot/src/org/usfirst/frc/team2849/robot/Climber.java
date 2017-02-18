@@ -30,10 +30,10 @@ public class Climber implements Runnable {
 		// TODO get someone to write code. && clean up commented code!!! -Sheldon
 		while (!ending.done()) {
 			if(forwards){
-				climber.set(1);
+				climber.set(.5);
 				setForwards(false);
 			} else if(backwards){
-				climber.set(-.5);
+				climber.set(-1);
 				setBackwards(false);
 			}
 			try {

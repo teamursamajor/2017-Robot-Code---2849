@@ -222,7 +222,6 @@ public class Drive implements Runnable {
 		drive(0, -.5, 0, -angleDeg);
 
 		while (System.currentTimeMillis() - timer < time) {
-			System.out.println("Driving in the loop");
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
@@ -230,10 +229,7 @@ public class Drive implements Runnable {
 			}
 		}
 
-		// TODO Why is this called twice? -backspac_
-
 		drive(0, 0, 0, 0);
-
 	}
 
 	/**
