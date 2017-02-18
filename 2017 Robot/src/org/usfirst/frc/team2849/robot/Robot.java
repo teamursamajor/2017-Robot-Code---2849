@@ -53,6 +53,11 @@ public class Robot extends IterativeRobot {
 	Latch b1 = new Latch();
 	Latch xboxLatch = new Latch();
 	Latch shooterLatch = new Latch();
+	
+	private final int FRONT_LEFT_DRIVE = 0;
+	private final int BACK_LEFT_DRIVE = 9;
+	private final int FRONT_RIGHT_DRIVE = 1;
+	private final int BACK_RIGHT_DRIVE = 8;
 
 	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
@@ -68,8 +73,10 @@ public class Robot extends IterativeRobot {
 		 * 
 		 * RTFD the correct order is Front Left, Back Left, Front Right, Back Right
 		 * It's in the documentation, read it for once
+		 * 
+		 * Alright just change the finals up above instead of this line
 		 */
-		drive = new Drive(0, 9, 1, 8, ahrs);
+		drive = new Drive(FRONT_LEFT_DRIVE, BACK_LEFT_DRIVE, FRONT_RIGHT_DRIVE, BACK_RIGHT_DRIVE, ahrs);
 		drive.startDrive();
 
 		ahrs.resetDisplacement();
@@ -160,20 +167,6 @@ public class Robot extends IterativeRobot {
 		// Shooter.clearIntake(joy);
 		// }
 		//
-
-//selecting peg to auto align to and running auto align
-<<<<<<< HEAD
-//		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-//			Vision.setPegSide("left");
-//			Vision.setRunAutoAlign(true);
-//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-//			Vision.setPegSide("middle");
-//			Vision.setRunAutoAlign(true);
-//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-//			Vision.setPegSide("right");
-//			Vision.setRunAutoAlign(true);
-//		}
-=======
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
 			Vision.setPegSide("left");
 			Vision.setRunAutoAlign(true);
@@ -184,7 +177,6 @@ public class Robot extends IterativeRobot {
 			Vision.setPegSide("right");
 			Vision.setRunAutoAlign(true);
 		}
->>>>>>> 8616735bb72989aaf662e37adc46e77c1170dfe4
 
 		// TODO Is this code needed?
 		// Drive.drive(joy.getXAxis(), joy.getYAxis(), joy.getZAxis(),

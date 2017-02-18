@@ -77,14 +77,11 @@ public class Vision implements Runnable {
 	private static VideoSink server1;
 //	private static VideoSink server2;
 
-<<<<<<< HEAD
 //	private static UsbCamera camera0;
 //	private static UsbCamera camera1;
 	private static UsbCamera camera2;
-=======
 	private static UsbCamera camera0;
 	private static UsbCamera camera1;
->>>>>>> 8616735bb72989aaf662e37adc46e77c1170dfe4
 
 	private static Drive drive;
 
@@ -95,7 +92,6 @@ public class Vision implements Runnable {
 	private static int cameraNumber = 1;
 
 	public Vision(Drive drive) {
-<<<<<<< HEAD
 //		/*
 //		 * Creates 3 cameras for use. Because of bandwidth issues, only 1 is
 //		 * always active (gear cam) and we switch beween the other two (one for
@@ -119,7 +115,7 @@ public class Vision implements Runnable {
 //		//front & shooter cams
 //		camera1 = new UsbCamera("USB Camera 1", 1);
 //		camera2 = new UsbCamera("USB Camera 2", 2);
-=======
+
 		/*
 		 * Creates 3 cameras for use. Because of bandwidth issues, only 1 is
 		 * always active (gear cam) and we switch beween the other two (one for
@@ -168,7 +164,6 @@ public class Vision implements Runnable {
 ////		CameraServer.getInstance().addCamera(outputStream);
 //		server2 = CameraServer.getInstance().addServer("serve_USB Camera 2");
 //		server2.setSource(outputStream2);
->>>>>>> 8616735bb72989aaf662e37adc46e77c1170dfe4
 //
 //		camera0.setResolution(160, 120);
 //		camera1.setResolution(160, 120);
@@ -223,18 +218,13 @@ public class Vision implements Runnable {
 
 	public void run() {
 		while (true) {
-<<<<<<< HEAD
-			cvSink.grabFrame(source);
 			
 			if (true) {
 //				System.out.println("running auto align");
-			cvSink1.grabFrame(image);
-=======
 //			System.out.println("while loop at top of run");
 			cvSink1.grabFrame(source);
 //			System.out.println("after grab frame");
 //			cvSink.grabFrame(source);
->>>>>>> 8616735bb72989aaf662e37adc46e77c1170dfe4
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
 				System.out.println(getDistance(cvSink1, outputStream1));
@@ -271,11 +261,8 @@ public class Vision implements Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-<<<<<<< HEAD
 			}
-=======
 //			System.out.println("after put frames");
->>>>>>> 8616735bb72989aaf662e37adc46e77c1170dfe4
 		}
 	}
 
