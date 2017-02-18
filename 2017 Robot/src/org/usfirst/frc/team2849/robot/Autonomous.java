@@ -3,13 +3,14 @@ package org.usfirst.frc.team2849.robot;
 import java.util.List;
 
 public class Autonomous implements Runnable {
-	
+
 	private static Drive drive;
 	private static List<AutoMode> mode;
 	private static Thread autoRunner = null;
 	private static EndCondition ending = null;
 	private static Boolean threadOneUse = false;
 	private static StartPosition position = null;
+
 	@Override
 	public void run() {
 		AutoMode previousMode;
@@ -44,13 +45,13 @@ public class Autonomous implements Runnable {
 
 	public void cross(AutoMode previousMode) {
 		drive.driveDirection(drive.getHeading(), 3000);
-		//headless is default true
-//		drive.switchHeadless();
-//		drive.driveDirection(-180, 500);
+		// headless is default true
+		// drive.switchHeadless();
+		// drive.driveDirection(-180, 500);
 	}
 
 	public void shoot(AutoMode previousMode) {
-		
+
 	}
 
 	public void gear(AutoMode previousMode) {
@@ -64,21 +65,21 @@ public class Autonomous implements Runnable {
 			} else if (position == StartPosition.CENTER) {
 				drive.driveDirection(0, 1000);
 			}
-		} else if (previousMode == AutoMode.SHOOT){
+		} else if (previousMode == AutoMode.SHOOT) {
 			drive.driveDirection(180, 2000);
 		} else if (previousMode == AutoMode.CROSS) {
-			
+
 		}
 	}
 
-	private Autonomous(EndCondition ending, List <AutoMode> mode, StartPosition position, Drive drive) {
+	private Autonomous(EndCondition ending, List<AutoMode> mode, StartPosition position, Drive drive) {
 		Autonomous.ending = ending;
 		Autonomous.mode = mode;
 		Autonomous.position = position;
 		Autonomous.drive = drive;
 	}
 
-	public static void auto(EndCondition ending, List <AutoMode> mode, StartPosition position, Drive drive) {
+	public static void auto(EndCondition ending, List<AutoMode> mode, StartPosition position, Drive drive) {
 		synchronized (threadOneUse) {
 			if (threadOneUse)
 				return;
@@ -87,4 +88,8 @@ public class Autonomous implements Runnable {
 		autoRunner = new Thread(new Autonomous(ending, mode, position, drive), "auto");
 		autoRunner.start();
 	}
+}
+
+enum AutoMode {
+	CROSS, SHOOT, GEAR, NONE;
 }
