@@ -19,7 +19,7 @@ import edu.wpi.cscore.VideoMode;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.wpilibj.CameraServer;
 
-//TODO fix switching between cameras
+//TODO test, test, and more testing. Also cut filters (not snapchat)
 public class Vision implements Runnable {
 	// code is basically clean!
 	// UPDATE: not clean anymore lol
@@ -79,7 +79,6 @@ public class Vision implements Runnable {
 
 	private static UsbCamera camera0;
 	private static UsbCamera camera1;
-	private static UsbCamera camera2;
 
 	private static Drive drive;
 
@@ -100,15 +99,12 @@ public class Vision implements Runnable {
 		camera0 = new UsbCamera("USB Camera 0", 0);
 		//front & shooter cams
 		camera1 = new UsbCamera("USB Camera 1", 1);
-		camera2 = new UsbCamera("USB Camera 2", 2);
 
 		camera0.setResolution(160, 120);
 		camera1.setResolution(160, 120);
-		camera2.setResolution(160, 120);
 
 		CameraServer.getInstance().addCamera(camera0);
 		CameraServer.getInstance().addCamera(camera1);
-		CameraServer.getInstance().addCamera(camera2);
 		// use one set of cvSink/outputStream and redefine in methods as necessary
 		cvSink1 = CameraServer.getInstance().getVideo(camera1);
 		outputStream1 = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
@@ -161,39 +157,36 @@ public class Vision implements Runnable {
 
 	public void run() {
 		while (true) {
-			System.out.println("while loop at top of run");
+//			System.out.println("while loop at top of run");
 			cvSink1.grabFrame(source);
-			System.out.println("after grab frame");
+//			System.out.println("after grab frame");
 //			cvSink.grabFrame(source);
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
-//				System.out.println(getDistance(cvSink1, outputStream1));
-				// autoAlign();
+				System.out.println(getDistance(cvSink1, outputStream1));
+//				 autoAlign();
 				try {
-					Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+//					Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 					outputStream1.putFrame(output);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				runAutoAlign = false;
-				switchCamera(cameraNumber);
+				switchCamera(1);
 			}
 			else {
-				System.out.println("before else statement");
+//				System.out.println("before else statement");
 //				try {
 //					outputStream1.putFrame(source);
 //				} catch (Exception e) {
 //					e.printStackTrace();
 //				}
 			}
-			System.out.println("after if statement");
+//			System.out.println("after if statement");
 			try {
 				if(cameraNumber == 1){
 					outputStream1.putFrame(source);
-					System.out.println("camera 1 put");
-				} else if(cameraNumber == 2){
-					outputStream1.putFrame(source);
-					System.out.println("camera 2 put");
+//					System.out.println("camera 1 put");
 				} else if(cameraNumber == 0){
 					outputStream1.putFrame(source);
 					System.out.println("gear cam put");
@@ -204,7 +197,7 @@ public class Vision implements Runnable {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println("after put frames");
+//			System.out.println("after put frames");
 		}
 	}
 
@@ -406,13 +399,6 @@ public class Vision implements Runnable {
 			System.out.println("camera 1");
 			cameraNumber = 1;
 			isSwitched = false;
-			break;
-		case 2:
-			//shooter camera
-			cvSink1 = CameraServer.getInstance().getVideo(camera2);
-			System.out.println("camera 2");
-			cameraNumber = 2;
-			isSwitched = true;
 			break;
 		case 0:
 			//gear camera
