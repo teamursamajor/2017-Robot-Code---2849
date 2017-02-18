@@ -112,7 +112,7 @@ public class Vision implements Runnable {
 		camera0.setResolution(160, 120);
 		camera1.setResolution(160, 120);
 				
-		cvSink1 = CameraServer.getInstance().getVideo(camera1);
+		cvSink1 = CameraServer.getInstance().getVideo(camera0);
 		outputStream1 = CameraServer.getInstance().putVideo("Camera 1", 160, 120);
 //		outputStream1 = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
 		//i dont think we need this, camera worked without it
