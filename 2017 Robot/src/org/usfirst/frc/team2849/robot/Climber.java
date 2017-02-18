@@ -17,9 +17,7 @@ public class Climber implements Runnable {
 	private static boolean forwards = false;
 	private static boolean backwards = false;
 	
-	//TODO please clean up after yourself -Sheldon
 	//TODO comment your code so I can actually understand it please
-//	private Talon climber = new Talon(9);
 	
 	private Climber(EndCondition ending) {
 		Climber.ending = ending;
@@ -27,7 +25,6 @@ public class Climber implements Runnable {
 	
 	@Override
 	public void run() {
-		// TODO get someone to write code. && clean up commented code!!! -Sheldon
 		while (!ending.done()) {
 			if(forwards){
 				climber.set(.5);

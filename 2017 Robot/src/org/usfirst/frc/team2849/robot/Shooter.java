@@ -26,8 +26,6 @@ public class Shooter implements Runnable {
 	private static double rightPower = 0.5;
 
 	private static boolean powerSet = true;
-	// TODO why are these yellow? If they aren't needed delete them
-
 	private static Boolean shooterLock = false;
 
 	private static Drive drive;
@@ -55,7 +53,6 @@ public class Shooter implements Runnable {
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

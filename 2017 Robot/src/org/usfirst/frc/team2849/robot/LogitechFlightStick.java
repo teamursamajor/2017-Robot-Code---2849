@@ -95,8 +95,6 @@ public class LogitechFlightStick extends Joystick {
 	public boolean getDPad(int dPadNumber) {
 		return this.getPOV(0) == dPadNumber;
 	}
-	//TODO - HERSHAL FIX UR DAMN CODE, it needs condensing
-	//TODO - Matt put $1 in the swear jar
 	public boolean getSingleButtonPress(int buttNum){
 		try {
 			return buttonPresses[buttNum - 1].buttonPress(this.getButton(buttNum));
