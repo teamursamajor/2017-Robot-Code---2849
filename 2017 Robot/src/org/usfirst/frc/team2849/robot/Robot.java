@@ -42,7 +42,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
-	// public static XboxController xbox = new XboxController(0);
+	public static XboxController xbox = new XboxController(0);
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	private Vision vision;
@@ -134,12 +134,15 @@ public class Robot extends IterativeRobot {
 		// if the camera is on shooter cam when shooting is done, switch it back
 		// to front cam
 		//This should be getButton, not getSingleButtonPress
-		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
-			System.out.println("switch camera");
-			Vision.switchCamera();
-		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
-			System.out.println("switch back");
-			Vision.switchBack();
+		if(xbox.getButton(1) && !Vision.getIsSwitched()){
+//		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
+			System.out.println("switch to shooter camera");
+			Vision.switchCamera(2);
+		} 
+		else if(!xbox.getButton(1) && Vision.getIsSwitched()){
+//		else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
+			System.out.println("switch to front cam");
+			Vision.switchCamera(1);
 		}
 
 		// Use slider axis to set Shooter power. Change range of slider from
@@ -158,13 +161,18 @@ public class Robot extends IterativeRobot {
 		//
 
 //selecting peg to auto align to and running auto align
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+		if (xbox.getButton(4)) {
+//		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
 			Vision.setPegSide("left");
 			Vision.setRunAutoAlign(true);
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+		} 
+		if (xbox.getButton(3)) {
+//			else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
 			Vision.setPegSide("middle");
 			Vision.setRunAutoAlign(true);
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+		}
+		if (xbox.getButton(2)) {
+//			else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
 			Vision.setPegSide("right");
 			Vision.setRunAutoAlign(true);
 		}

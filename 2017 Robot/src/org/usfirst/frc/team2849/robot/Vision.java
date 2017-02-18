@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.CameraServer;
 //TODO fix switching between cameras
 public class Vision implements Runnable {
 	// code is basically clean!
+	// UPDATE: not clean anymore lol
 	// VISION II: ELECTRIC BOOGALOO
 	// **cue Star Wars music**
 
@@ -62,19 +63,19 @@ public class Vision implements Runnable {
 
 	// Declares CvSink and CvSource so that they can be passed values in Vision
 	// constructor
-	private static CvSink cvSink;
-	private static CvSource outputStream;
+//	private static CvSink cvSink;
+//	private static CvSource outputStream;
 	private static CvSink cvSink1;
 	private static CvSource outputStream1;
-	private static CvSink cvSink2;
-	private static CvSource outputStream2;
+//	private static CvSink cvSink2;
+//	private static CvSource outputStream2;
 
 	private static Thread visionRun = null;
 	private static boolean runAutoAlign = false;
 	private static boolean isSwitched = false;
-	private static VideoSink server;
+//	private static VideoSink server;
 	private static VideoSink server1;
-	private static VideoSink server2;
+//	private static VideoSink server2;
 
 	private static UsbCamera camera0;
 	private static UsbCamera camera1;
@@ -82,9 +83,9 @@ public class Vision implements Runnable {
 
 	private static Drive drive;
 
-	private static Mat image = new Mat();
+//	private static Mat image = new Mat();
 	//may not need this if switching cameras works
-	private static Mat image2 = new Mat();
+//	private static Mat image2 = new Mat();
 
 	private static int cameraNumber = 1;
 
@@ -123,7 +124,7 @@ public class Vision implements Runnable {
 //		//I set source to outputStream instead of camera0
 //		cvSink = CameraServer.getInstance().getVideo(camera0);
 //		outputStream = new CvSource("Gear Cam", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-//		CameraServer.getInstance().addCamera(outputStream);
+////		CameraServer.getInstance().addCamera(outputStream);
 //		server = CameraServer.getInstance().addServer("serve_Gear Cam");
 //		server.setSource(outputStream);
 
@@ -160,45 +161,50 @@ public class Vision implements Runnable {
 
 	public void run() {
 		while (true) {
-			cvSink1.grabFrame(image);
-			//cvSink.grabFrame(source);
-//			isSwitched = true;
-//			if (isSwitched) {
-//				switchCamera();
-//			} else {
-//				switchBack();
-//			}
+			System.out.println("while loop at top of run");
+			cvSink1.grabFrame(source);
+			System.out.println("after grab frame");
+//			cvSink.grabFrame(source);
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
-				System.out.println(getDistance(cvSink, outputStream));
+//				System.out.println(getDistance(cvSink1, outputStream1));
 				// autoAlign();
-				// //only for testing purposes; delete for competition
-				runAutoAlign = false;
 				try {
-				//	outputStream.putFrame(output);
+					Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
+					outputStream1.putFrame(output);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				runAutoAlign = false;
+				switchCamera(cameraNumber);
 			}
 			else {
-				try {
-				//	outputStream.putFrame(source);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				System.out.println("before else statement");
+//				try {
+//					outputStream1.putFrame(source);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
 			}
-				
+			System.out.println("after if statement");
 			try {
 				if(cameraNumber == 1){
-					outputStream1.putFrame(image);
+					outputStream1.putFrame(source);
 					System.out.println("camera 1 put");
 				} else if(cameraNumber == 2){
-					outputStream1.putFrame(image);
+					outputStream1.putFrame(source);
 					System.out.println("camera 2 put");
+				} else if(cameraNumber == 0){
+					outputStream1.putFrame(source);
+					System.out.println("gear cam put");
+				} else{
+					outputStream1.putFrame(source);
+					System.out.println("default to front cam");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			System.out.println("after put frames");
 		}
 	}
 
@@ -238,7 +244,7 @@ public class Vision implements Runnable {
 		System.out.println(pegSide);
 
 		// returns distance that the robot needs to move
-		distance = getDistance(cvSink, outputStream);
+		//distance = getDistance(cvSink1, outputStream1);
 
 		if (distance > 0) {
 			// if the tapes are to the right of the center, then move right
@@ -247,7 +253,6 @@ public class Vision implements Runnable {
 			// if the tapes are to the left of center, then move left
 			drive.mechDriveDistance(distance, 270);
 		}
-
 		/*
 		 * checks to see if the horizontal distance we need to move is greater
 		 * than 3.25 inches (.08255 meters) Ends after 3 attempts and stops auto
@@ -259,7 +264,7 @@ public class Vision implements Runnable {
 			drive.mechDriveDistance(1, 180);
 		}
 		for (int i = 3; Math.abs(distance) > 0.08255 && i > 0; i--) {
-			distance = getDistance(cvSink, outputStream);
+			//distance = getDistance(cvSink1, outputStream1);
 
 			if (distance > 0) {
 				// if the tapes are to the right of the center, then move right
@@ -287,7 +292,7 @@ public class Vision implements Runnable {
 	 * @param outputStream
 	 * @return double distance
 	 */
-	public static double getDistance(CvSink cvSink, CvSource outputStream) {
+	public static double getDistance(CvSink cvSink1, CvSource outputStream1) {
 		// clear stuff
 		maxArea = 0;
 		almostMaxArea = 0;
@@ -295,10 +300,10 @@ public class Vision implements Runnable {
 		almostMaxIndex = 0;
 		maxContours.clear();
 		contours.clear();
+		
 		// TODO if any errors come up this grabFrame is a possible suspect
 		// we're keeping an eye on you cvSink.grabFrame(source);....
-		cvSink.grabFrame(source);
-
+		cvSink1.grabFrame(source);
 		/*
 		 * We need to find rectangles by shining a green light from our camera
 		 * onto the reflective tape next to the peg, so we grab an image and
@@ -388,22 +393,50 @@ public class Vision implements Runnable {
 
 	public static void setRunAutoAlign(boolean runAutoAlign) {
 		Vision.runAutoAlign = runAutoAlign;
+		switchCamera(0);
 	}// end setRunAutoAlign
 
 	//TODO delete if still unused
-	public static void switchCamera() {
-		cvSink1 = CameraServer.getInstance().getVideo(camera2);
-		System.out.println("camera 2");
-		cameraNumber = 2;
-		isSwitched = true;
+	public static void switchCamera(int cameraNum) {
+		
+		switch(cameraNum){
+		case 1:
+			//front camera
+			cvSink1 = CameraServer.getInstance().getVideo(camera1);
+			System.out.println("camera 1");
+			cameraNumber = 1;
+			isSwitched = false;
+			break;
+		case 2:
+			//shooter camera
+			cvSink1 = CameraServer.getInstance().getVideo(camera2);
+			System.out.println("camera 2");
+			cameraNumber = 2;
+			isSwitched = true;
+			break;
+		case 0:
+			//gear camera
+			cvSink1 = CameraServer.getInstance().getVideo(camera0);
+			System.out.println("gear cam");
+			cameraNumber = 0;
+			break;
+		default:
+			cvSink1 = CameraServer.getInstance().getVideo(camera1);
+			System.out.println("camera 1");
+			cameraNumber = 1;
+		}
+//		cvSink1 = CameraServer.getInstance().getVideo(camera2);
+//		System.out.println("camera 2");
+//		cameraNumber = 2;
+//		isSwitched = true;
 	}
-
-	public static void switchBack() {
-		cvSink1 = CameraServer.getInstance().getVideo(camera1);
-		System.out.println("camera 1");
-		cameraNumber = 1;
-		isSwitched = false;
-	}
+//
+//	public static void switchBack() {
+//		cvSink1 = CameraServer.getInstance().getVideo(camera1);
+//		System.out.println("camera 1");
+//		cameraNumber = 1;
+//		isSwitched = false;
+//	}
 
 	public static boolean getIsSwitched() {
 		return isSwitched;
