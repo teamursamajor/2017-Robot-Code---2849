@@ -76,6 +76,8 @@ public class Vision implements Runnable {
 
 	// starts with gear cam
 	private static int cameraNumber = 0;
+	private static int shooterCam = 1;
+	private static int gearCam = 0;
 
 	public Vision(Drive drive) {
 		// default peg side to middle
@@ -108,17 +110,20 @@ public class Vision implements Runnable {
 			cvSink.grabFrame(source);
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
-				 System.out.println(getDistance(cvSink, outputStream));
-//				autoAlign();
+				// TODO when we run autoAlign we get too many simultaneous
+				// client streams, but not when we run getDistance
+				// try commenting out all the drive code and see what happens?
+				// System.out.println(getDistance(cvSink, outputStream));
+				autoAlign();
 				runAutoAlign = false;
 			} else {
 				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 			}
 
-			//TODO test and see if code works without this
-			//we have a putVideo line 98, do we need putFrame?
+			// TODO test and see if code works without this
+			// we have a putVideo line 98, do we need putFrame?
 			try {
-				if (cameraNumber == 0) {
+				if (cameraNumber == gearCam) {
 					outputStream.putFrame(output);
 				} else {
 					outputStream.putFrame(source);
@@ -140,18 +145,14 @@ public class Vision implements Runnable {
 		 * facing relative to a default angle (0 degrees) set at robotInit and
 		 * set it to a specific angle depending on which side we are on
 		 */
-		//TODO fix these numbers, whichw ay is the robot starting?
 		switch (pegSide) {
 		case "left":
-			// turns the robot to angle 240 when the left button is pressed
-			drive.turnToAngle(150.0);
+			drive.turnToAngle(-40.0);
 			break;
 		case "right":
-			// turns the robot to angle 120 when the right button is pressed
-			drive.turnToAngle(210.0);
+			drive.turnToAngle(40.0);
 			break;
 		case "middle":
-			// turns the robot to angle 180 when the middle button is pressed
 			drive.turnToAngle(0.0);
 		default:
 			break;
@@ -164,12 +165,14 @@ public class Vision implements Runnable {
 
 		if (distance > 0) {
 			// if the tapes are to the right of the center, then move right
+			// the robot wasn't moving with mechDriveDistance, so we want to try
+			// driveDistance to see if that fixes it
 			// drive.mechDriveDistance(distance, 270);
-			drive.driveDirection(90, 2000);
+			drive.driveDirection(270, 500);
 		} else {
 			// if the tapes are to the left of center, then move left
 			// drive.mechDriveDistance(distance, 90);
-			drive.driveDirection(270, 2000);
+			drive.driveDirection(90, 500);
 		}
 
 		/*
@@ -179,24 +182,28 @@ public class Vision implements Runnable {
 		 */
 		if (Math.abs(distance) < 0.0825) {
 			// move forward
-			drive.mechDriveDistance(1, 0);
-//			drive.driveDirection(180, 1000);
+			// drive.mechDriveDistance(1, 180);
+			drive.driveDirection(0, 500);
 		} else {
-			for (int i = 3; Math.abs(distance) > 0.08255 && i > 0; i--) {
+			int i;
+			for (i = 3; Math.abs(distance) > 0.08255 && i > 0; i--) {
 				distance = getDistance(cvSink, outputStream);
 				if (distance > 0) {
 					// if the tapes are to the right of the center, then move
 					// right
 					// drive.mechDriveDistance(distance, 270);
-					drive.driveDirection(270, 2000);
+					drive.driveDirection(270, 250);
 				} else {
 					// if the tapes are to the left of center, then move left
 					// drive.mechDriveDistance(distance, 90);
-					drive.driveDirection(90, 2000);
+					drive.driveDirection(90, 250);
 				}
-				if (i == 0) {
-					System.out.println("ERROR: AUTO ALIGN FAILED :( ");
-				}
+
+			}
+			if (i == 0) {
+				System.out.println("ERROR: AUTO ALIGN FAILED :( ");
+			} else {
+				drive.driveDirection(0, 500);
 			}
 
 		}
@@ -309,23 +316,37 @@ public class Vision implements Runnable {
 		switch (cameraNum) {
 		case 1:
 			// shooter camera
-			cvSink = CameraServer.getInstance().getVideo(camera1);
-			System.out.println("camera 1");
-			cameraNumber = 1;
+			if (shooterCam == 0) {
+				cvSink = CameraServer.getInstance().getVideo(camera0);
+			} else {
+				cvSink = CameraServer.getInstance().getVideo(camera1);
+			}
+			System.out.println("shooter cam");
+			cameraNumber = shooterCam;
 			isSwitched = true;
 			break;
 		case 0:
 			// gear camera
-			cvSink = CameraServer.getInstance().getVideo(camera0);
+			if (gearCam == 0) {
+				cvSink = CameraServer.getInstance().getVideo(camera0);
+			} else {
+				cvSink = CameraServer.getInstance().getVideo(camera1);
+			}
 			System.out.println("gear cam");
-			cameraNumber = 0;
+			cameraNumber = gearCam;
 			isSwitched = false;
 			break;
 		default:
-			cvSink = CameraServer.getInstance().getVideo(camera1);
-			System.out.println("camera 1");
-			cameraNumber = 1;
+			cvSink = CameraServer.getInstance().getVideo(camera0);
+			System.out.println("gear cam");
+			cameraNumber = gearCam;
+			isSwitched = false;
 		}
+	}
+
+	public static void setCameras(int shooterCam, int gearCam) {
+		Vision.shooterCam = shooterCam;
+		Vision.gearCam = gearCam;
 	}
 
 	public static boolean getIsSwitched() {

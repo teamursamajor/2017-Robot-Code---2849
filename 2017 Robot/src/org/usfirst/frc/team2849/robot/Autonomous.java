@@ -1,6 +1,9 @@
 package org.usfirst.frc.team2849.robot;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import org.usfirst.frc.team2849.robot.Autonomous.AutoMode;
 
 public class Autonomous implements Runnable {
 
