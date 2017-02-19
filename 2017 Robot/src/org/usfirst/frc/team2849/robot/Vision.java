@@ -10,26 +10,20 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
-
-//why can't I own a Canadian?
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoMode;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.wpilibj.CameraServer;
 
-//TODO test, test, and more testing. Also cut filters (not snapchat)
+//TODO test, test, and more testing
 public class Vision implements Runnable {
-	// code is basically clean!
-	// UPDATE: not clean anymore lol
 	// VISION II: ELECTRIC BOOGALOO
 	// **cue Star Wars music**
 
 	private static List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 	private static List<MatOfPoint> maxContours = new ArrayList<MatOfPoint>();
 
-	// we don't actually know what this does
 	private static Mat hierarchy = new Mat();
 
 	private static double maxArea = 0;
@@ -53,72 +47,55 @@ public class Vision implements Runnable {
 	// conversion factor from pixels to inches
 	private static double conversion;
 
-	// Arrays of Arrays used to hold the frames we grab from the camera
+	// Mats used to hold the frames we grab from the camera
 	private static Mat source = new Mat();
 	private static Mat output = new Mat();
 	private static Mat temp = new Mat();
 
 	// String for the peg side the robot is going to auto align to
-	private static String pegSide = "middle";
+	private static String pegSide = "right";
 
-	// Declares CvSink and CvSource so that they can be passed values in Vision
-	// constructor
-//	private static CvSink cvSink;
-//	private static CvSource outputStream;
-	private static CvSink cvSink1;
-	private static CvSource outputStream1;
-//	private static CvSink cvSink2;
-//	private static CvSource outputStream2;
+	private static CvSink cvSink;
+	private static CvSource outputStream;
 
 	private static Thread visionRun = null;
+
+	// if true, run auto align
 	private static boolean runAutoAlign = false;
+	// if true the camera is on shooter cam, if false gear cam
 	private static boolean isSwitched = false;
-	
-	private static VideoSink server1;
-//	private static VideoSink server2;
 
+	private static VideoSink server;
 
-//	private static UsbCamera camera0;
-//	private static UsbCamera camera1;
-//	private static UsbCamera camera2;
+	// Gear cam
 	private static UsbCamera camera0;
+	// shooter cam
 	private static UsbCamera camera1;
 
 	private static Drive drive;
 
-//	private static Mat image = new Mat();
-	//may not need this if switching cameras works
-//	private static Mat image2 = new Mat();
-
+	// starts with gear cam
 	private static int cameraNumber = 0;
 
 	public Vision(Drive drive) {
-		/*
-		 * Creates 3 cameras for use. Because of bandwidth issues, only 1 is
-		 * always active (gear cam) and we switch beween the other two (one for
-		 * shooter one for main/climber)
-		 */
-		pegSide = "middle";
-		//gear camera
+		// default peg side to middle
+		pegSide = "right";
+
+		Vision.drive = drive;
+
+		// gear camera
 		camera0 = new UsbCamera("USB Camera 0", 0);
-		//shooter camera
+		// shooter camera
 		camera1 = new UsbCamera("USB Camera 1", 1);
-		
-		
 
 		CameraServer.getInstance().addCamera(camera0);
 		CameraServer.getInstance().addCamera(camera1);
-		
+
 		camera0.setResolution(160, 120);
 		camera1.setResolution(160, 120);
-				
-		cvSink1 = CameraServer.getInstance().getVideo(camera0);
-		outputStream1 = CameraServer.getInstance().putVideo("Camera 1", 160, 120);
-//		outputStream1 = new CvSource("Camera 1", VideoMode.PixelFormat.kMJPEG, 160, 120, 30);
-		//i dont think we need this, camera worked without it
-//		CameraServer.getInstance().addCamera(outputStream1);
-//		server1 = CameraServer.getInstance().addServer("serve_USB Camera 1");
-//		server1.setSource(outputStream1);
+
+		cvSink = CameraServer.getInstance().getVideo(camera0);
+		outputStream = CameraServer.getInstance().putVideo("Camera 1", 160, 120);
 	}
 
 	public static void visionInit(Drive drive) {
@@ -128,29 +105,23 @@ public class Vision implements Runnable {
 
 	public void run() {
 		while (true) {
-			
-//			System.out.println("running auto align");
-			cvSink1.grabFrame(source);
+			cvSink.grabFrame(source);
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
-				System.out.println(getDistance(cvSink1, outputStream1));
-//				 autoAlign();
-//				switchCamera(1);
+				 System.out.println(getDistance(cvSink, outputStream));
+//				autoAlign();
 				runAutoAlign = false;
-			} else{
+			} else {
 				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 			}
-			
+
+			//TODO test and see if code works without this
+			//we have a putVideo line 98, do we need putFrame?
 			try {
-				if(cameraNumber == 1){
-					outputStream1.putFrame(source);
-//					System.out.println("camera 1 put");
-				} else if(cameraNumber == 0){
-					outputStream1.putFrame(output);
-//					System.out.println("gear cam put");
-				} else{
-					outputStream1.putFrame(source);
-//					System.out.println("default to shooter cam");
+				if (cameraNumber == 0) {
+					outputStream.putFrame(output);
+				} else {
+					outputStream.putFrame(source);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -164,71 +135,73 @@ public class Vision implements Runnable {
 	 * moving
 	 */
 	public void autoAlign() {
-
 		/*
 		 * This uses the IMU sensor Navx MXP to find the angle the robot is
 		 * facing relative to a default angle (0 degrees) set at robotInit and
 		 * set it to a specific angle depending on which side we are on
 		 */
-
-		// GEAR IS ON THE BACK OF THE ROBOT
+		//TODO fix these numbers, whichw ay is the robot starting?
 		switch (pegSide) {
 		case "left":
-			// turns the robot to angle 240 when the user presses the button set
-			// to left
-			drive.driveAngle(240.0);
+			// turns the robot to angle 240 when the left button is pressed
+			drive.turnToAngle(150.0);
 			break;
 		case "right":
-			// turns the robot to angle 120 when the user presses the button set
-			// to right
-			drive.driveAngle(120.0);
+			// turns the robot to angle 120 when the right button is pressed
+			drive.turnToAngle(210.0);
 			break;
 		case "middle":
-			// turns the robot to angle 180 when the user presses the button set
-			// to middle
-			drive.driveAngle(180.0);
+			// turns the robot to angle 180 when the middle button is pressed
+			drive.turnToAngle(0.0);
 		default:
-
 			break;
 		}
 		System.out.println(pegSide);
 
+		// TODO Why is this commented out? Do we need it?
 		// returns distance that the robot needs to move
-		//distance = getDistance(cvSink1, outputStream1);
+		distance = getDistance(cvSink, outputStream);
 
 		if (distance > 0) {
 			// if the tapes are to the right of the center, then move right
-			drive.mechDriveDistance(distance, 90);
+			// drive.mechDriveDistance(distance, 270);
+			drive.driveDirection(90, 2000);
 		} else {
 			// if the tapes are to the left of center, then move left
-			drive.mechDriveDistance(distance, 270);
+			// drive.mechDriveDistance(distance, 90);
+			drive.driveDirection(270, 2000);
 		}
+
 		/*
 		 * checks to see if the horizontal distance we need to move is greater
 		 * than 3.25 inches (.08255 meters) Ends after 3 attempts and stops auto
 		 * align
 		 */
-
 		if (Math.abs(distance) < 0.0825) {
 			// move forward
-			drive.mechDriveDistance(1, 180);
-		}
-		for (int i = 3; Math.abs(distance) > 0.08255 && i > 0; i--) {
-			//distance = getDistance(cvSink1, outputStream1);
-
-			if (distance > 0) {
-				// if the tapes are to the right of the center, then move right
-				drive.mechDriveDistance(distance, 90);
-			} else {
-				// if the tapes are to the left of center, then move left
-				drive.mechDriveDistance(distance, 270);
+			drive.mechDriveDistance(1, 0);
+//			drive.driveDirection(180, 1000);
+		} else {
+			for (int i = 3; Math.abs(distance) > 0.08255 && i > 0; i--) {
+				distance = getDistance(cvSink, outputStream);
+				if (distance > 0) {
+					// if the tapes are to the right of the center, then move
+					// right
+					// drive.mechDriveDistance(distance, 270);
+					drive.driveDirection(270, 2000);
+				} else {
+					// if the tapes are to the left of center, then move left
+					// drive.mechDriveDistance(distance, 90);
+					drive.driveDirection(90, 2000);
+				}
+				if (i == 0) {
+					System.out.println("ERROR: AUTO ALIGN FAILED :( ");
+				}
 			}
-			if (i == 0) {
-				System.out.println("ERROR: AUTO ALIGN FAILED :( ");
-			}
 
 		}
 
+		// TODO is this only for testing
 		System.out.println(distance);
 
 	} // end autoAlign
@@ -242,7 +215,7 @@ public class Vision implements Runnable {
 	 * @param outputStream
 	 * @return double distance
 	 */
-	public static double getDistance(CvSink cvSink1, CvSource outputStream1) {
+	public static double getDistance(CvSink cvSink, CvSource outputStream) {
 		// clear stuff
 		maxArea = 0;
 		almostMaxArea = 0;
@@ -250,15 +223,9 @@ public class Vision implements Runnable {
 		almostMaxIndex = 0;
 		maxContours.clear();
 		contours.clear();
-		
-		// TODO if any errors come up this grabFrame is a possible suspect
-		// we're keeping an eye on you cvSink.grabFrame(source);....
-		cvSink1.grabFrame(source);
-		/*
-		 * We need to find rectangles by shining a green light from our camera
-		 * onto the reflective tape next to the peg, so we grab an image and
-		 * process it
-		 */
+
+		cvSink.grabFrame(source);
+
 		// changes image from BGR to HSV (hue, saturation value)
 		Imgproc.cvtColor(source, temp, Imgproc.COLOR_BGR2HSV);
 		// extracts one of those values (H, S, or V & idk which is which)
@@ -284,21 +251,15 @@ public class Vision implements Runnable {
 				almostMaxArea = area;
 				almostMaxIndex = i;
 			}
-
 		}
+
 		// if there are no contours, return nothing
 		if (contours.size() == 0) {
-			// outputStream.putFrame(output);
 			return Double.NaN;
 		}
 
 		maxContours.add(contours.get(maxIndex));
 		maxContours.add(contours.get(almostMaxIndex));
-
-		// draws the contours so we can see them for testing purposes only
-		// for (int i = 0; i < maxContours.size(); i++) {
-		// Imgproc.drawContours(output, maxContours, i, new Scalar(942.0d));
-		// }
 
 		// draw rectangles around the max contours
 		Rect rec1 = Imgproc.boundingRect(maxContours.get(0));
@@ -308,8 +269,7 @@ public class Vision implements Runnable {
 		Imgproc.rectangle(output, new Point(rec2.x, rec2.y), new Point(rec2.x + rec2.width, rec2.y + rec2.height),
 				new Scalar(500.0d));
 
-		// conversion factor for pixels to inches 2 inches over average of
-		// widths (simplify to get 4)
+		// pixels to inches conversion factor 2 inches over average of widths
 		conversion = 4.0 / (rec1.width + rec2.width);
 
 		// if rec1 is on the right
@@ -321,8 +281,7 @@ public class Vision implements Runnable {
 			perceivedPx = (rec2.x + rec2.width) - rec1.x;
 		}
 
-		// find center of 2 tapes by adding half the distance to the left x
-		// coordinate
+		// find center of tapes
 		if (rec1.x > rec2.x) {
 			centerOfTapes = rec2.x + (perceivedPx / 2.0);
 		} else {
@@ -332,55 +291,42 @@ public class Vision implements Runnable {
 		// find center of the frame
 		centerOfFrame = output.width() / 2.0;
 
-		// finds distance you need to move by subtracting frame from center and
-		// converts to meters
+		// find distance to move
 		return ((centerOfTapes - centerOfFrame) * conversion) * 0.0254;
 	}// end getDistance
 
 	public static void setPegSide(String pegSide) {
 		Vision.pegSide = pegSide;
-	}// end setPegSide
+	}
 
 	public static void setRunAutoAlign(boolean runAutoAlign) {
 		Vision.runAutoAlign = runAutoAlign;
-		switchCamera(0);
-	}// end setRunAutoAlign
+		// switchCamera(0);
+	}
 
-	//TODO delete if still unused
 	public static void switchCamera(int cameraNum) {
-		
-		switch(cameraNum){
+
+		switch (cameraNum) {
 		case 1:
-			//shooter camera
-			cvSink1 = CameraServer.getInstance().getVideo(camera1);
+			// shooter camera
+			cvSink = CameraServer.getInstance().getVideo(camera1);
 			System.out.println("camera 1");
 			cameraNumber = 1;
 			isSwitched = true;
 			break;
 		case 0:
-			//gear camera
-			cvSink1 = CameraServer.getInstance().getVideo(camera0);
+			// gear camera
+			cvSink = CameraServer.getInstance().getVideo(camera0);
 			System.out.println("gear cam");
 			cameraNumber = 0;
 			isSwitched = false;
 			break;
 		default:
-			cvSink1 = CameraServer.getInstance().getVideo(camera1);
+			cvSink = CameraServer.getInstance().getVideo(camera1);
 			System.out.println("camera 1");
 			cameraNumber = 1;
 		}
-//		cvSink1 = CameraServer.getInstance().getVideo(camera2);
-//		System.out.println("camera 2");
-//		cameraNumber = 2;
-//		isSwitched = true;
 	}
-//
-//	public static void switchBack() {
-//		cvSink1 = CameraServer.getInstance().getVideo(camera1);
-//		System.out.println("camera 1");
-//		cameraNumber = 1;
-//		isSwitched = false;
-//	}
 
 	public static boolean getIsSwitched() {
 		return isSwitched;

@@ -149,6 +149,10 @@ public class Shooter implements Runnable {
 		}
 
 	}
+	
+	public static void ballIntake(double val){
+		intake.set(val);
+	}
 
 	/**
 	 * Gets the joystick's x and y values and does arctan then converts to

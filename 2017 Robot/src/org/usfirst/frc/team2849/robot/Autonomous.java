@@ -57,13 +57,16 @@ public class Autonomous implements Runnable {
 	public void gear(AutoMode previousMode) {
 		if (previousMode == AutoMode.GEAR) {
 			if (position == StartPosition.LEFT) {
-				drive.driveDirection(0, 1000);
-				drive.driveDirection(90, 1000);
+				drive.driveDirection(180, 2000);
+				drive.turnAngle(40);
+				drive.driveDirection(180, 500);
 			} else if (position == StartPosition.RIGHT) {
-				drive.driveDirection(0, 1000);
-				drive.driveDirection(-90, 1000);
+				drive.driveDirection(180, 2000);
+				drive.turnAngle(-40);
+				drive.driveDirection(180, 500);
+//				drive.driveDirection(90, 1000);
 			} else if (position == StartPosition.CENTER) {
-				drive.driveDirection(0, 1000);
+				drive.driveDirection(180, 1500);
 			}
 		} else if (previousMode == AutoMode.SHOOT) {
 			drive.driveDirection(180, 2000);

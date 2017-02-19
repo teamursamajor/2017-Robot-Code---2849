@@ -46,6 +46,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends IterativeRobot {
 	public static LogitechFlightStick joy = new LogitechFlightStick(0);
+
+	// public static XboxController xbox = new XboxController(0);
+
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 
 	private Drive drive;
@@ -55,20 +58,25 @@ public class Robot extends IterativeRobot {
 	Latch b1 = new Latch();
 	Latch xboxLatch = new Latch();
 	Latch shooterLatch = new Latch();
-	
+
 	// Set these for motors
 	private final int FRONT_LEFT_DRIVE = 0;
 	private final int BACK_LEFT_DRIVE = 9;
 	private final int FRONT_RIGHT_DRIVE = 1;
 	private final int BACK_RIGHT_DRIVE = 8;
+
+	private AutoSelector autoSelector;
+
+	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
+
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
-		/* 
-		 * RTFD the correct order is Front Left, Back Left, Front Right, Back Right
-		 * It's in the documentation, read it for once
+		/*
+		 * RTFD the correct order is Front Left, Back Left, Front Right, Back
+		 * Right It's in the documentation, read it for once
 		 * 
 		 * Alright just change the finals up above instead of this line
 		 */
@@ -81,6 +89,8 @@ public class Robot extends IterativeRobot {
 		// creates camera feeds
 		Vision.visionInit(drive);
 
+		autoSelector = new AutoSelector();
+		autoSelector.initialize();
 	}
 
 	/**
@@ -99,8 +109,8 @@ public class Robot extends IterativeRobot {
 		ahrs.zeroYaw();
 		LinkedList<AutoMode> modes = new LinkedList<AutoMode>();
 		modes.add(AutoMode.CROSS);
-		Autonomous.auto(() -> !this.isAutonomous(), modes, StartPosition.CENTER, drive);
-		drive.setHeadingOffset(45);
+		Autonomous.auto(() -> !this.isAutonomous(), modes, StartPosition.LEFT, drive);
+		drive.setHeadingOffset(0);
 
 	}
 
@@ -125,9 +135,10 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
 		try {
-			if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10)) {
-				Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
-			}
+			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
+			// {
+			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
+			// }
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
@@ -135,35 +146,63 @@ public class Robot extends IterativeRobot {
 		if (joy.getButton(1)) {
 			Shooter.startShoot(() -> !joy.getButton(1));
 		}
-		
+
+		/*
+		 * switch camera from gear to shooter when trigger is pressed and then
+		 * switch back to gear when trigger is released
+		 * 
+		 * This should be getButton, not getSingleButtonPress
+		 */
+
 		// if the camera is on shooter cam when shooting is done, switch it back
 		// to front cam
+
 		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
 			System.out.println("switch to shooter camera");
 			Vision.switchCamera(1);
-		}else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
+		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
 			System.out.println("switch to front cam");
 			Vision.switchCamera(0);
 		}
 		currentAngle = drive.getHeading();
 		// TODO add a y deadzone for anglelock
 		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
+
+		if (joy.getButton(3)) {
+			Shooter.ballIntake(1.0);
+		} else{
+			Shooter.ballIntake(0.0);
+		}
+		
+		// else {
+		// Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+		// }
+
+		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
+		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
+		//
+		// if (joy.getButton(LogitechFlightStick.BUTTON_Side8)) {
+		// Shooter.clearIntake(joy);
+		// }
+
+		// run auto align for the three different gear pegs
+
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
 			Vision.setPegSide("left");
 			Vision.setRunAutoAlign(true);
 		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
 			Vision.setPegSide("middle");
 			Vision.setRunAutoAlign(true);
-		}else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
 			Vision.setPegSide("right");
 			Vision.setRunAutoAlign(true);
 		}
 	}
+
 	public void testInit() {
 		ahrs.zeroYaw();
 		ahrs.reset();
 		drive.setHeadingOffset(0);
-		
 	}
 
 	/**
@@ -186,10 +225,10 @@ public class Robot extends IterativeRobot {
 
 		if (joy.getButton(2)) {
 			povAngle = joy.getPOV(0);
-			if( povAngle == -1){
+			if (povAngle == -1) {
 				Drive.drive(0, 0, 0, 0);
-			}else{
-				Drive.drive(Math.sin(povAngle*Math.PI/180), -Math.cos(povAngle*Math.PI/180), 0, 0);
+			} else {
+				Drive.drive(Math.sin(povAngle * Math.PI / 180), -Math.cos(povAngle * Math.PI / 180), 0, 0);
 			}
 		} else {
 			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
@@ -199,19 +238,50 @@ public class Robot extends IterativeRobot {
 			drive.switchHeadless();
 			System.out.println("Headless: " + drive.getHeadless());
 		}
-		if (joy.getButton(1)){
-			Shooter.startShoot(() -> !joy.getButton(1));
-		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
 
-		Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
-		
+		//
+		// // TODO Needed?
+		// // Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
+		//// Shooter.startShoot(() -> !joy.getButton(1), ahrs);
+		//
+
+		if (joy.getButton(1)) {
+			Shooter.startShoot(() -> !joy.getButton(1));
+			// TODO wth is this come on guys
+			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
+
+			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
+
+			// // TODO Why is this code commented out??????? -Sheldon
+			// // drive.angleLock(joy.getAxisGreaterThan(0, 0.1),
+			// // joy.getAxisGreaterThan(2, 0.1), currentAngle);
+			// //
+			// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
+			// // joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
+			//
+			// if (joy.getButton(3)) {
+			// Shooter.ballIntake(1, 1);
+			// }
+			//// else {
+			//// Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+			//// }
+			//
+
+		}
+
+		if (joy.getButton(1)) {
+			Shooter.startShoot(() -> !joy.getButton(1));
+			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
+
+			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
+
+		}
 	}
-}
 
 	public void disabledInit() {
-		
+
 	}
-	
+
 	public void disabledPeriodic() {
 		SmartDashboard.putBoolean("IMU_Connected", ahrs.isConnected());
 		SmartDashboard.putBoolean("IMU_IsCalibrating", ahrs.isCalibrating());

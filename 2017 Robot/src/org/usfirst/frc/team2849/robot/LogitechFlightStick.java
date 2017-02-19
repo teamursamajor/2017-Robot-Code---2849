@@ -33,7 +33,7 @@ public class LogitechFlightStick extends Joystick {
 	public static final int POV_DIAUPLEFT = 315;
 	
 	private final double MAX_XY = 1;
-	private final double MAX_Z = .75;
+	private final double MAX_Z = 1;
 	
 	private Latch[] buttonPresses = new Latch[12];
 
