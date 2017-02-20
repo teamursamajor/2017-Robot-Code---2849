@@ -70,7 +70,7 @@ public class Autonomous implements Runnable {
 				try {
 					Thread.sleep(1000);
 				} catch (Exception e) {
-
+					
 				}
 				Vision.setRunAutoAlign(true);
 				// drive.driveDirection(90, 1000);

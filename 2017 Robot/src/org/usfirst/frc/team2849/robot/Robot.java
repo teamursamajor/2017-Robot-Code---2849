@@ -4,12 +4,12 @@ package org.usfirst.frc.team2849.robot;
 import java.util.LinkedList;
 
 import org.usfirst.frc.team2849.robot.Autonomous.AutoMode;
+import org.usfirst.frc.team2849.robot.Autonomous.StartPosition;
 
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* these buttons are accurate for both teleop and test
@@ -49,7 +49,9 @@ public class Robot extends IterativeRobot {
 	// public static XboxController xbox = new XboxController(0);
 
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
-
+	
+	private Ultrasonic ultra = new Ultrasonic(0);
+	
 	private Drive drive;
 	private int povAngle = 0;
 	private double currentAngle = 0.0;
@@ -65,8 +67,6 @@ public class Robot extends IterativeRobot {
 	private final int BACK_RIGHT_DRIVE = 8;
 
 	private AutoSelector autoSelector;
-	
-	private Solenoid prox = new Solenoid(0);
 
 	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
@@ -149,6 +149,7 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
+		System.out.println("Distance: " + ultra.getDistance());
 		
 		try {
 			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
@@ -326,7 +327,6 @@ public class Robot extends IterativeRobot {
 
 	public void disabledInit() {
 		Vision.closeFile();
-		prox.set(true);
 	}
 
 	public void disabledPeriodic() {
