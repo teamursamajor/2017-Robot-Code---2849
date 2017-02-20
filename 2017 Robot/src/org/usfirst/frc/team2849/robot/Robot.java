@@ -4,33 +4,32 @@ package org.usfirst.frc.team2849.robot;
 import java.util.LinkedList;
 
 import org.usfirst.frc.team2849.robot.Autonomous.AutoMode;
-import org.usfirst.frc.team2849.robot.Autonomous.StartPosition;
 
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-/* TODO Organize layout and resolve button conflicts
- * Control Scheme **Currently ideas, code does NOT match**
- * Dpad Up:
- * Dpad Down:
- * Dpad Left:
- * Dpad Right:
+/* these buttons are accurate for both teleop and test
+ * Dpad Up: exact driving
+ * Dpad Down: exact driving
+ * Dpad Left: exact driving
+ * Dpad Right: exact driving
  * Trigger: Shooter
- * Side: some POV crap (in test) i swear you guys need to comment your code better how will anyone understand this TODO
- * Button 3:
- * Button 4: Switch Power (in test)
- * Button 5: Climber (in test)
- * Button 6: Back Climber (in test)
- * Button 7: Peg Left 
- * Button 8: Clear Intake
- * Button 9: Peg Middle
- * Button 10: some random drive thing TODO wth is it
- * Button 11: Peg Right
- * Button 12: Toggle Headless
- * Slider: Setting shooter power (?)
+ * Side: (currently nothing)
+ * Button 3: intake
+ * Button 4: switched which shooter motor the slider sets power for
+ * Button 5: climber forwards
+ * Button 6: climber backwards
+ * Button 7:  left gear
+ * Button 8: clear intake
+ * Button 9: center gear
+ * Button 10: switch headless
+ * Button 11: right gear
+ * Button 12: exact direction driving
+ * Slider: sets shooter motor power
  * 
  */
 /*
@@ -66,6 +65,8 @@ public class Robot extends IterativeRobot {
 	private final int BACK_RIGHT_DRIVE = 8;
 
 	private AutoSelector autoSelector;
+	
+	private Solenoid prox = new Solenoid(0);
 
 	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
@@ -160,6 +161,8 @@ public class Robot extends IterativeRobot {
 
 		if (joy.getButton(1)) {
 			Shooter.startShoot(() -> !joy.getButton(1));
+			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
+			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
 		}
 		
 		if (joy.getButton(5)) {
@@ -223,6 +226,22 @@ public class Robot extends IterativeRobot {
 			Vision.setPegSide("right");
 			Vision.setRunAutoAlign(true);
 		}
+		
+		if (joy.getButton(12)) {
+			povAngle = joy.getPOV(0);
+			if (povAngle == -1) {
+				Drive.drive(0, 0, 0, 0);
+			} else {
+				Drive.drive(Math.sin(povAngle * Math.PI / 180), -Math.cos(povAngle * Math.PI / 180), 0, 0);
+			}
+		} else {
+			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
+		}
+
+		if (joy.getSingleButtonPress(10)) {
+			drive.switchHeadless();
+			System.out.println("Headless: " + drive.getHeadless());
+		}
 	}
 
 	public void testInit() {
@@ -249,7 +268,7 @@ public class Robot extends IterativeRobot {
 			Climber.climb(() -> !joy.getButton(6));
 		}
 
-		if (joy.getButton(2)) {
+		if (joy.getButton(12)) {
 			povAngle = joy.getPOV(0);
 			if (povAngle == -1) {
 				Drive.drive(0, 0, 0, 0);
@@ -260,7 +279,7 @@ public class Robot extends IterativeRobot {
 			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), drive.getHeading());
 		}
 
-		if (joy.getSingleButtonPress(12)) {
+		if (joy.getSingleButtonPress(10)) {
 			drive.switchHeadless();
 			System.out.println("Headless: " + drive.getHeadless());
 		}
@@ -273,25 +292,25 @@ public class Robot extends IterativeRobot {
 
 		if (joy.getButton(1)) {
 			Shooter.startShoot(() -> !joy.getButton(1));
-			// TODO wth is this come on guys
+			
 			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
 
 			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
 
-			// // TODO Why is this code commented out??????? -Sheldon
-			// // drive.angleLock(joy.getAxisGreaterThan(0, 0.1),
-			// // joy.getAxisGreaterThan(2, 0.1), currentAngle);
-			// //
-			// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
-			// // joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
-			//
-			// if (joy.getButton(3)) {
-			// Shooter.ballIntake(1, 1);
-			// }
-			//// else {
-			//// Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
-			//// }
-			//
+//			 // TODO Why is this code commented out??????? -Sheldon
+//			 // drive.angleLock(joy.getAxisGreaterThan(0, 0.1),
+//			 // joy.getAxisGreaterThan(2, 0.1), currentAngle);
+//			 //
+//			 Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
+//			 // joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
+//			
+//			 if (joy.getButton(3)) {
+//			 Shooter.ballIntake(1, 1);
+//			 }
+//			// else {
+//			// Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+//			// }
+//			
 
 		}
 
@@ -306,6 +325,7 @@ public class Robot extends IterativeRobot {
 
 	public void disabledInit() {
 		Vision.closeFile();
+		prox.set(true);
 	}
 
 	public void disabledPeriodic() {
