@@ -340,7 +340,7 @@ public class Drive implements Runnable {
 	private void turn(double degrees) {
 		double speed = 0.5;
 		double heading = getHeading();
-		while (heading > (degrees + 0.5) || heading < (degrees - 0.5)) {
+		while (heading > (degrees + 1) || heading < (degrees - 1)) {
 			if (heading < degrees) {
 				speed = -0.5;
 				double distance = (360-degrees) + heading;
@@ -348,12 +348,14 @@ public class Drive implements Runnable {
 				{
 					speed=0.5;
 				}
+				System.out.println("1: " + heading + " " + speed + " " + distance + " " + degrees);
 			} else if (heading > degrees) {
 				double distance = degrees + (360-heading);
 				speed = 0.5;
 				if(distance < (heading-degrees)){
 					speed = -0.5;
 				}
+				System.out.println("2: " + heading + " " + speed + " " + distance + " " + degrees);
 			}
 			drive(0.0, 0.0, speed, 0);
 			heading = getHeading();

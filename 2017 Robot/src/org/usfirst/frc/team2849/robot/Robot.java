@@ -105,20 +105,28 @@ public class Robot extends IterativeRobot {
 	 * SendableChooser make sure to add them to the chooser code above as well.
 	 */
 	public void autonomousInit() {
+		System.out.println(autoSelector.getCameras());
+		System.out.println(autoSelector.getAutoMode());
+		System.out.println(autoSelector.getStartPosition());
 		ahrs.reset();
 		ahrs.zeroYaw();
 		LinkedList<AutoMode> modes = new LinkedList<AutoMode>();
-		modes.add(AutoMode.CROSS);
-		Autonomous.auto(() -> !this.isAutonomous(), modes, StartPosition.LEFT, drive);
+		modes.add(autoSelector.getAutoMode());
+		Autonomous.auto(() -> !this.isAutonomous(), modes, autoSelector.getStartPosition(), drive);
 		drive.setHeadingOffset(0);
 
+		if(autoSelector.getCameras()==0){
+			Vision.setCameras(1, 0);
+		} else {
+			Vision.setCameras(0, 1);
+		}
 	}
 
 	/**
 	 * This function is called periodically during autonomous
 	 */
 	public void autonomousPeriodic() {
-		System.out.println(drive.getHeading());
+//		System.out.println(drive.getHeading());
 	}
 
 	public void teleopInit() {
@@ -126,6 +134,12 @@ public class Robot extends IterativeRobot {
 		ahrs.zeroYaw();
 		ahrs.resetDisplacement();
 		drive.setHeadingOffset(45);
+		
+		if(autoSelector.getCameras()==0){
+			Vision.setCameras(1, 0);
+		} else {
+			Vision.setCameras(0, 1);
+		}
 	}
 
 	/**
@@ -134,6 +148,7 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
+		
 		try {
 			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
 			// {
@@ -145,6 +160,17 @@ public class Robot extends IterativeRobot {
 
 		if (joy.getButton(1)) {
 			Shooter.startShoot(() -> !joy.getButton(1));
+		}
+		
+		if (joy.getButton(5)) {
+			Climber.setForwards(true);
+			Climber.climb(() -> !joy.getButton(5));
+		}
+
+		// run climber to unwind rope
+		if (joy.getButton(6)) {
+			Climber.setBackwards(true);
+			Climber.climb(() -> !joy.getButton(6));
 		}
 
 		/*

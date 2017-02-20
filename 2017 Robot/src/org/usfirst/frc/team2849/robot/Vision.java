@@ -51,6 +51,7 @@ public class Vision implements Runnable {
 	private static Mat source = new Mat();
 	private static Mat output = new Mat();
 	private static Mat temp = new Mat();
+	private static Mat distanceTemp = new Mat();
 
 	// String for the peg side the robot is going to auto align to
 	private static String pegSide = "right";
@@ -98,6 +99,8 @@ public class Vision implements Runnable {
 
 		cvSink = CameraServer.getInstance().getVideo(camera0);
 		outputStream = CameraServer.getInstance().putVideo("Camera 1", 160, 120);
+		cvSink.grabFrame(source);
+		Imgproc.cvtColor(source, distanceTemp, Imgproc.COLOR_BGR2GRAY);
 	}
 
 	public static void visionInit(Drive drive) {
@@ -106,8 +109,10 @@ public class Vision implements Runnable {
 	}
 
 	public void run() {
+
 		while (true) {
 			cvSink.grabFrame(source);
+			getDistance(cvSink, outputStream);
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
 				// TODO when we run autoAlign we get too many simultaneous
@@ -117,14 +122,13 @@ public class Vision implements Runnable {
 				autoAlign();
 				runAutoAlign = false;
 			} else {
-				Imgproc.cvtColor(source, output, Imgproc.COLOR_BGR2GRAY);
 			}
 
 			// TODO test and see if code works without this
 			// we have a putVideo line 98, do we need putFrame?
 			try {
 				if (cameraNumber == gearCam) {
-					outputStream.putFrame(output);
+					outputStream.putFrame(distanceTemp);
 				} else {
 					outputStream.putFrame(source);
 				}
@@ -145,19 +149,19 @@ public class Vision implements Runnable {
 		 * facing relative to a default angle (0 degrees) set at robotInit and
 		 * set it to a specific angle depending on which side we are on
 		 */
-		switch (pegSide) {
-		case "left":
-			drive.turnToAngle(-40.0);
-			break;
-		case "right":
-			drive.turnToAngle(40.0);
-			break;
-		case "middle":
-			drive.turnToAngle(0.0);
-		default:
-			break;
-		}
-		System.out.println(pegSide);
+		// switch (pegSide) {
+		// case "left":
+		// drive.turnToAngle(50.0);
+		// break;
+		// case "right":
+		// drive.turnToAngle(-42.0);
+		// break;
+		// case "middle":
+		// drive.turnToAngle(0.0);
+		// default:
+		// break;
+		// }
+		// System.out.println(pegSide);
 
 		// TODO Why is this commented out? Do we need it?
 		// returns distance that the robot needs to move
@@ -168,11 +172,11 @@ public class Vision implements Runnable {
 			// the robot wasn't moving with mechDriveDistance, so we want to try
 			// driveDistance to see if that fixes it
 			// drive.mechDriveDistance(distance, 270);
-			drive.driveDirection(270, 500);
+			drive.driveDirection(270, 400);
 		} else {
 			// if the tapes are to the left of center, then move left
 			// drive.mechDriveDistance(distance, 90);
-			drive.driveDirection(90, 500);
+			drive.driveDirection(90, 400);
 		}
 
 		/*
@@ -183,7 +187,7 @@ public class Vision implements Runnable {
 		if (Math.abs(distance) < 0.0825) {
 			// move forward
 			// drive.mechDriveDistance(1, 180);
-			drive.driveDirection(0, 500);
+			drive.driveDirection(180, 750);
 		} else {
 			int i;
 			for (i = 3; Math.abs(distance) > 0.08255 && i > 0; i--) {
@@ -192,19 +196,19 @@ public class Vision implements Runnable {
 					// if the tapes are to the right of the center, then move
 					// right
 					// drive.mechDriveDistance(distance, 270);
-					drive.driveDirection(270, 250);
+					drive.driveDirection(270, 200);
 				} else {
 					// if the tapes are to the left of center, then move left
 					// drive.mechDriveDistance(distance, 90);
-					drive.driveDirection(90, 250);
+					drive.driveDirection(90, 200);
 				}
 
 			}
 			if (i == 0) {
 				System.out.println("ERROR: AUTO ALIGN FAILED :( ");
-			} else {
-				drive.driveDirection(0, 500);
 			}
+
+			drive.driveDirection(180, 850);
 
 		}
 
@@ -241,10 +245,15 @@ public class Vision implements Runnable {
 		Imgproc.threshold(temp, temp, 200, 600, Imgproc.THRESH_BINARY);
 		// only shows the outlines of each object seen in the image (rectangles
 		// from tape and/or lights)
-		Imgproc.Canny(temp, output, 210, 215);
+		Imgproc.Canny(temp, output, 200, 255);
 		// finds the information for those lines which we can use for autoalign
 		Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
 
+		// if there are no contours, return nothing
+		if (contours.size() == 0) {
+			return Double.NaN;
+		}
+		
 		// Finds the contours w/ largest and second largest areas and their
 		// index in the matrix
 		for (int i = 0; i < contours.size(); i++) {
@@ -260,11 +269,6 @@ public class Vision implements Runnable {
 			}
 		}
 
-		// if there are no contours, return nothing
-		if (contours.size() == 0) {
-			return Double.NaN;
-		}
-
 		maxContours.add(contours.get(maxIndex));
 		maxContours.add(contours.get(almostMaxIndex));
 
@@ -275,6 +279,9 @@ public class Vision implements Runnable {
 		Rect rec2 = Imgproc.boundingRect(maxContours.get(1));
 		Imgproc.rectangle(output, new Point(rec2.x, rec2.y), new Point(rec2.x + rec2.width, rec2.y + rec2.height),
 				new Scalar(500.0d));
+		
+		output.copyTo(distanceTemp);
+		
 
 		// pixels to inches conversion factor 2 inches over average of widths
 		conversion = 4.0 / (rec1.width + rec2.width);
@@ -347,6 +354,7 @@ public class Vision implements Runnable {
 	public static void setCameras(int shooterCam, int gearCam) {
 		Vision.shooterCam = shooterCam;
 		Vision.gearCam = gearCam;
+		switchCamera(0);
 	}
 
 	public static boolean getIsSwitched() {

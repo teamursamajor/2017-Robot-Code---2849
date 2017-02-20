@@ -61,15 +61,28 @@ public class Autonomous implements Runnable {
 		if (previousMode == AutoMode.GEAR) {
 			if (position == StartPosition.LEFT) {
 				drive.driveDirection(180, 2000);
-				drive.turnAngle(40);
-				drive.driveDirection(180, 500);
+				drive.turnAngle(50);
+				drive.driveDirection(180, 750);
 			} else if (position == StartPosition.RIGHT) {
 				drive.driveDirection(180, 2000);
 				drive.turnAngle(-40);
-				drive.driveDirection(180, 500);
-//				drive.driveDirection(90, 1000);
+				drive.driveDirection(180, 600);
+				try {
+					Thread.sleep(1000);
+				} catch (Exception e) {
+
+				}
+				Vision.setRunAutoAlign(true);
+				// drive.driveDirection(90, 1000);
 			} else if (position == StartPosition.CENTER) {
-				drive.driveDirection(180, 1500);
+				drive.driveDirection(180, 1900);
+				drive.turnAngle(3);
+				try {
+					Thread.sleep(5000);
+				} catch (Exception e) {
+
+				}
+				Vision.setRunAutoAlign(true);
 			}
 		} else if (previousMode == AutoMode.SHOOT) {
 			drive.driveDirection(180, 2000);
@@ -95,11 +108,11 @@ public class Autonomous implements Runnable {
 		autoRunner.start();
 	}
 
+	enum AutoMode {
+		CROSS, SHOOT, GEAR, NONE;
+	}
 
-enum AutoMode {
-	CROSS, SHOOT, GEAR, NONE;
-}
- enum StartPosition {
-	LEFT, RIGHT, CENTER
-}
+	enum StartPosition {
+		LEFT, RIGHT, CENTER
+	}
 }
