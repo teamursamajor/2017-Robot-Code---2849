@@ -389,7 +389,12 @@ public class Vision implements Runnable {
 	}
 
 	public static void closeFile() {
-		file.close();
+		try {
+			file.close();
+		} catch(Exception e) {
+			
+		}
+		
 	}
 }
 // VISION III: PLEASE HELP ME coming to theaters near you January 2018

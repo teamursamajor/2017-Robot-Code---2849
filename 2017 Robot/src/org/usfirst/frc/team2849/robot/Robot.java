@@ -4,12 +4,13 @@ package org.usfirst.frc.team2849.robot;
 import java.util.LinkedList;
 
 import org.usfirst.frc.team2849.robot.Autonomous.AutoMode;
-import org.usfirst.frc.team2849.robot.Autonomous.StartPosition;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* TODO Organize layout and resolve button conflicts
@@ -50,7 +51,9 @@ public class Robot extends IterativeRobot {
 	// public static XboxController xbox = new XboxController(0);
 
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
-
+	
+	private Ultrasonic ultra = new Ultrasonic(0);
+	
 	private Drive drive;
 	private int povAngle = 0;
 	private double currentAngle = 0.0;
@@ -66,6 +69,8 @@ public class Robot extends IterativeRobot {
 	private final int BACK_RIGHT_DRIVE = 8;
 
 	private AutoSelector autoSelector;
+	
+	private Solenoid prox = new Solenoid(0);
 
 	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
@@ -82,12 +87,14 @@ public class Robot extends IterativeRobot {
 		 */
 		drive = new Drive(FRONT_LEFT_DRIVE, BACK_LEFT_DRIVE, FRONT_RIGHT_DRIVE, BACK_RIGHT_DRIVE, ahrs);
 		drive.startDrive();
+		
+		prox.set(true);
 
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
 
 		// creates camera feeds
-		Vision.visionInit(drive);
+		//Vision.visionInit(drive);
 
 		autoSelector = new AutoSelector();
 		autoSelector.initialize();
@@ -135,11 +142,11 @@ public class Robot extends IterativeRobot {
 		ahrs.resetDisplacement();
 		drive.setHeadingOffset(45);
 		
-		if(autoSelector.getCameras()==0){
+		/*if(autoSelector.getCameras()==0){
 			Vision.setCameras(1, 0);
 		} else {
 			Vision.setCameras(0, 1);
-		}
+		}*/
 	}
 
 	/**
@@ -148,81 +155,82 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
+		System.out.println("Distance: " + ultra.getDistance());
 		
-		try {
-			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
-			// {
-			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
-			// }
-		} catch (NullPointerException e) {
-			e.printStackTrace();
-		}
-
-		if (joy.getButton(1)) {
-			Shooter.startShoot(() -> !joy.getButton(1));
-		}
-		
-		if (joy.getButton(5)) {
-			Climber.setForwards(true);
-			Climber.climb(() -> !joy.getButton(5));
-		}
-
-		// run climber to unwind rope
-		if (joy.getButton(6)) {
-			Climber.setBackwards(true);
-			Climber.climb(() -> !joy.getButton(6));
-		}
-
-		/*
-		 * switch camera from gear to shooter when trigger is pressed and then
-		 * switch back to gear when trigger is released
-		 * 
-		 * This should be getButton, not getSingleButtonPress
-		 */
-
-		// if the camera is on shooter cam when shooting is done, switch it back
-		// to front cam
-
-		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
-			System.out.println("switch to shooter camera");
-			Vision.switchCamera(1);
-		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
-			System.out.println("switch to front cam");
-			Vision.switchCamera(0);
-		}
-		currentAngle = drive.getHeading();
-		// TODO add a y deadzone for anglelock
-		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
-
-		if (joy.getButton(3)) {
-			Shooter.ballIntake(1.0);
-		} else{
-			Shooter.ballIntake(0.0);
-		}
-		
-		// else {
-		// Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
-		// }
-
-		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
-		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
-		//
-		// if (joy.getButton(LogitechFlightStick.BUTTON_Side8)) {
-		// Shooter.clearIntake(joy);
-		// }
-
-		// run auto align for the three different gear pegs
-
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-			Vision.setPegSide("left");
-			Vision.setRunAutoAlign(true);
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-			Vision.setPegSide("middle");
-			Vision.setRunAutoAlign(true);
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-			Vision.setPegSide("right");
-			Vision.setRunAutoAlign(true);
-		}
+//		try {
+//			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
+//			// {
+//			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
+//			// }
+//		} catch (NullPointerException e) {
+//			e.printStackTrace();
+//		}
+//
+//		if (joy.getButton(1)) {
+//			Shooter.startShoot(() -> !joy.getButton(1));
+//		}
+//		
+//		if (joy.getButton(5)) {
+//			Climber.setForwards(true);
+//			Climber.climb(() -> !joy.getButton(5));
+//		}
+//
+//		// run climber to unwind rope
+//		if (joy.getButton(6)) {
+//			Climber.setBackwards(true);
+//			Climber.climb(() -> !joy.getButton(6));
+//		}
+//
+//		/*
+//		 * switch camera from gear to shooter when trigger is pressed and then
+//		 * switch back to gear when trigger is released
+//		 * 
+//		 * This should be getButton, not getSingleButtonPress
+//		 */
+//
+//		// if the camera is on shooter cam when shooting is done, switch it back
+//		// to front cam
+//
+//		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
+//			System.out.println("switch to shooter camera");
+//			Vision.switchCamera(1);
+//		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
+//			System.out.println("switch to front cam");
+//			Vision.switchCamera(0);
+//		}
+//		currentAngle = drive.getHeading();
+//		// TODO add a y deadzone for anglelock
+//		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
+//
+//		if (joy.getButton(3)) {
+//			Shooter.ballIntake(1.0);
+//		} else{
+//			Shooter.ballIntake(0.0);
+//		}
+//		
+//		// else {
+//		// Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+//		// }
+//
+//		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
+//		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
+//		//
+//		// if (joy.getButton(LogitechFlightStick.BUTTON_Side8)) {
+//		// Shooter.clearIntake(joy);
+//		// }
+//
+//		// run auto align for the three different gear pegs
+//
+//		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
+//			Vision.setPegSide("left");
+//			Vision.setRunAutoAlign(true);
+//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
+//			Vision.setPegSide("middle");
+//			Vision.setRunAutoAlign(true);
+//		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+//			Vision.setPegSide("right");
+//			Vision.setRunAutoAlign(true);
+//		}
 	}
 
 	public void testInit() {
