@@ -56,7 +56,7 @@ public class Autonomous implements Runnable {
 	public void shoot(AutoMode previousMode) {
 
 	}
-
+	
 	public void gear(AutoMode previousMode) {
 		if (previousMode == AutoMode.GEAR) {
 			if (position == StartPosition.LEFT) {
