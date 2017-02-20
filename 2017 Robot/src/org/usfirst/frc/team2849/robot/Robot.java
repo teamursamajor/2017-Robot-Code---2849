@@ -198,7 +198,8 @@ public class Robot extends IterativeRobot {
 		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
 
 		if (joy.getButton(3)) {
-			Shooter.ballIntake(1.0);
+			//TODO this was 1.0 and running backwards
+			Shooter.ballIntake(-1.0);
 		} else{
 			Shooter.ballIntake(0.0);
 		}
