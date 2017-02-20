@@ -7,10 +7,8 @@ import org.usfirst.frc.team2849.robot.Autonomous.AutoMode;
 
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* TODO Organize layout and resolve button conflicts
@@ -70,8 +68,6 @@ public class Robot extends IterativeRobot {
 
 	private AutoSelector autoSelector;
 	
-	private Solenoid prox = new Solenoid(0);
-
 	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
 	/**
@@ -88,8 +84,6 @@ public class Robot extends IterativeRobot {
 		drive = new Drive(FRONT_LEFT_DRIVE, BACK_LEFT_DRIVE, FRONT_RIGHT_DRIVE, BACK_RIGHT_DRIVE, ahrs);
 		drive.startDrive();
 		
-		prox.set(true);
-
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
 
