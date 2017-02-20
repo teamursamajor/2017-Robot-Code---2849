@@ -305,7 +305,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void disabledInit() {
-
+		Vision.closeFile();
 	}
 
 	public void disabledPeriodic() {

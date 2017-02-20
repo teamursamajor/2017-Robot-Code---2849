@@ -1,10 +1,13 @@
 package org.usfirst.frc.team2849.robot;
 
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.opencv.imgcodecs.*;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
@@ -79,8 +82,16 @@ public class Vision implements Runnable {
 	private static int cameraNumber = 0;
 	private static int shooterCam = 1;
 	private static int gearCam = 0;
+	private static PrintWriter file;
 
 	public Vision(Drive drive) {
+
+		try {
+			file = new PrintWriter("/home/lvuser/vision.txt");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
 		// default peg side to middle
 		pegSide = "right";
 
@@ -227,6 +238,8 @@ public class Vision implements Runnable {
 	 * @return double distance
 	 */
 	public static double getDistance(CvSink cvSink, CvSource outputStream) {
+		String str = "";
+
 		// clear stuff
 		maxArea = 0;
 		almostMaxArea = 0;
@@ -251,9 +264,10 @@ public class Vision implements Runnable {
 
 		// if there are no contours, return nothing
 		if (contours.size() == 0) {
+			str += " size is 0 ";
 			return Double.NaN;
 		}
-		
+
 		// Finds the contours w/ largest and second largest areas and their
 		// index in the matrix
 		for (int i = 0; i < contours.size(); i++) {
@@ -269,6 +283,8 @@ public class Vision implements Runnable {
 			}
 		}
 
+		str += "\nmax area: " + maxArea + " almost max area: " + almostMaxArea;
+
 		maxContours.add(contours.get(maxIndex));
 		maxContours.add(contours.get(almostMaxIndex));
 
@@ -279,9 +295,10 @@ public class Vision implements Runnable {
 		Rect rec2 = Imgproc.boundingRect(maxContours.get(1));
 		Imgproc.rectangle(output, new Point(rec2.x, rec2.y), new Point(rec2.x + rec2.width, rec2.y + rec2.height),
 				new Scalar(500.0d));
-		
+
+		str += "\nrec1 x: " + rec1.x + " rec1 y: " + rec1.y + "rec2 x: " + rec2.x + " rec2 y: " + rec2.y;
+
 		output.copyTo(distanceTemp);
-		
 
 		// pixels to inches conversion factor 2 inches over average of widths
 		conversion = 4.0 / (rec1.width + rec2.width);
@@ -304,6 +321,16 @@ public class Vision implements Runnable {
 
 		// find center of the frame
 		centerOfFrame = output.width() / 2.0;
+
+		str += "\ncenter of tapes: " + centerOfTapes + " center of frame: " + centerOfFrame + "\n\n";
+
+		try {
+			file.println(str);
+			file.flush();
+			Imgcodecs.imwrite("/home/lvuser/vision.jpg", distanceTemp);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// find distance to move
 		return ((centerOfTapes - centerOfFrame) * conversion) * 0.0254;
@@ -359,6 +386,10 @@ public class Vision implements Runnable {
 
 	public static boolean getIsSwitched() {
 		return isSwitched;
+	}
+
+	public static void closeFile() {
+		file.close();
 	}
 }
 // VISION III: PLEASE HELP ME coming to theaters near you January 2018
