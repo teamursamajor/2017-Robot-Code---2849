@@ -136,7 +136,7 @@ public class Vision implements Runnable {
 			// we have a putVideo line 98, do we need putFrame?
 			try {
 				if (cameraNumber == gearCam) {
-					outputStream.putFrame(distanceTemp);
+					outputStream.putFrame(source);
 				} else {
 					outputStream.putFrame(source);
 				}
@@ -173,7 +173,7 @@ public class Vision implements Runnable {
 			}
 		}
 
-		Drive.setAutoDrive(true);
+//		Drive.setAutoDrive(true);
 
 		distance = getDistance(cvSink, outputStream);
 
@@ -181,12 +181,12 @@ public class Vision implements Runnable {
 			// if the tapes are to the right of the center, then move right
 			// the robot wasn't moving with mechDriveDistance, so we want to try
 			// driveDistance to see if that fixes it
-			// drive.mechDriveDistance(distance, 270);
-			drive.driveDirection(270, 400);
+			 drive.mechDriveDistance(distance, 90);
+//			drive.driveDirection(270, 400);
 		} else {
 			// if the tapes are to the left of center, then move left
-			// drive.mechDriveDistance(distance, 90);
-			drive.driveDirection(90, 400);
+			 drive.mechDriveDistance(distance, 270);
+//			drive.driveDirection(90, 400);
 		}
 
 		/*

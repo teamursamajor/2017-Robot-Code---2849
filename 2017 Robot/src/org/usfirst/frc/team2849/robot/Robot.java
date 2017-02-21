@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+//on right, starting 49in from edge of field
+
 /* these buttons are accurate for both teleop and test
  * Dpad Up: exact driving
  * Dpad Down: exact driving
@@ -209,7 +211,7 @@ public class Robot extends IterativeRobot {
 		if (joy.getButton(3)) {
 			Shooter.ballIntake(-1.0);
 		} else {
-			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+//			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
 		}
 
 		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),

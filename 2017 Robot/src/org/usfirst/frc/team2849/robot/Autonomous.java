@@ -35,6 +35,7 @@ public class Autonomous implements Runnable {
 				gear(previousMode);
 				break;
 			case NONE:
+				break;
 			default:
 				// do nothing
 				break;
@@ -50,23 +51,27 @@ public class Autonomous implements Runnable {
 		if (isKilled())
 			return;
 		if(previousMode == AutoMode.GEAR){
-		if (position == StartPosition.LEFT || position == StartPosition.RIGHT) {
+		if (position == StartPosition.LEFT) {
 			drive.driveDirection(0, 1000);
-			drive.turnToAngle(0);
-			drive.driveDirection(180);
+			drive.turnAngle(-30);
+			drive.driveDirection(0);
+		} else if(position == StartPosition.RIGHT){
+			drive.driveDirection(0, 1000);
+			drive.turnAngle(40);
+			drive.driveDirection(0);
 		} else {
 			if (team.equals("blue")) {
 				drive.driveDirection(0, 1900);
-				drive.turnAngle(-90);
-				drive.driveDirection(180, 2000);
+				drive.turnAngle(-100);
+				drive.driveDirection(180, 1700);
 				drive.driveDirection(90);
-				drive.driveDirection(180);
+				drive.driveDirection(0);
 			} else {
 				drive.driveDirection(0, 1900);
-				drive.turnAngle(90);
-				drive.driveDirection(180, 2000);
+				drive.turnAngle(100);
+				drive.driveDirection(180, 1700);
 				drive.driveDirection(-90);
-				drive.driveDirection(180);
+				drive.driveDirection(0);
 			}
 		}
 		}
@@ -85,29 +90,35 @@ public class Autonomous implements Runnable {
 			return;
 		if (previousMode == AutoMode.GEAR) {
 			if (position == StartPosition.LEFT) {
-				drive.driveDirection(180, 2000);
-				drive.turnAngle(50);
-				drive.driveDirection(180, 750);
+				drive.driveDirection(180, 1900);
+				drive.turnToAngle(45);
+				drive.driveDirection(180, 300);
+				try {
+					Thread.sleep(1000);
+				} catch (Exception e) {
+				}
+				Vision.setRunAutoAlign(true);
 			} else if (position == StartPosition.RIGHT) {
-				drive.driveDirection(180, 2000);
-				drive.turnAngle(-40);
-				drive.driveDirection(180, 600);
+				drive.driveDirection(180, 1850);
+				drive.turnToAngle(-40);
+				drive.driveDirection(180, 300);
 				try {
 					Thread.sleep(1000);
 				} catch (Exception e) {
 
 				}
 				Vision.setRunAutoAlign(true);
-				// drive.driveDirection(90, 1000);
 			} else if (position == StartPosition.CENTER) {
-				drive.driveDirection(180, 1900);
-				drive.turnAngle(3);
+				drive.driveDirection(190, 1400);
 				try {
-					Thread.sleep(5000);
+					Thread.sleep(1000);
 				} catch (Exception e) {
-
 				}
 				Vision.setRunAutoAlign(true);
+			}
+			try {
+				Thread.sleep(9000);
+			} catch (InterruptedException e) {
 			}
 		} else if (previousMode == AutoMode.SHOOT) {
 			drive.driveDirection(180, 2000);

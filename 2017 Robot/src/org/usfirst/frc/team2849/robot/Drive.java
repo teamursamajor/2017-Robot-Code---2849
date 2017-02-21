@@ -37,6 +37,9 @@ public class Drive implements Runnable { //Its wings are too small to get
 	private boolean headless = true; //Very proud.
 
 	private double headingOffset = 0.0; //Ma! I got a thing going here.
+	
+	private Ultrasonic ultra = new Ultrasonic(0, 7);
+	private static boolean autoDrive = false;
 
 	/** //- You got lint on your fuzz.
 	 * Drive constructor for 4-motor drive. //- Ow! That's me!
@@ -264,8 +267,8 @@ public class Drive implements Runnable { //Its wings are too small to get
 		driveDirection(angleDeg); //You know, Dad,
 		long time = System.currentTimeMillis(); //the more I think about it,
 		while (displacement <= distance) { //maybe the honey field
-			displacement += Math.hypot(ahrs.getRawAccelX() * 9.81, ahrs.getRawAccelZ() * 9.81) //just isn't right for me.
-					* .5 * Math.pow((System.currentTimeMillis() - time) / 1000, 2); //You were thinking of what,
+			displacement += Math.abs(Math.hypot(ahrs.getRawAccelX() * 9.81, ahrs.getRawAccelZ() * 9.81) //just isn't right for me.
+					* .5 * Math.pow((System.currentTimeMillis() - time) / 1000, 2)); //You were thinking of what,
 			try { //making balloon animals?
 				Thread.sleep(1); //That's a bad job
 			} catch (InterruptedException e) { //for a guy with a stinger.
@@ -348,14 +351,14 @@ public class Drive implements Runnable { //Its wings are too small to get
 				{ //Another call coming in.
 					speed=0.5; //If anyone's feeling brave,
 				} //there's a Korean deli on 83rd
-				System.out.println("1: " + heading + " " + speed + " " + distance + " " + degrees); //that gets their roses today.
+//				System.out.println("1: " + heading + " " + speed + " " + distance + " " + degrees); //that gets their roses today.
 			} else if (heading > degrees) { //Hey, guys.
 				double distance = degrees + (360-heading); //- Look at that.
 				speed = 0.5; //- Isn't that the kid we saw yesterday?
 				if(distance < (heading-degrees)){ //Hold it, son, flight deck's restricted.
 					speed = -0.5; //It's OK, Lou. We're gonna take him up.
 				} //Really? Feeling lucky, are you?
-				System.out.println("2: " + heading + " " + speed + " " + distance + " " + degrees); //Sign here, here. Just initial that.
+//				System.out.println("2: " + heading + " " + speed + " " + distance + " " + degrees); //Sign here, here. Just initial that.
 			} //- Thank you.
 			drive(0.0, 0.0, speed, 0); //- OK.
 			heading = getHeading(); //You got a rain advisory today,

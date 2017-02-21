@@ -16,17 +16,17 @@ public class AutoSelector {
 
 	public void initialize(){
 		autoModeChooser1 = new SendableChooser<String>();
-		autoModeChooser1.addDefault("Cross", "0");
-		autoModeChooser1.addObject("Shoot", "1");
-		autoModeChooser1.addObject("Gear", "2");
-		autoModeChooser1.addObject("None", "3");
+		autoModeChooser1.addDefault("1: Cross", "0");
+		autoModeChooser1.addObject("1: Shoot", "1");
+		autoModeChooser1.addObject("1: Gear", "2");
+		autoModeChooser1.addObject("1: None", "3");
 		SmartDashboard.putData("Auto Mode Chooser 1", autoModeChooser1);
 		
 		autoModeChooser2 = new SendableChooser<String>();
-		autoModeChooser2.addDefault("Cross", "0");
-		autoModeChooser2.addObject("Shoot", "1");
-		autoModeChooser2.addObject("Gear", "2");
-		autoModeChooser2.addObject("None", "3");
+		autoModeChooser2.addDefault("2: Cross", "0");
+		autoModeChooser2.addObject("2: Shoot", "1");
+		autoModeChooser2.addObject("2: Gear", "2");
+		autoModeChooser2.addObject("2: None", "3");
 		SmartDashboard.putData("Auto Mode Chooser 2", autoModeChooser2);
 		
 		sideChooser = new SendableChooser<String>();
