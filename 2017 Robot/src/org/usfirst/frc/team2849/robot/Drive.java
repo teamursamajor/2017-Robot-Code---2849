@@ -38,6 +38,9 @@ public class Drive implements Runnable {
 
 	private double headingOffset = 0.0;
 
+	private Ultrasonic ultra = new Ultrasonic(7, 0);
+	private static boolean autoDrive = false;
+
 	/**
 	 * Drive constructor for 4-motor drive.
 	 * 
@@ -203,7 +206,8 @@ public class Drive implements Runnable {
 	 *            An angle measurement in degrees.
 	 */
 	public void driveDirection(double angleDeg) {
-
+		if (Autonomous.isKilled())
+			return;
 		drive(0, .5, 0, -angleDeg);
 
 	}
@@ -221,6 +225,10 @@ public class Drive implements Runnable {
 		drive(0, -.5, 0, -angleDeg);
 
 		while (System.currentTimeMillis() - timer < time) {
+			if (Autonomous.isKilled()) {
+				drive(0, 0, 0, 0);
+				return;
+			}
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
@@ -264,8 +272,8 @@ public class Drive implements Runnable {
 		driveDirection(angleDeg);
 		long time = System.currentTimeMillis();
 		while (displacement <= distance) {
-			displacement += Math.hypot(ahrs.getRawAccelX() * 9.81, ahrs.getRawAccelZ() * 9.81)
-					* .5 * Math.pow((System.currentTimeMillis() - time) / 1000, 2);
+			displacement += Math.hypot(ahrs.getRawAccelX() * 9.81, ahrs.getRawAccelZ() * 9.81) * .5
+					* Math.pow((System.currentTimeMillis() - time) / 1000, 2);
 			try {
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
@@ -283,8 +291,20 @@ public class Drive implements Runnable {
 	 */
 	public void run() {
 		while (true) {
-			mecanumDrive(Drive.xaxis, Drive.yaxis, Drive.zaxis, Drive.angle);
+			if (autoDrive) {
+				if (ultra.getDistance() < 6.0) {
+					drive(0, 0, 0, 0);
+				} else {
+					mecanumDrive(Drive.xaxis, Drive.yaxis, Drive.zaxis, Drive.angle);
+				}
+			} else {
+				mecanumDrive(Drive.xaxis, Drive.yaxis, Drive.zaxis, Drive.angle);
+			}
 		}
+	}
+	
+	public static void setAutoDrive(boolean autoDrive){
+		Drive.autoDrive=autoDrive;
 	}
 
 	/**
@@ -343,16 +363,15 @@ public class Drive implements Runnable {
 		while (heading > (degrees + 1) || heading < (degrees - 1)) {
 			if (heading < degrees) {
 				speed = -0.5;
-				double distance = (360-degrees) + heading;
-				if(distance < (degrees-heading))
-				{
-					speed=0.5;
+				double distance = (360 - degrees) + heading;
+				if (distance < (degrees - heading)) {
+					speed = 0.5;
 				}
 				System.out.println("1: " + heading + " " + speed + " " + distance + " " + degrees);
 			} else if (heading > degrees) {
-				double distance = degrees + (360-heading);
+				double distance = degrees + (360 - heading);
 				speed = 0.5;
-				if(distance < (heading-degrees)){
+				if (distance < (heading - degrees)) {
 					speed = -0.5;
 				}
 				System.out.println("2: " + heading + " " + speed + " " + distance + " " + degrees);
@@ -376,7 +395,7 @@ public class Drive implements Runnable {
 		}
 		turn(desired);
 	}
-	
+
 	public void turnToAngle(double degrees) {
 		double heading = 0;
 		double desired;

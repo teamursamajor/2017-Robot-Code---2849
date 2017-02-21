@@ -13,6 +13,9 @@ public class Shooter implements Runnable {
 	private static Spark leftShooter = new Spark(7);
 	private static Spark rightShooter = new Spark(6);
 
+	private static Spark leftFeeder = new Spark(4);
+	private static Spark rightFeeder = new Spark(5);
+
 	private static Spark intake = new Spark(3);
 
 	private static EndCondition ending = null;
@@ -36,7 +39,12 @@ public class Shooter implements Runnable {
 	 */
 	private Shooter(EndCondition ending) {
 		rightShooter.setInverted(true);
+		rightFeeder.setInverted(true);
 		Shooter.ending = ending;
+	}
+	
+	public static void shooterInit(Drive drive) {
+		Shooter.drive = drive;
 	}
 
 	/**
@@ -45,11 +53,10 @@ public class Shooter implements Runnable {
 	 */
 	@Override
 	public void run() {
-		System.out.println(ending.done());
+		leftShooter.set(leftPower);
+		rightShooter.set(rightPower);
+		feed(true);
 		while (!ending.done()) {
-			System.out.println("LOOPING");
-			leftShooter.set(leftPower);
-			rightShooter.set(rightPower);
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
@@ -58,6 +65,7 @@ public class Shooter implements Runnable {
 		}
 		leftShooter.set(0);
 		rightShooter.set(0);
+		feed(false);
 		synchronized (shooterLock) {
 			System.out.println("Releasing shooter thread");
 			shooterLock = false;
@@ -78,7 +86,7 @@ public class Shooter implements Runnable {
 		}
 		new Thread(new Shooter(ending), "shooter").start();
 	}
-	
+
 	/**
 	 * Sets power to one side according to the last call to switchPower().
 	 * 
@@ -141,16 +149,19 @@ public class Shooter implements Runnable {
 	 *            Reading from the y-axis of the joystick.
 	 */
 	public static void ballIntake(double xaxis, double yaxis) {
-
-		if (Math.abs(joystickAngle(xaxis, yaxis) - (drive.getHeading())) <= 30) {
-			intake.set(1.0);
-		} else {
-			intake.set(0.0);
+		try {
+			if (Math.abs(joystickAngle(xaxis, yaxis) - (drive.getHeading())) <= 30) {
+				intake.set(1.0);
+			} else {
+				intake.set(0.0);
+			}
+		} catch (NullPointerException e) {
+			e.printStackTrace();
 		}
 
 	}
-	
-	public static void ballIntake(double val){
+
+	public static void ballIntake(double val) {
 		intake.set(val);
 	}
 
@@ -172,8 +183,9 @@ public class Shooter implements Runnable {
 	/**
 	 * Clears the intake in case of a ball problem.
 	 * 
-	 * @param The joystick
-	 *            
+	 * @param The
+	 *            joystick
+	 * 
 	 */
 	public static void clearIntake(LogitechFlightStick joy) {
 
@@ -182,5 +194,15 @@ public class Shooter implements Runnable {
 		}
 
 		intake.set(0.0);
+	}
+
+	public static void feed(boolean feeding) {
+		if (feeding) {
+			leftFeeder.set(1);
+			rightFeeder.set(1);
+		} else {
+			leftFeeder.set(0);
+			rightFeeder.set(0);
+		}
 	}
 }

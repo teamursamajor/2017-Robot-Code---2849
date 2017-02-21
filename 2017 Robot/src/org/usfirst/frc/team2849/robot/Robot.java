@@ -4,7 +4,6 @@ package org.usfirst.frc.team2849.robot;
 import java.util.LinkedList;
 
 import org.usfirst.frc.team2849.robot.Autonomous.AutoMode;
-import org.usfirst.frc.team2849.robot.Autonomous.StartPosition;
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -50,8 +49,6 @@ public class Robot extends IterativeRobot {
 
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	
-	private Ultrasonic ultra = new Ultrasonic(7, 0);
-	
 	private Drive drive;
 	private int povAngle = 0;
 	private double currentAngle = 0.0;
@@ -67,6 +64,9 @@ public class Robot extends IterativeRobot {
 	private final int BACK_RIGHT_DRIVE = 8;
 
 	private AutoSelector autoSelector;
+	
+	private static boolean isAutonomous = false;
+	private static boolean isTeleop = false;
 
 	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
@@ -84,6 +84,8 @@ public class Robot extends IterativeRobot {
 		drive = new Drive(FRONT_LEFT_DRIVE, BACK_LEFT_DRIVE, FRONT_RIGHT_DRIVE, BACK_RIGHT_DRIVE, ahrs);
 		drive.startDrive();
 
+		Shooter.shooterInit(drive);
+		
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
 
@@ -106,14 +108,18 @@ public class Robot extends IterativeRobot {
 	 * SendableChooser make sure to add them to the chooser code above as well.
 	 */
 	public void autonomousInit() {
+		isAutonomous = true;
+		isTeleop = false;
 		System.out.println(autoSelector.getCameras());
-		System.out.println(autoSelector.getAutoMode());
+		System.out.println(autoSelector.getAutoMode1());
+		System.out.println(autoSelector.getAutoMode2());
 		System.out.println(autoSelector.getStartPosition());
 		ahrs.reset();
 		ahrs.zeroYaw();
 		LinkedList<AutoMode> modes = new LinkedList<AutoMode>();
-		modes.add(autoSelector.getAutoMode());
-		Autonomous.auto(() -> !this.isAutonomous(), modes, autoSelector.getStartPosition(), drive);
+		modes.add(autoSelector.getAutoMode1());
+		modes.add(autoSelector.getAutoMode2());
+		Autonomous.auto(() -> !this.isAutonomous(), modes, autoSelector.getStartPosition(), autoSelector.getTeam(), drive);
 		drive.setHeadingOffset(0);
 
 		if(autoSelector.getCameras()==0){
@@ -131,6 +137,8 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopInit() {
+		isAutonomous = false;
+		isTeleop = true;
 		ahrs.reset();
 		ahrs.zeroYaw();
 		ahrs.resetDisplacement();
@@ -149,8 +157,6 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
-		System.out.println("Distance: " + ultra.getDistance());
-		System.out.println("Voltage: " + ultra.getVoltage());
 		
 		try {
 			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
@@ -202,13 +208,9 @@ public class Robot extends IterativeRobot {
 
 		if (joy.getButton(3)) {
 			Shooter.ballIntake(-1.0);
-		} else{
-			Shooter.ballIntake(0.0);
+		} else {
+			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
 		}
-		
-		// else {
-		// Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
-		// }
 
 		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
 		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
@@ -327,6 +329,8 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void disabledInit() {
+		isAutonomous = false;
+		isTeleop = false;
 		Vision.closeFile();
 	}
 
@@ -336,5 +340,13 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("IMU_Yaw", ahrs.getYaw());
 		SmartDashboard.putNumber("IMU_Pitch", ahrs.getPitch());
 		SmartDashboard.putNumber("IMU_Roll", ahrs.getRoll());
+	}
+	
+	public static boolean getIsAutonomous(){
+		return isAutonomous;
+	}
+	
+	public static boolean getIsTeleop(){
+		return isTeleop;
 	}
 }

@@ -4,14 +4,13 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import org.opencv.imgcodecs.*;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.CvSource;
@@ -19,7 +18,6 @@ import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.wpilibj.CameraServer;
 
-//TODO test, test, and more testing
 public class Vision implements Runnable {
 	// VISION II: ELECTRIC BOOGALOO
 	// **cue Star Wars music**
@@ -69,6 +67,8 @@ public class Vision implements Runnable {
 	// if true the camera is on shooter cam, if false gear cam
 	private static boolean isSwitched = false;
 
+	//TODO do we need server still? if not, delete it
+	@SuppressWarnings("unused")
 	private static VideoSink server;
 
 	// Gear cam
@@ -126,9 +126,6 @@ public class Vision implements Runnable {
 			getDistance(cvSink, outputStream);
 			if (runAutoAlign) {
 				System.out.println("Running Auto Align");
-				// TODO when we run autoAlign we get too many simultaneous
-				// client streams, but not when we run getDistance
-				// try commenting out all the drive code and see what happens?
 				// System.out.println(getDistance(cvSink, outputStream));
 				autoAlign();
 				runAutoAlign = false;
@@ -160,22 +157,24 @@ public class Vision implements Runnable {
 		 * facing relative to a default angle (0 degrees) set at robotInit and
 		 * set it to a specific angle depending on which side we are on
 		 */
-		// switch (pegSide) {
-		// case "left":
-		// drive.turnToAngle(50.0);
-		// break;
-		// case "right":
-		// drive.turnToAngle(-42.0);
-		// break;
-		// case "middle":
-		// drive.turnToAngle(0.0);
-		// default:
-		// break;
-		// }
-		// System.out.println(pegSide);
+		// TODO check these numbers
+		if (Robot.getIsTeleop()) {
+			switch (pegSide) {
+			case "left":
+				drive.turnToAngle(50.0);
+				break;
+			case "right":
+				drive.turnToAngle(-42.0);
+				break;
+			case "middle":
+				drive.turnToAngle(0.0);
+			default:
+				break;
+			}
+		}
 
-		// TODO Why is this commented out? Do we need it?
-		// returns distance that the robot needs to move
+		Drive.setAutoDrive(true);
+
 		distance = getDistance(cvSink, outputStream);
 
 		if (distance > 0) {
@@ -224,7 +223,7 @@ public class Vision implements Runnable {
 		}
 
 		// TODO is this only for testing
-		System.out.println(distance);
+		System.out.printf("Auto align distance: %f", distance);
 
 	} // end autoAlign
 
@@ -391,10 +390,10 @@ public class Vision implements Runnable {
 	public static void closeFile() {
 		try {
 			file.close();
-		} catch(Exception e) {
-			
+		} catch (Exception e) {
+
 		}
-		
+
 	}
 }
 // VISION III: PLEASE HELP ME coming to theaters near you January 2018
