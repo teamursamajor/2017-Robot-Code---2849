@@ -240,9 +240,9 @@ public class Drive implements Runnable { //Its wings are too small to get
 	 */ //- Maybe I am.
 	public void driveAngle(double angleDeg) { //- You are not!
 
-		mecanumDrive(0, 0, .5, 0); //We're going 0900 at J-Gate.
+		drive(0, 0, .5, 0); //We're going 0900 at J-Gate.
 		if (getHeading() == angleDeg) { //What do you think, buzzy-boy?
-			mecanumDrive(0, 0, 0, 0); //Are you bee enough?
+			drive(0, 0, 0, 0); //Are you bee enough?
 		} //I might be. It all depends
 
 	} //on what 0900 means.
