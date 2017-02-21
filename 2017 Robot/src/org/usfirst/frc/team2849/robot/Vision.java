@@ -67,7 +67,7 @@ public class Vision implements Runnable {
 	// if true the camera is on shooter cam, if false gear cam
 	private static boolean isSwitched = false;
 
-	//TODO do we need server still? if not, delete it
+	// TODO do we need server still? if not, delete it
 	@SuppressWarnings("unused")
 	private static VideoSink server;
 
@@ -152,6 +152,7 @@ public class Vision implements Runnable {
 	 * moving
 	 */
 	public void autoAlign() {
+		Drive.setAutoDrive(true);
 		/*
 		 * This uses the IMU sensor Navx MXP to find the angle the robot is
 		 * facing relative to a default angle (0 degrees) set at robotInit and
@@ -173,20 +174,18 @@ public class Vision implements Runnable {
 			}
 		}
 
-//		Drive.setAutoDrive(true);
-
 		distance = getDistance(cvSink, outputStream);
 
 		if (distance > 0) {
 			// if the tapes are to the right of the center, then move right
 			// the robot wasn't moving with mechDriveDistance, so we want to try
 			// driveDistance to see if that fixes it
-			 drive.mechDriveDistance(distance, 90);
-//			drive.driveDirection(270, 400);
+			drive.mechDriveDistance(distance, 90);
+			// drive.driveDirection(270, 400);
 		} else {
 			// if the tapes are to the left of center, then move left
-			 drive.mechDriveDistance(distance, 270);
-//			drive.driveDirection(90, 400);
+			drive.mechDriveDistance(distance, 270);
+			// drive.driveDirection(90, 400);
 		}
 
 		/*
@@ -224,7 +223,7 @@ public class Vision implements Runnable {
 
 		// TODO is this only for testing
 		System.out.printf("Auto align distance: %f", distance);
-
+		Drive.setAutoDrive(false);
 	} // end autoAlign
 
 	/**

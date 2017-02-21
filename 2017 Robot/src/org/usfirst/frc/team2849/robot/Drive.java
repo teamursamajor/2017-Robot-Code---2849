@@ -285,6 +285,13 @@ public class Drive implements Runnable {
 	 */
 	public void run() { 
 		while (true) { 
+			if(autoDrive){
+				if(ultra.getDistance()<6.0){
+					drive(0,0,0,0);
+				} else {
+					mecanumDrive(Drive.xaxis, Drive.yaxis, Drive.zaxis, Drive.angle);
+				}
+			}
 			mecanumDrive(Drive.xaxis, Drive.yaxis, Drive.zaxis, Drive.angle); 
 		} 
 	} 
@@ -409,4 +416,8 @@ public class Drive implements Runnable {
 	public void setHeadingOffset(double offset) { 
 		this.headingOffset = offset; 
 	} 
+	
+	public static void setAutoDrive(boolean autoDrive){
+		Drive.autoDrive = autoDrive;
+	}
 } 
