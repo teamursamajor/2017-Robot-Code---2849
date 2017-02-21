@@ -10,9 +10,9 @@ public class Ultrasonic extends AnalogInput {
 	private double b = 5.5419;
 	private Solenoid enableSelf;
 		
-	public Ultrasonic(int port){
-		super(port);
-		enableSelf = new Solenoid(port);
+	public Ultrasonic(int aiport, int pcmPort){
+		super(aiport);
+		enableSelf = new Solenoid(pcmPort);
 		enableSelf.set(true);
 	}
 	// returns in inches

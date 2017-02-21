@@ -35,7 +35,7 @@ public class Shooter implements Runnable {
 	 * a new Thread().
 	 */
 	private Shooter(EndCondition ending) {
-		leftShooter.setInverted(true);
+		rightShooter.setInverted(true);
 		Shooter.ending = ending;
 	}
 

@@ -50,7 +50,7 @@ public class Robot extends IterativeRobot {
 
 	private static AHRS ahrs = new AHRS(SPI.Port.kMXP);
 	
-	private Ultrasonic ultra = new Ultrasonic(0);
+	private Ultrasonic ultra = new Ultrasonic(7, 0);
 	
 	private Drive drive;
 	private int povAngle = 0;
@@ -134,7 +134,7 @@ public class Robot extends IterativeRobot {
 		ahrs.reset();
 		ahrs.zeroYaw();
 		ahrs.resetDisplacement();
-		drive.setHeadingOffset(45);
+		drive.setHeadingOffset(0);
 		
 		if(autoSelector.getCameras()==0){
 			Vision.setCameras(1, 0);
@@ -150,6 +150,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
 		System.out.println("Distance: " + ultra.getDistance());
+		System.out.println("Voltage: " + ultra.getVoltage());
 		
 		try {
 			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
@@ -162,9 +163,10 @@ public class Robot extends IterativeRobot {
 
 		if (joy.getButton(1)) {
 			Shooter.startShoot(() -> !joy.getButton(1));
-			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
-			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
 		}
+		
+		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
+//		Shooter.setPowerSided((joy.getAxis(3) - 1) * -.5d);
 		
 		if (joy.getButton(5)) {
 			Climber.setForwards(true);
@@ -199,7 +201,6 @@ public class Robot extends IterativeRobot {
 		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
 
 		if (joy.getButton(3)) {
-			//TODO this was 1.0 and running backwards
 			Shooter.ballIntake(-1.0);
 		} else{
 			Shooter.ballIntake(0.0);
