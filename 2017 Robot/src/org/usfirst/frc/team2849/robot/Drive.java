@@ -204,7 +204,7 @@ public class Drive implements Runnable {
 	 */
 	public void driveDirection(double angleDeg) {
 
-		mecanumDrive(0, .5, 0, -angleDeg);
+		drive(0, .5, 0, -angleDeg);
 
 	}
 
@@ -264,7 +264,7 @@ public class Drive implements Runnable {
 		driveDirection(angleDeg);
 		long time = System.currentTimeMillis();
 		while (displacement <= distance) {
-			displacement += Math.sqrt(Math.pow(ahrs.getRawAccelX() * 9.81, 2) + Math.pow(ahrs.getRawAccelZ() * 9.81, 2))
+			displacement += Math.hypot(ahrs.getRawAccelX() * 9.81, ahrs.getRawAccelZ() * 9.81)
 					* .5 * Math.pow((System.currentTimeMillis() - time) / 1000, 2);
 			try {
 				Thread.sleep(1);
@@ -273,7 +273,7 @@ public class Drive implements Runnable {
 			}
 
 		}
-		mecanumDrive(0, 0, 0, 0);
+		drive(0, 0, 0, 0);
 	}
 
 	/**
