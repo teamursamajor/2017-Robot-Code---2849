@@ -38,8 +38,10 @@ public class Drive implements Runnable {
 
 	private double headingOffset = 0.0;
 	
-	private Ultrasonic ultra = new Ultrasonic(0, 7);
+	public Ultrasonic ultra = new Ultrasonic(0, 7);
 	private static boolean autoDrive = false;
+	
+	private final double STOPPING_DISTANCE = 8.0;
 
 	/** 
 	 * Drive constructor for 4-motor drive.
@@ -286,7 +288,11 @@ public class Drive implements Runnable {
 	public void run() { 
 		while (true) { 
 			if(autoDrive){
-				if(ultra.getDistance()<6.0){
+				System.out.println("Distance: " + ultra.getDistance());
+				System.out.println("Voltage: " + ultra.getVoltage());
+				//checking in centimeters
+				if(ultra.getDistance()<STOPPING_DISTANCE){
+					System.out.println("distance less than STOPPING_DISTANCE, drive stopped");
 					drive(0,0,0,0);
 				} else {
 					mecanumDrive(Drive.xaxis, Drive.yaxis, Drive.zaxis, Drive.angle);

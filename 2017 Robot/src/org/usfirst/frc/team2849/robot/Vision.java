@@ -83,6 +83,8 @@ public class Vision implements Runnable {
 	private static int shooterCam = 1;
 	private static int gearCam = 0;
 	private static PrintWriter file;
+	
+	private final double DIST_MARGIN_ERROR = 0.1;
 
 	public Vision(Drive drive) {
 
@@ -190,9 +192,9 @@ public class Vision implements Runnable {
 			// if the tapes are to the left of center, then move left
 			// drive.mechDriveDistance(distance, 270);
 			if (pegSide.equals("right") || pegSide.equals("left")) {
-				drive.driveDirection(270, 400);
+				drive.driveDirection(90, 400);
 			} else {
-				drive.driveDirection(270, 200);
+				drive.driveDirection(90, 200);
 			}
 		}
 
@@ -201,14 +203,14 @@ public class Vision implements Runnable {
 		 * than 3.25 inches (.08255 meters) Ends after 3 attempts and stops auto
 		 * align
 		 */
-		if (Math.abs(distance) < 0.0825) {
+		if (Math.abs(distance) < DIST_MARGIN_ERROR) {
 			// move forward
 			// drive.mechDriveDistance(1, 180);
 			drive.driveDirection(180, 750);
 		} else {
 			int i;
 			int time = 200;
-			for (i = 3; Math.abs(distance) > 0.08255 && i > 0; i--) {
+			for (i = 3; Math.abs(distance) > DIST_MARGIN_ERROR && i > 0; i--) {
 				distance = getDistance(cvSink, outputStream);
 				if (distance > 0) {
 					// if the tapes are right of the center, then move right

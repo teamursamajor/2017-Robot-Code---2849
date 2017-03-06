@@ -36,8 +36,8 @@ public class AutoSelector {
 		SmartDashboard.putData("Side Chooser", sideChooser);
 		
 		cameraChooser = new SendableChooser<String>();
-		cameraChooser.addDefault("gearCam = 0, shooterCam = 1", "0");
-		cameraChooser.addObject("gearCam = 1, shooterCam = 0", "1");
+		cameraChooser.addDefault("defaults to gear cam", "0");
+		cameraChooser.addObject("defaults to shooter cam", "1");
 		SmartDashboard.putData("Camera Chooser", cameraChooser);
 		
 		teamChooser = new SendableChooser<String>();

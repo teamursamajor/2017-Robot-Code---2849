@@ -135,6 +135,8 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during autonomous
 	 */
 	public void autonomousPeriodic() {
+		System.out.println("Distance: " + drive.ultra.getDistance());
+		System.out.println("Voltage: " + drive.ultra.getVoltage());
 //		System.out.println(drive.getHeading());
 	}
 
@@ -160,6 +162,9 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
 		
+		System.out.println("Distance: " + drive.ultra.getDistance());
+		System.out.println("Voltage: " + drive.ultra.getVoltage());
+		System.out.println();
 		try {
 			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
 			// {
@@ -211,6 +216,7 @@ public class Robot extends IterativeRobot {
 		if (joy.getButton(3)) {
 			Shooter.ballIntake(-1.0);
 		} else {
+			Shooter.ballIntake(0);
 //			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
 		}
 
