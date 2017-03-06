@@ -117,7 +117,7 @@ public class Autonomous implements Runnable {
 				Vision.setRunAutoAlign(true);
 			}
 			try {
-				Thread.sleep(9000);
+				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 			}
 		} else if (previousMode == AutoMode.SHOOT) {
