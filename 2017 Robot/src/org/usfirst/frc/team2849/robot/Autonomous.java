@@ -108,6 +108,7 @@ public class Autonomous implements Runnable {
 
 				}
 				Vision.setRunAutoAlign(true);
+				
 			} else if (position == StartPosition.CENTER) {
 				drive.driveDirection(190, 1400);
 				try {

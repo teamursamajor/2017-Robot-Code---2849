@@ -83,7 +83,7 @@ public class Vision implements Runnable {
 	private static int shooterCam = 1;
 	private static int gearCam = 0;
 	private static PrintWriter file;
-	
+
 	private final double DIST_MARGIN_ERROR = 0.1;
 
 	public Vision(Drive drive) {
@@ -178,26 +178,6 @@ public class Vision implements Runnable {
 
 		distance = getDistance(cvSink, outputStream);
 
-		if (distance > 0) {
-			// if the tapes are to the right of the center, then move right
-			// the robot wasn't moving with mechDriveDistance, so we want to try
-			// driveDistance to see if that fixes it
-			// drive.mechDriveDistance(distance, 90);
-			if (pegSide.equals("right") || pegSide.equals("left")) {
-				drive.driveDirection(270, 400);
-			} else {
-				drive.driveDirection(270, 200);
-			}
-		} else {
-			// if the tapes are to the left of center, then move left
-			// drive.mechDriveDistance(distance, 270);
-			if (pegSide.equals("right") || pegSide.equals("left")) {
-				drive.driveDirection(90, 400);
-			} else {
-				drive.driveDirection(90, 200);
-			}
-		}
-
 		/*
 		 * checks to see if the horizontal distance we need to move is greater
 		 * than 3.25 inches (.08255 meters) Ends after 3 attempts and stops auto
@@ -208,30 +188,58 @@ public class Vision implements Runnable {
 			// drive.mechDriveDistance(1, 180);
 			drive.driveDirection(180, 750);
 		} else {
-			int i;
-			int time = 200;
-			for (i = 3; Math.abs(distance) > DIST_MARGIN_ERROR && i > 0; i--) {
-				distance = getDistance(cvSink, outputStream);
-				if (distance > 0) {
-					// if the tapes are right of the center, then move right
-					// drive.mechDriveDistance(distance, 270);
-					if(i < 3){
+			if (distance > 0) {
+				// if the tapes are to the right of the center, then move right
+				// the robot wasn't moving with mechDriveDistance, so we want to
+				// try
+				// driveDistance to see if that fixes it
+				// drive.mechDriveDistance(distance, 90);
+				if (pegSide.equals("right") || pegSide.equals("left")) {
+					drive.driveDirection(270, 400);
+				} else {
+					drive.driveDirection(270, 200);
+				}
+			} else {
+				// if the tapes are to the left of center, then move left
+				// drive.mechDriveDistance(distance, 270);
+				if (pegSide.equals("right") || pegSide.equals("left")) {
+					drive.driveDirection(90, 400);
+				} else {
+					drive.driveDirection(90, 200);
+				}
+			}
+
+			distance = getDistance(cvSink, outputStream);
+
+			if (Math.abs(distance) < DIST_MARGIN_ERROR) {
+				// move forward
+				// drive.mechDriveDistance(1, 180);
+				drive.driveDirection(180, 750);
+			} else {
+				int i;
+				int time = 200;
+				for (i = 3; Math.abs(distance) > DIST_MARGIN_ERROR && i > 0; i--) {
+					distance = getDistance(cvSink, outputStream);
+					if (i < 3) {
 						time -= 50;
 					}
-					drive.driveDirection(270, time);
-				} else {
-					// if the tapes are left of center, then move left
-					// drive.mechDriveDistance(distance, 90);
-					drive.driveDirection(90, time);
+					if (distance > 0) {
+						// if the tapes are right of the center, then move right
+						// drive.mechDriveDistance(distance, 270);
+						drive.driveDirection(270, time);
+					} else {
+						// if the tapes are left of center, then move left
+						// drive.mechDriveDistance(distance, 90);
+						drive.driveDirection(90, time);
+					}
+
+				}
+				if (i == 0) {
+					System.out.println("ERROR: AUTO ALIGN FAILED :( ");
 				}
 
+				drive.driveDirection(180, 850);
 			}
-			if (i == 0) {
-				System.out.println("ERROR: AUTO ALIGN FAILED :( ");
-			}
-
-			drive.driveDirection(180, 850);
-
 		}
 
 		// TODO is this only for testing
@@ -272,7 +280,6 @@ public class Vision implements Runnable {
 		Imgproc.Canny(temp, output, 200, 255);
 		// finds the information for those lines which we can use for autoalign
 		Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
 		// if there are no contours, return nothing
 		if (contours.size() == 0) {
 			str += " size is 0 ";
