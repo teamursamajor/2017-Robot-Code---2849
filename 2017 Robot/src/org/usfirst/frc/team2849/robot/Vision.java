@@ -95,6 +95,7 @@ public class Vision implements Runnable {
 		}
 
 		// default peg side to middle
+		//TODO why is this right instead of middle? testing?
 		pegSide = "right";
 
 		Vision.drive = drive;
@@ -162,15 +163,17 @@ public class Vision implements Runnable {
 		 */
 		// TODO check these numbers
 		if (Robot.getIsTeleop()) {
+			//TODO vijay said we dont want this, so i commented it out -20XX
 			switch (pegSide) {
 			case "left":
-				drive.turnToAngle(50.0);
+//				drive.turnToAngle(50.0);
 				break;
 			case "right":
-				drive.turnToAngle(-42.0);
+				//TODO was -40, made -42.5
+//				drive.turnToAngle(-42.5);
 				break;
 			case "middle":
-				drive.turnToAngle(0.0);
+//				drive.turnToAngle(0.0);
 			default:
 				break;
 			}
@@ -237,8 +240,8 @@ public class Vision implements Runnable {
 				if (i == 0) {
 					System.out.println("ERROR: AUTO ALIGN FAILED :( ");
 				}
-
-				drive.driveDirection(180, 850);
+				//TODO was 850 ms, changed it to 100 and run auto align twice
+				drive.driveDirection(180, 100);
 			}
 		}
 

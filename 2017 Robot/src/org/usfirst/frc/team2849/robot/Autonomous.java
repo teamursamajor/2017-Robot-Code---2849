@@ -3,7 +3,11 @@ package org.usfirst.frc.team2849.robot;
 import java.util.List;
 
 public class Autonomous implements Runnable {
-
+/*
+ * TODO make sure all the parameters are the same between different methods/in methods
+ * bc I changed a lot of things when testing auto align. Anything changed in probably
+ * correct and I logged it through TODOs -20XX
+ */
 	private static Drive drive;
 	private static List<AutoMode> mode;
 	private static Thread autoRunner = null;
@@ -32,7 +36,7 @@ public class Autonomous implements Runnable {
 				shoot(previousMode);
 				break;
 			case GEAR:
-				gear(previousMode);
+				gear(previousMode, 0);
 				break;
 			case NONE:
 				break;
@@ -57,8 +61,10 @@ public class Autonomous implements Runnable {
 			drive.driveDirection(0);
 		} else if(position == StartPosition.RIGHT){
 			drive.driveDirection(0, 1000);
-			drive.turnAngle(40);
-			drive.driveDirection(0);
+			//TODO was 40, changed to 42.5 to match gear
+			drive.turnAngle(42.5);
+			//TODO changed from infinity to 100
+			drive.driveDirection(0, 100);
 		} else {
 			if (team.equals("blue")) {
 				drive.driveDirection(0, 1900);
@@ -85,10 +91,11 @@ public class Autonomous implements Runnable {
 			return;
 	}
 
-	public void gear(AutoMode previousMode) {
+	public void gear(AutoMode previousMode, int i) {
 		if (isKilled())
 			return;
-		if (previousMode == AutoMode.GEAR) {
+		if (previousMode == AutoMode.GEAR && i==0) {
+		//TODO make gear twice
 			if (position == StartPosition.LEFT) {
 				drive.driveDirection(180, 1900);
 				drive.turnToAngle(45);
@@ -99,15 +106,29 @@ public class Autonomous implements Runnable {
 				}
 				Vision.setRunAutoAlign(true);
 			} else if (position == StartPosition.RIGHT) {
-				drive.driveDirection(180, 1850);
-				drive.turnToAngle(-40);
-				drive.driveDirection(180, 300);
+				//TODO was 1850, made 1800
+				drive.driveDirection(180, 1800);
+				//TODO was -40
+				drive.turnToAngle(-42.5);
+				//TODO was 300, changed to 900
+				drive.driveDirection(180, 900);
 				try {
-					Thread.sleep(1000);
+					//TODO was 1000 is now 100
+					Thread.sleep(100);
 				} catch (Exception e) {
 
 				}
 				Vision.setRunAutoAlign(true);
+//				Vision.setRunAutoAlign(false);
+				Vision.setRunAutoAlign(true);
+				try{
+					Thread.sleep(5000);
+				} catch(Exception e){
+					
+				}
+				drive.driveDirection(0,1000);
+				drive.turnAngle(222.5);
+				
 				
 			} else if (position == StartPosition.CENTER) {
 				drive.driveDirection(190, 1400);

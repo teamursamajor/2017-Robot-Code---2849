@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Button 6: climber backwards
  * Button 7:  left gear
  * Button 8: clear intake
- * Button 9: center gear
+ * Button 9: Auto Align
  * Button 10: switch headless
  * Button 11: right gear
  * Button 12: exact direction driving
@@ -233,12 +233,14 @@ public class Robot extends IterativeRobot {
 			Vision.setPegSide("left");
 			Vision.setRunAutoAlign(true);
 		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-			Vision.setPegSide("middle");
+			//TODO i commented this out, so hopefully nothing breaks! -20XX
+//			Vision.setPegSide("middle");
+			Vision.setRunAutoAlign(true);
 			Vision.setRunAutoAlign(true);
 		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
 			Vision.setPegSide("right");
 			Vision.setRunAutoAlign(true);
-		}
+		} 
 		
 		if (joy.getButton(12)) {
 			povAngle = joy.getPOV(0);
