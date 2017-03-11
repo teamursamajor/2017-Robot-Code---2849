@@ -95,7 +95,7 @@ public class Vision implements Runnable {
 		}
 
 		// default peg side to middle
-		//TODO why is this right instead of middle? testing?
+		// TODO why is this right instead of middle? testing?
 		pegSide = "right";
 
 		Vision.drive = drive;
@@ -125,13 +125,23 @@ public class Vision implements Runnable {
 	public void run() {
 
 		while (true) {
+			// displays shooter cam
+			switchCamera(1);
 			cvSink.grabFrame(source);
-			getDistance(cvSink, outputStream);
+			// getDistance(cvSink, outputStream);
 			if (runAutoAlign) {
+				// displays gear cam
+				/*
+				 * not sure if we need to switch for auto align to work, so I
+				 * put it in just in case
+				 */
+				switchCamera(0);
 				System.out.println("Running Auto Align");
 				// System.out.println(getDistance(cvSink, outputStream));
 				autoAlign();
 				runAutoAlign = false;
+				// displays shooter cam
+				switchCamera(1);
 			} else {
 			}
 
@@ -163,17 +173,17 @@ public class Vision implements Runnable {
 		 */
 		// TODO check these numbers
 		if (Robot.getIsTeleop()) {
-			//TODO vijay said we dont want this, so i commented it out -20XX
+			// TODO vijay said we dont want this, so i commented it out -20XX
 			switch (pegSide) {
 			case "left":
-//				drive.turnToAngle(50.0);
+				// drive.turnToAngle(50.0);
 				break;
 			case "right":
-				//TODO was -40, made -42.5
-//				drive.turnToAngle(-42.5);
+				// TODO was -40, made -42.5
+				// drive.turnToAngle(-42.5);
 				break;
 			case "middle":
-//				drive.turnToAngle(0.0);
+				// drive.turnToAngle(0.0);
 			default:
 				break;
 			}
@@ -240,7 +250,7 @@ public class Vision implements Runnable {
 				if (i == 0) {
 					System.out.println("ERROR: AUTO ALIGN FAILED :( ");
 				}
-				//TODO was 850 ms, changed it to 100 and run auto align twice
+				// TODO was 850 ms, changed it to 100 and run auto align twice
 				drive.driveDirection(180, 100);
 			}
 		}
@@ -366,11 +376,12 @@ public class Vision implements Runnable {
 		// switchCamera(0);
 	}
 
+	// changes which camera is showing
 	public static void switchCamera(int cameraNum) {
 
 		switch (cameraNum) {
 		case 1:
-			// shooter camera
+			// displays the shooter camera
 			if (shooterCam == 0) {
 				cvSink = CameraServer.getInstance().getVideo(camera0);
 			} else {
@@ -381,7 +392,7 @@ public class Vision implements Runnable {
 			isSwitched = true;
 			break;
 		case 0:
-			// gear camera
+			// displays the gear camera
 			if (gearCam == 0) {
 				cvSink = CameraServer.getInstance().getVideo(camera0);
 			} else {
@@ -399,6 +410,7 @@ public class Vision implements Runnable {
 		}
 	}
 
+	// flips the cameras
 	public static void setCameras(int shooterCam, int gearCam) {
 		Vision.shooterCam = shooterCam;
 		Vision.gearCam = gearCam;

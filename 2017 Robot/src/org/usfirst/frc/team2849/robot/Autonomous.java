@@ -132,7 +132,8 @@ public class Autonomous implements Runnable {
 				}
 
 			} else if (position == StartPosition.CENTER) {
-				drive.driveDirection(190, 1400);
+				//was 1400 made 700
+				drive.driveDirection(190, 700);
 				try {
 					Thread.sleep(100);
 				} catch (Exception e) {
