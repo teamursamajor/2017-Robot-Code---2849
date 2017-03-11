@@ -80,6 +80,7 @@ public class Vision implements Runnable {
 
 	// starts with gear cam
 	private static int cameraNumber = 0;
+	//TODO if bandwidth issues persist, comment out shooterCam & fix errors
 	private static int shooterCam = 1;
 	private static int gearCam = 0;
 	private static PrintWriter file;

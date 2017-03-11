@@ -143,9 +143,6 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		isAutonomous = false;
 		isTeleop = true;
-		ahrs.reset();
-		ahrs.zeroYaw();
-		ahrs.resetDisplacement();
 		drive.setHeadingOffset(0);
 		
 		if(autoSelector.getCameras()==0){

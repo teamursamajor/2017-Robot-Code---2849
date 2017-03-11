@@ -80,6 +80,10 @@ public class Autonomous implements Runnable {
 					drive.driveDirection(0, 2000);
 				}
 			}
+		} else if (previousMode == AutoMode.CROSS) {
+			if (position != StartPosition.CENTER) {
+				drive.driveDirection(180, 1800);
+			}
 		}
 		// headless is default true
 		// drive.switchHeadless();
@@ -97,7 +101,7 @@ public class Autonomous implements Runnable {
 		// if we're doing gear and this is the 1st automode
 		if (previousMode == AutoMode.GEAR && i == 0) {
 			if (position == StartPosition.LEFT) {
-				drive.driveDirection(180, 1900);
+				drive.driveDirection(180, 1800);
 				drive.turnToAngle(45);
 				drive.driveDirection(180, 300);
 				try {
@@ -171,15 +175,15 @@ public class Autonomous implements Runnable {
 			}
 			Vision.setRunAutoAlign(true);
 			Vision.setRunAutoAlign(true);
-			
+
 			drive.driveDirection(0, 1000);
 			if (position == StartPosition.RIGHT) {
 				drive.turnAngle(222.5);
-			} else {
+			} else if (position == StartPosition.LEFT) {
 				// TODO is this the right angle?
 				drive.turnAngle(-210);
 			}
-			
+
 		} else if (previousMode == AutoMode.SHOOT) {
 			drive.driveDirection(180, 2000);
 		} else if (previousMode == AutoMode.CROSS) {
