@@ -143,6 +143,8 @@ public class Vision implements Runnable {
 				// displays shooter cam
 				switchCamera(1);
 			} else {
+				
+				
 			}
 
 			// TODO test and see if code works without this
