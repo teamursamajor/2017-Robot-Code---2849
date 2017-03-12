@@ -159,9 +159,9 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
-		
-		System.out.println("Distance: " + drive.ultra.getDistance());
-		System.out.println("Voltage: " + drive.ultra.getVoltage());
+		System.out.println("Current angle is: " + ahrs.getAngle());
+//		System.out.println("Distance: " + drive.ultra.getDistance());
+//		System.out.println("Voltage: " + drive.ultra.getVoltage());
 		System.out.println();
 		try {
 			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))

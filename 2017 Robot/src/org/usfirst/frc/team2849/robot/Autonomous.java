@@ -72,7 +72,7 @@ public class Autonomous implements Runnable {
 			if (position != StartPosition.CENTER) {
 				// moves forward straight from the wall on the left or right
 				// side, no gear
-				drive.driveDirection(0, 1800);
+				drive.driveDirection(0, 3000);
 			}
 		}
 
@@ -214,9 +214,9 @@ public class Autonomous implements Runnable {
 		drive.driveDirection(180, 1750);
 		// turn, angle depends on side: right or left
 		if (side.equals("right")) {
-			drive.turnToAngle(45);
-		} else if (side.equals("left")) {
 			drive.turnToAngle(-42.5);
+		} else if (side.equals("left")) {
+			drive.turnToAngle(45);
 		}
 		// second drive towards peg
 		drive.driveDirection(180, 750);
@@ -260,7 +260,7 @@ public class Autonomous implements Runnable {
 		 * lifted up a bit by having the robot move back and letting the peg
 		 * pull the gear forward
 		 */
-		drive.driveDirection(0, 50);
+		drive.driveDirection(0, 100);
 
 		// waits 5 seconds for driver to get peg
 		try {

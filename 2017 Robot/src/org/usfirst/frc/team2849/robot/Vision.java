@@ -387,7 +387,7 @@ public class Vision implements Runnable {
 			} else {
 				cvSink = CameraServer.getInstance().getVideo(camera1);
 			}
-			System.out.println("shooter cam");
+//			System.out.println("shooter cam");
 			cameraNumber = shooterCam;
 			isSwitched = true;
 			break;
@@ -398,13 +398,13 @@ public class Vision implements Runnable {
 			} else {
 				cvSink = CameraServer.getInstance().getVideo(camera1);
 			}
-			System.out.println("gear cam");
+//			System.out.println("gear cam");
 			cameraNumber = gearCam;
 			isSwitched = false;
 			break;
 		default:
 			cvSink = CameraServer.getInstance().getVideo(camera0);
-			System.out.println("gear cam");
+//			System.out.println("gear cam");
 			cameraNumber = gearCam;
 			isSwitched = false;
 		}
