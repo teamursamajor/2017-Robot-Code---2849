@@ -90,6 +90,7 @@ public class Robot extends IterativeRobot {
 		
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
+
 		// creates camera feeds
 		Vision.visionInit(drive);
 
@@ -204,8 +205,10 @@ public class Robot extends IterativeRobot {
 		// to front cam
 
 		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
+			System.out.println("switch to shooter camera");
 			Vision.switchCamera(1);
 		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
+			System.out.println("switch to front cam");
 			Vision.switchCamera(0);
 		}
 		currentAngle = drive.getHeading();
@@ -222,6 +225,7 @@ public class Robot extends IterativeRobot {
 		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
 		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
 		//
+		// if (joy.getButton(LogitechFlightStick.BUTTON_Side8)) {
 		// Shooter.clearIntake(joy);
 		// }
 

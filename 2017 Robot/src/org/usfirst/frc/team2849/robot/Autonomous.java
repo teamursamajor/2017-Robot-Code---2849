@@ -5,6 +5,7 @@ import java.util.List;
 // TODO driveDirection: 0 moves gear towards DS, 180 moves gear towards field
 // TODO turnToAngle: 0 moves gear towards field, 180 moves gear towards DS
 public class Autonomous implements Runnable {
+
 	private static Drive drive;
 	private static List<AutoMode> mode;
 	private static Thread autoRunner = null;
@@ -122,6 +123,14 @@ public class Autonomous implements Runnable {
 					// waits 5 seconds for pilot if needed
 					centerToGear();
 				}
+				Vision.setRunAutoAlign(true);
+			} else if (position == StartPosition.RIGHT) {
+				drive.driveDirection(180, 1850);
+				drive.turnToAngle(-40);
+				drive.driveDirection(180, 300);
+				try {
+					Thread.sleep(1000);
+				} catch (Exception e) {
 
 				// if we aren't center, theres a second auto, and its not gear,
 				// straighten

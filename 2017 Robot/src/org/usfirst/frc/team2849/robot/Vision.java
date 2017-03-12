@@ -293,6 +293,7 @@ public class Vision implements Runnable {
 		Imgproc.Canny(temp, output, 200, 255);
 		// finds the information for those lines which we can use for autoalign
 		Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+
 		// if there are no contours, return nothing
 		if (contours.size() == 0) {
 			str += " size is 0 ";
