@@ -26,9 +26,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Button 6: climber backwards
  * Button 7:  left gear
  * Button 8: clear intake
- * Button 9: center gear
+ * Button 9: climbing low gear
  * Button 10: switch headless
- * Button 11: right gear
+ * Button 11: reset heading angle
  * Button 12: exact direction driving
  * Slider: sets shooter motor power
  * 
@@ -118,6 +118,8 @@ public class Robot extends IterativeRobot {
 		System.out.println(autoSelector.getStartPosition());
 		ahrs.reset();
 		ahrs.zeroYaw();
+		ahrs.resetDisplacement();
+		drive.setHeadingOffset(0);
 		LinkedList<AutoMode> modes = new LinkedList<AutoMode>();
 		modes.add(autoSelector.getAutoMode1());
 		modes.add(autoSelector.getAutoMode2());
@@ -143,9 +145,6 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		isAutonomous = false;
 		isTeleop = true;
-		ahrs.reset();
-		ahrs.zeroYaw();
-		ahrs.resetDisplacement();
 		drive.setHeadingOffset(0);
 		
 		if(autoSelector.getCameras()==0){
@@ -161,9 +160,9 @@ public class Robot extends IterativeRobot {
 	 */
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
-		
-		System.out.println("Distance: " + drive.ultra.getDistance());
-		System.out.println("Voltage: " + drive.ultra.getVoltage());
+		System.out.println("Current angle is: " + ahrs.getAngle());
+//		System.out.println("Distance: " + drive.ultra.getDistance());
+//		System.out.println("Voltage: " + drive.ultra.getVoltage());
 		System.out.println();
 		try {
 			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
@@ -232,12 +231,20 @@ public class Robot extends IterativeRobot {
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
 			Vision.setPegSide("left");
 			Vision.setRunAutoAlign(true);
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-			Vision.setPegSide("middle");
-			Vision.setRunAutoAlign(true);
 		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-			Vision.setPegSide("right");
-			Vision.setRunAutoAlign(true);
+			//resets headless angle
+			//TODO test if we have practice time
+//			drive.turnToAngle(180);
+			ahrs.reset();
+			ahrs.zeroYaw();
+			ahrs.resetDisplacement();
+			drive.setHeadingOffset(0);
+		} 
+		
+		if (joy.getButton(9)) {
+			joy.setMaxXY(0.5);
+		} else{
+			joy.setMaxXY(1.0);
 		}
 		
 		if (joy.getButton(12)) {
@@ -258,9 +265,9 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testInit() {
-		ahrs.zeroYaw();
-		ahrs.reset();
-		drive.setHeadingOffset(0);
+//		ahrs.zeroYaw();
+//		ahrs.reset();
+//		drive.setHeadingOffset(0);
 	}
 
 	/**

@@ -80,10 +80,11 @@ public class Vision implements Runnable {
 
 	// starts with gear cam
 	private static int cameraNumber = 0;
+	//TODO if bandwidth issues persist, comment out shooterCam & fix errors
 	private static int shooterCam = 1;
 	private static int gearCam = 0;
 	private static PrintWriter file;
-	
+
 	private final double DIST_MARGIN_ERROR = 0.1;
 
 	public Vision(Drive drive) {
@@ -95,6 +96,7 @@ public class Vision implements Runnable {
 		}
 
 		// default peg side to middle
+		// TODO why is this right instead of middle? testing?
 		pegSide = "right";
 
 		Vision.drive = drive;
@@ -124,15 +126,24 @@ public class Vision implements Runnable {
 	public void run() {
 
 		while (true) {
+			// displays shooter cam
+			switchCamera(1);
 			cvSink.grabFrame(source);
-			getDistance(cvSink, outputStream);
+			// getDistance(cvSink, outputStream);
 			if (runAutoAlign) {
+				// displays gear cam
+				/*
+				 * not sure if we need to switch for auto align to work, so I
+				 * put it in just in case
+				 */
+				switchCamera(0);
 				System.out.println("Running Auto Align");
 				// System.out.println(getDistance(cvSink, outputStream));
 				autoAlign();
 				runAutoAlign = false;
-			} else {
-			}
+				// displays shooter cam
+				switchCamera(1);
+			} 
 
 			// TODO test and see if code works without this
 			// we have a putVideo line 98, do we need putFrame?
@@ -162,41 +173,23 @@ public class Vision implements Runnable {
 		 */
 		// TODO check these numbers
 		if (Robot.getIsTeleop()) {
+			// TODO vijay said we dont want this, so i commented it out -20XX
 			switch (pegSide) {
 			case "left":
-				drive.turnToAngle(50.0);
+				// drive.turnToAngle(50.0);
 				break;
 			case "right":
-				drive.turnToAngle(-42.0);
+				// TODO was -40, made -42.5
+				// drive.turnToAngle(-42.5);
 				break;
 			case "middle":
-				drive.turnToAngle(0.0);
+				// drive.turnToAngle(0.0);
 			default:
 				break;
 			}
 		}
 
 		distance = getDistance(cvSink, outputStream);
-
-		if (distance > 0) {
-			// if the tapes are to the right of the center, then move right
-			// the robot wasn't moving with mechDriveDistance, so we want to try
-			// driveDistance to see if that fixes it
-			// drive.mechDriveDistance(distance, 90);
-			if (pegSide.equals("right") || pegSide.equals("left")) {
-				drive.driveDirection(270, 400);
-			} else {
-				drive.driveDirection(270, 200);
-			}
-		} else {
-			// if the tapes are to the left of center, then move left
-			// drive.mechDriveDistance(distance, 270);
-			if (pegSide.equals("right") || pegSide.equals("left")) {
-				drive.driveDirection(90, 400);
-			} else {
-				drive.driveDirection(90, 200);
-			}
-		}
 
 		/*
 		 * checks to see if the horizontal distance we need to move is greater
@@ -208,30 +201,58 @@ public class Vision implements Runnable {
 			// drive.mechDriveDistance(1, 180);
 			drive.driveDirection(180, 750);
 		} else {
-			int i;
-			int time = 200;
-			for (i = 3; Math.abs(distance) > DIST_MARGIN_ERROR && i > 0; i--) {
-				distance = getDistance(cvSink, outputStream);
-				if (distance > 0) {
-					// if the tapes are right of the center, then move right
-					// drive.mechDriveDistance(distance, 270);
-					if(i < 3){
+			if (distance > 0) {
+				// if the tapes are to the right of the center, then move right
+				// the robot wasn't moving with mechDriveDistance, so we want to
+				// try
+				// driveDistance to see if that fixes it
+				// drive.mechDriveDistance(distance, 90);
+				if (pegSide.equals("right") || pegSide.equals("left")) {
+					drive.driveDirection(270, 400);
+				} else {
+					drive.driveDirection(270, 200);
+				}
+			} else {
+				// if the tapes are to the left of center, then move left
+				// drive.mechDriveDistance(distance, 270);
+				if (pegSide.equals("right") || pegSide.equals("left")) {
+					drive.driveDirection(90, 400);
+				} else {
+					drive.driveDirection(90, 200);
+				}
+			}
+
+			distance = getDistance(cvSink, outputStream);
+
+			if (Math.abs(distance) < DIST_MARGIN_ERROR) {
+				// move forward
+				// drive.mechDriveDistance(1, 180);
+				drive.driveDirection(180, 750);
+			} else {
+				int i;
+				int time = 200;
+				for (i = 3; Math.abs(distance) > DIST_MARGIN_ERROR && i > 0; i--) {
+					distance = getDistance(cvSink, outputStream);
+					if (i < 3) {
 						time -= 50;
 					}
-					drive.driveDirection(270, time);
-				} else {
-					// if the tapes are left of center, then move left
-					// drive.mechDriveDistance(distance, 90);
-					drive.driveDirection(90, time);
+					if (distance > 0) {
+						// if the tapes are right of the center, then move right
+						// drive.mechDriveDistance(distance, 270);
+						drive.driveDirection(270, time);
+					} else {
+						// if the tapes are left of center, then move left
+						// drive.mechDriveDistance(distance, 90);
+						drive.driveDirection(90, time);
+					}
+
 				}
-
+				if (i == 0) {
+					System.out.println("ERROR: AUTO ALIGN FAILED :( ");
+				}
+				// TODO was 850 ms, changed it to 100 and run auto align twice
+				drive.driveDirection(180, 100);
 			}
-			if (i == 0) {
-				System.out.println("ERROR: AUTO ALIGN FAILED :( ");
-			}
-
-			drive.driveDirection(180, 850);
-
 		}
 
 		// TODO is this only for testing
@@ -356,39 +377,41 @@ public class Vision implements Runnable {
 		// switchCamera(0);
 	}
 
+	// changes which camera is showing
 	public static void switchCamera(int cameraNum) {
 
 		switch (cameraNum) {
 		case 1:
-			// shooter camera
+			// displays the shooter camera
 			if (shooterCam == 0) {
 				cvSink = CameraServer.getInstance().getVideo(camera0);
 			} else {
 				cvSink = CameraServer.getInstance().getVideo(camera1);
 			}
-			System.out.println("shooter cam");
+//			System.out.println("shooter cam");
 			cameraNumber = shooterCam;
 			isSwitched = true;
 			break;
 		case 0:
-			// gear camera
+			// displays the gear camera
 			if (gearCam == 0) {
 				cvSink = CameraServer.getInstance().getVideo(camera0);
 			} else {
 				cvSink = CameraServer.getInstance().getVideo(camera1);
 			}
-			System.out.println("gear cam");
+//			System.out.println("gear cam");
 			cameraNumber = gearCam;
 			isSwitched = false;
 			break;
 		default:
 			cvSink = CameraServer.getInstance().getVideo(camera0);
-			System.out.println("gear cam");
+//			System.out.println("gear cam");
 			cameraNumber = gearCam;
 			isSwitched = false;
 		}
 	}
 
+	// flips the cameras
 	public static void setCameras(int shooterCam, int gearCam) {
 		Vision.shooterCam = shooterCam;
 		Vision.gearCam = gearCam;
