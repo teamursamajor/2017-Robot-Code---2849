@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Button 6: climber backwards
  * Button 7:  left gear
  * Button 8: clear intake
- * Button 9: Auto Align
+ * Button 9: climbing low gear
  * Button 10: switch headless
  * Button 11: reset heading angle
  * Button 12: exact direction driving
@@ -201,10 +201,8 @@ public class Robot extends IterativeRobot {
 		// to front cam
 
 		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
-			System.out.println("switch to shooter camera");
 			Vision.switchCamera(1);
 		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
-			System.out.println("switch to front cam");
 			Vision.switchCamera(0);
 		}
 		currentAngle = drive.getHeading();
@@ -229,11 +227,6 @@ public class Robot extends IterativeRobot {
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
 			Vision.setPegSide("left");
 			Vision.setRunAutoAlign(true);
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side9)) {
-			//TODO i commented this out, so hopefully nothing breaks! -20XX
-//			Vision.setPegSide("middle");
-			Vision.setRunAutoAlign(true);
-			Vision.setRunAutoAlign(true);
 		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
 			//resets headless angle
 			//TODO test if we have practice time
@@ -243,6 +236,12 @@ public class Robot extends IterativeRobot {
 			ahrs.resetDisplacement();
 			drive.setHeadingOffset(0);
 		} 
+		
+		if (joy.getButton(9)) {
+			joy.setMaxXY(0.5);
+		} else{
+			joy.setMaxXY(1.0);
+		}
 		
 		if (joy.getButton(12)) {
 			povAngle = joy.getPOV(0);

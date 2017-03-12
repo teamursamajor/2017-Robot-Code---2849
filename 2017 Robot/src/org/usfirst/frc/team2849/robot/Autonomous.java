@@ -2,6 +2,8 @@ package org.usfirst.frc.team2849.robot;
 
 import java.util.List;
 
+// TODO driveDirection: 0 moves gear towards DS, 180 moves gear towards field
+// TODO turnToAngle: 0 moves gear towards field, 180 moves gear towards DS
 public class Autonomous implements Runnable {
 	private static Drive drive;
 	private static List<AutoMode> mode;
@@ -72,7 +74,7 @@ public class Autonomous implements Runnable {
 			if (position != StartPosition.CENTER) {
 				// moves forward straight from the wall on the left or right
 				// side, no gear
-				drive.driveDirection(0, 3000);
+				drive.driveDirection(180, 3000);
 			}
 		}
 
@@ -196,7 +198,7 @@ public class Autonomous implements Runnable {
 	 */
 	public static void gearToStraight() {
 		drive.driveDirection(0, 1000);
-		drive.turnToAngle(0);
+		drive.turnToAngle(180);
 		drive.driveDirection(180, 100);
 	}
 
@@ -216,7 +218,7 @@ public class Autonomous implements Runnable {
 		if (side.equals("right")) {
 			drive.turnToAngle(-42.5);
 		} else if (side.equals("left")) {
-			drive.turnToAngle(45);
+			drive.turnToAngle(42.5);
 		}
 		// second drive towards peg
 		drive.driveDirection(180, 750);
