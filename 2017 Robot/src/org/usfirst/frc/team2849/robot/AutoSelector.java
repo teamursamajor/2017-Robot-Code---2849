@@ -12,6 +12,7 @@ public class AutoSelector {
 	public SendableChooser<String> autoModeChooser2;
 	public SendableChooser<String> sideChooser;
 	public SendableChooser<String> cameraChooser;
+	public SendableChooser<String> cameraChooser2;
 	public SendableChooser<String> teamChooser;
 
 	public void initialize(){
@@ -36,8 +37,8 @@ public class AutoSelector {
 		SmartDashboard.putData("Side Chooser", sideChooser);
 		
 		cameraChooser = new SendableChooser<String>();
-		cameraChooser.addDefault("defaults to gear cam", "0");
-		cameraChooser.addObject("defaults to shooter cam", "1");
+		cameraChooser.addDefault("if starts on shooter/", "0");
+		cameraChooser.addObject("if starts on gear/", "1");
 		SmartDashboard.putData("Camera Chooser", cameraChooser);
 		
 		teamChooser = new SendableChooser<String>();

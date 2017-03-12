@@ -143,10 +143,7 @@ public class Vision implements Runnable {
 				runAutoAlign = false;
 				// displays shooter cam
 				switchCamera(1);
-			} else {
-				
-				
-			}
+			} 
 
 			// TODO test and see if code works without this
 			// we have a putVideo line 98, do we need putFrame?

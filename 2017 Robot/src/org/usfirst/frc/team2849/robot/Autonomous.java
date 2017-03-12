@@ -99,90 +99,99 @@ public class Autonomous implements Runnable {
 		if (isKilled())
 			return;
 		// if we're doing gear and this is the 1st automode
-		if (previousMode == AutoMode.GEAR && i == 0) {
-			if (position == StartPosition.LEFT) {
-				drive.driveDirection(180, 1800);
-				drive.turnToAngle(45);
-				drive.driveDirection(180, 300);
-				try {
-					Thread.sleep(100);
-				} catch (Exception e) {
+		if (previousMode == AutoMode.GEAR) {
+			if (i == 0) {
+				if (position == StartPosition.LEFT) {
+					drive.driveDirection(180, 1750);
+					drive.turnToAngle(45);
+					drive.driveDirection(180, 750);
+					try {
+						Thread.sleep(100);
+					} catch (Exception e) {
+					}
+					Vision.setRunAutoAlign(true);
+					Vision.setRunAutoAlign(true);
+					try {
+						Thread.sleep(GEAR_LIFT_TIME);
+					} catch (Exception e) {
+					}
+
+					// TODO these numbers were all changed
+				} else if (position == StartPosition.RIGHT) {
+					// was 1850, made 1800
+					// TODO just made it 1750
+					drive.driveDirection(180, 1750);
+					// was -40
+					drive.turnToAngle(-42.5);
+					// was 300, changed to 900
+					drive.driveDirection(180, 750);
+					try {
+						// was 1000 is now 100
+						Thread.sleep(100);
+					} catch (Exception e) {
+					}
+					Vision.setRunAutoAlign(true);
+					Vision.setRunAutoAlign(true);
+					try {
+						Thread.sleep(GEAR_LIFT_TIME);
+					} catch (Exception e) {
+					}
+
+				} else if (position == StartPosition.CENTER) {
+					// robot isnt driving straight. it was 190 and the robot was
+					// too
+					// far right, i wasnt sure if i should go up or down
+					drive.driveDirection(180, 3000);
+					// drive.driveDirection(190, 700);
+					// drive.driveDirection(200, 700);
+					try {
+						Thread.sleep(100);
+					} catch (Exception e) {
+					}
+					// Vision.setRunAutoAlign(true);
+					// Vision.setRunAutoAlign(true);
+					// drive.driveDirection(180, 300);
 				}
-				Vision.setRunAutoAlign(true);
-				Vision.setRunAutoAlign(true);
 				try {
 					Thread.sleep(GEAR_LIFT_TIME);
-				} catch (Exception e) {
+				} catch (InterruptedException e) {
 				}
 
-				// TODO these numbers were all changed
-			} else if (position == StartPosition.RIGHT) {
-				// was 1850, made 1800
-				drive.driveDirection(180, 1800);
-				// was -40
-				drive.turnToAngle(-42.5);
-				// was 300, changed to 900
-				drive.driveDirection(180, 900);
-				try {
-					// was 1000 is now 100
-					Thread.sleep(100);
-				} catch (Exception e) {
-				}
-				Vision.setRunAutoAlign(true);
-				Vision.setRunAutoAlign(true);
-				try {
-					Thread.sleep(GEAR_LIFT_TIME);
-				} catch (Exception e) {
-				}
-
-			} else if (position == StartPosition.CENTER) {
-				//was 1400 made 700
-				drive.driveDirection(190, 700);
-				try {
-					Thread.sleep(100);
-				} catch (Exception e) {
-				}
-				Vision.setRunAutoAlign(true);
-				Vision.setRunAutoAlign(true);
-			}
-			try {
-				Thread.sleep(GEAR_LIFT_TIME);
-			} catch (InterruptedException e) {
-			}
-
-			// if we arent running gear twice, straighten
-			// TODO this isnt tested
-			if (mode.size() > 1) {
-				if (mode.get(1) != AutoMode.GEAR && position != StartPosition.CENTER) {
-					drive.driveDirection(0, 1000);
-					if (position == StartPosition.RIGHT) {
-						drive.turnAngle(222.5);
-					} else {
-						// TODO is this the right angle?
-						drive.turnAngle(-210);
+				// if we arent running gear twice, straighten
+				// TODO this isnt tested
+				if (mode.size() > 1) {
+					if (mode.get(1) != AutoMode.GEAR && position != StartPosition.CENTER) {
+						drive.driveDirection(0, 1000);
+						if (position == StartPosition.RIGHT) {
+							drive.turnAngle(222.5);
+						} else {
+							// TODO is this the right angle?
+							drive.turnAngle(-210);
+						}
 					}
 				}
-			}
-		} else if (previousMode == AutoMode.GEAR && i == 1) {
-			// TODO all of this is completely untested
-			/*
-			 * this is supposed to back the robot up and redo autoalign if we
-			 * call gear twice for autonomous
-			 */
-			drive.driveDirection(0, 1000);
-			try {
-				Thread.sleep(100);
-			} catch (Exception e) {
-			}
-			Vision.setRunAutoAlign(true);
-			Vision.setRunAutoAlign(true);
+			} else if (i == 1) {
+				// TODO all of this is completely untested
+				/*
+				 * this is supposed to back the robot up and redo autoalign if
+				 * we call gear twice for autonomous
+				 */
+				drive.driveDirection(0, 300);
+				try {
+					Thread.sleep(100);
+				} catch (Exception e) {
+				}
+				// Vision.setRunAutoAlign(true);
+				// Vision.setRunAutoAlign(true);
+				drive.driveDirection(180, 300);
+				drive.driveDirection(0, 1000);
 
-			drive.driveDirection(0, 1000);
-			if (position == StartPosition.RIGHT) {
-				drive.turnAngle(222.5);
-			} else if (position == StartPosition.LEFT) {
-				// TODO is this the right angle?
-				drive.turnAngle(-210);
+				if (position == StartPosition.RIGHT) {
+					drive.turnAngle(222.5);
+				} else if (position == StartPosition.LEFT) {
+					// TODO is this the right angle?
+					drive.turnAngle(-210);
+				}
 			}
 
 		} else if (previousMode == AutoMode.SHOOT) {

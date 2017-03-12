@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Button 8: clear intake
  * Button 9: Auto Align
  * Button 10: switch headless
- * Button 11: right gear
+ * Button 11: reset heading angle
  * Button 12: exact direction driving
  * Slider: sets shooter motor power
  * 
@@ -90,7 +90,6 @@ public class Robot extends IterativeRobot {
 		
 		ahrs.resetDisplacement();
 		ahrs.zeroYaw();
-
 		// creates camera feeds
 		Vision.visionInit(drive);
 
@@ -118,6 +117,8 @@ public class Robot extends IterativeRobot {
 		System.out.println(autoSelector.getStartPosition());
 		ahrs.reset();
 		ahrs.zeroYaw();
+		ahrs.resetDisplacement();
+		drive.setHeadingOffset(0);
 		LinkedList<AutoMode> modes = new LinkedList<AutoMode>();
 		modes.add(autoSelector.getAutoMode1());
 		modes.add(autoSelector.getAutoMode2());
@@ -235,8 +236,13 @@ public class Robot extends IterativeRobot {
 			Vision.setRunAutoAlign(true);
 			Vision.setRunAutoAlign(true);
 		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
-			Vision.setPegSide("right");
-			Vision.setRunAutoAlign(true);
+			//resets headless angle
+			//TODO test if we have practice time
+//			drive.turnToAngle(180);
+			ahrs.reset();
+			ahrs.zeroYaw();
+			ahrs.resetDisplacement();
+			drive.setHeadingOffset(0);
 		} 
 		
 		if (joy.getButton(12)) {
