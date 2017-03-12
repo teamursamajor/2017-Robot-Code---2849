@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Button 3: intake
  * Button 4: switched which shooter motor the slider sets power for
  * Button 5: climber forwards
- * Button 6: climber backwards
+ * Button 6: clifmber backwards
  * Button 7:  left gear
  * Button 8: clear intake
  * Button 9: climbing low gear

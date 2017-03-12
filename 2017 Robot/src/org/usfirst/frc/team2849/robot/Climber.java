@@ -27,7 +27,7 @@ public class Climber implements Runnable {
 	public void run() {
 		while (!ending.done()) {
 			if (backwards) {
-				climber.set(.5);
+				climber.set(-.5);
 				setBackwards(false);
 			} else if (forwards) {
 				climber.set(-1);
