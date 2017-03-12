@@ -176,9 +176,12 @@ public class Robot extends IterativeRobot {
 			Shooter.startShoot(() -> !joy.getButton(1));
 		}
 		
-		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
+//		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
 //		Shooter.setPowerSided((joy.getAxis(3) - 1) * -.5d);
-		
+		if (joy.getButton(4)) {
+			Climber.setButton4(true);
+			Climber.climb(() -> !joy.getButton(4));
+		}
 		if (joy.getButton(5)) {
 			Climber.setForwards(true);
 			Climber.climb(() -> !joy.getButton(5));

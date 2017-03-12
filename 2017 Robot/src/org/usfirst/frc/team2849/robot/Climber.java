@@ -9,7 +9,7 @@ public class Climber implements Runnable {
 	private static Thread climberRunner = null;
 
 	private static Boolean bool = false;
-
+	private static Boolean button4 = false;
 	private static EndCondition ending = null;
 
 	private static Spark climber = new Spark(2);
@@ -32,6 +32,9 @@ public class Climber implements Runnable {
 			} else if (forwards) {
 				climber.set(-1);
 				setForwards(false);
+			} else if (button4) {
+				climber.set(.5);
+				setButton4(false);
 			}
 			try {
 				Thread.sleep(20);
@@ -62,6 +65,10 @@ public class Climber implements Runnable {
 
 	public static void setForwards(boolean forwards) {
 		Climber.forwards= forwards;
+	}
+	
+	public static void setButton4 (boolean button4) {
+		Climber.button4 = button4;
 	}
 
 }
