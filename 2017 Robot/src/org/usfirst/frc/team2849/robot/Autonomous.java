@@ -17,10 +17,12 @@ public class Autonomous implements Runnable {
 	public void run() {
 		AutoMode previousMode;
 		AutoMode currentMode;
+		// if there is no auto methods in the mode array, return
 		if (mode == null || mode.size() == 0) {
 			return;
 		}
 		previousMode = mode.get(0);
+		// if there are still auto modes left in the array, continue to do them
 		for (int i = 0; i < mode.size(); i++) {
 			if (isKilled())
 				break;
@@ -43,29 +45,27 @@ public class Autonomous implements Runnable {
 			}
 			previousMode = currentMode;
 		}
+		// idk ask charlie
 		synchronized (threadOneUse) {
 			threadOneUse = false;
 		}
 	} // end run
 
+	// for crossing the line at the beginning of auto
 	public void cross(AutoMode previousMode) {
+		// if auto ends stop autoing
 		if (isKilled())
 			return;
+		// if you selected gear on the chooser and then want to cross
 		if (previousMode == AutoMode.GEAR) {
 			if (position == StartPosition.LEFT) {
-				/*
-				 * in gear position, straighten out by backing up 1000, turning
-				 * to face the field, and drive forward 100
-				 */
-
+				// in gear position, straighten out by backing up, turning
+				// to face the field, and drive forward
 				gearToStraight();
 			} else if (position == StartPosition.RIGHT) {
-				/*
-				 * in gear position, straighten out by backing up 1000, turning
-				 * to face the field, and drive forward 100
-				 */
+				// in gear position, straighten out by backing up, turning
+				// to face the field, and drive forward
 				gearToStraight();
-
 			}
 
 		} else if (previousMode == AutoMode.CROSS) {
@@ -94,9 +94,9 @@ public class Autonomous implements Runnable {
 				if (position == StartPosition.LEFT) {
 					/*
 					 * drive forward 1750, turn 45 degrees clockwise and drive
-					 * forward again so we are close to the peg and on the right
-					 * angle. Then we wait so the robot doesn't roll and run
-					 * auto align twice, then wait so gear can be pulled.
+					 * forward again so we are close to the peg and on the
+					 * correct angle. Then we wait so the robot doesn't roll and
+					 * run auto align twice, then wait so gear can be pulled.
 					 */
 
 					wallToGear("left");
@@ -106,7 +106,7 @@ public class Autonomous implements Runnable {
 					/*
 					 * drive forward 1750, turn 42.5 degrees counterclockwise
 					 * and drive forward again so we are close to the peg and on
-					 * the right angle. Then we wait so the robot doesn't roll
+					 * the correct angle. Then we wait so the robot doesn't roll
 					 * and run auto align twice, then wait so gear can be
 					 * pulled.
 					 */
@@ -114,10 +114,15 @@ public class Autonomous implements Runnable {
 					wallToGear("right");
 
 				} else if (position == StartPosition.CENTER) {
+					// moves forward a lot to reach the peg from center
+					// waits 2 seconds so pilot can take gear or wait a sec
+					// moves back ~3in (50ms?) so peg properly catches gear
+					// waits 5 seconds for pilot if needed
 					centerToGear();
 				}
 
-				//if we aren't center, theres a second auto, and its not gear, straighten
+				// if we aren't center, theres a second auto, and its not gear,
+				// straighten
 				if (position != StartPosition.CENTER) {
 					if (mode.size() > 1) {
 						if (mode.get(1) != AutoMode.GEAR) {
@@ -128,7 +133,7 @@ public class Autonomous implements Runnable {
 			} else if (i == 1) {
 				/*
 				 * this is supposed to back the robot up and redo autoalign if
-				 * we call gear twice for autonomous
+				 * we call gear twice for autonomous, then straightens out
 				 */
 
 				gearToGear();
@@ -136,8 +141,10 @@ public class Autonomous implements Runnable {
 			}
 
 		} else if (previousMode == AutoMode.SHOOT) {
+			// shooting not used
 			drive.driveDirection(180, 2000);
 		} else if (previousMode == AutoMode.CROSS) {
+			// we cant cross and then do gear so its empty
 		} // end of previousmode = gear
 	} // end of gear
 
@@ -151,6 +158,8 @@ public class Autonomous implements Runnable {
 
 	public static void auto(EndCondition ending, List<AutoMode> mode, StartPosition position, String team,
 			Drive drive) {
+		// creates a new auto thread and makes sure it doesn't get run more than
+		// once
 		synchronized (threadOneUse) {
 			if (threadOneUse)
 				return;
@@ -172,19 +181,34 @@ public class Autonomous implements Runnable {
 		return ending.done();
 	}
 
+	/**
+	 * Backs the robot up and auto aligns twice again to attempt auto gear again
+	 */
 	public static void gearToGear() {
 		drive.driveDirection(0, 300);
 		Vision.setRunAutoAlign(true);
 		Vision.setRunAutoAlign(true);
-
 	}
 
+	/**
+	 * Moves the robot from the gear peg and orients it to make it straight,
+	 * then moves forward
+	 */
 	public static void gearToStraight() {
 		drive.driveDirection(0, 1000);
 		drive.turnToAngle(0);
 		drive.driveDirection(180, 100);
 	}
 
+	/**
+	 * Moves the robot from the wall on the left or right to the gear peg by
+	 * moving forward, turning to an angle depending on side, moving forward
+	 * again, then auto aligning twice
+	 * 
+	 * @param side
+	 *            String "left" or "right" that tells you which side peg the
+	 *            robot is on. Used to determine which angle to turn to
+	 */
 	public static void wallToGear(String side) {
 		// initial drive
 		drive.driveDirection(180, 1750);
@@ -212,9 +236,14 @@ public class Autonomous implements Runnable {
 			Thread.sleep(GEAR_LIFT_TIME);
 		} catch (Exception e) {
 		}
-
 	}
 
+	/**
+	 * Moves the robot from the center wall to the gear by moving forward (3.5
+	 * secs), waiting (2 seconds), moving backwards 3 inches (50 ms), and then
+	 * stopping until auto ends
+	 * 
+	 */
 	public static void centerToGear() {
 
 		// initial drive forward from wall for 3.5 seconds

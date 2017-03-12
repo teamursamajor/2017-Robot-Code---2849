@@ -221,7 +221,6 @@ public class Robot extends IterativeRobot {
 		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
 		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
 		//
-		// if (joy.getButton(LogitechFlightStick.BUTTON_Side8)) {
 		// Shooter.clearIntake(joy);
 		// }
 
@@ -263,9 +262,9 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testInit() {
-		ahrs.zeroYaw();
-		ahrs.reset();
-		drive.setHeadingOffset(0);
+//		ahrs.zeroYaw();
+//		ahrs.reset();
+//		drive.setHeadingOffset(0);
 	}
 
 	/**
