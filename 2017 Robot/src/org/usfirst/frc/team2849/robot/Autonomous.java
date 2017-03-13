@@ -114,7 +114,8 @@ public class Autonomous implements Runnable {
 						}
 					}
 				}
-			} else if (i == 1) {
+			} 
+			}else if (i == 1) {
 				/*
 				 * this is supposed to back the robot up and redo autoalign if
 				 * we call gear twice for autonomous, then straightens out
@@ -215,6 +216,9 @@ public class Autonomous implements Runnable {
 			Thread.sleep(GEAR_LIFT_TIME);
 		} catch (Exception e) {
 		}
+		
+		//slight move backwards
+		drive.driveDirection(0,100);
 	}
 
 	/**
