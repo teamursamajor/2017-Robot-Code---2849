@@ -80,7 +80,7 @@ public class Vision implements Runnable {
 
 	// starts with gear cam
 	private static int cameraNumber = 0;
-	//TODO if bandwidth issues persist, comment out shooterCam & fix errors
+	// TODO if bandwidth issues persist, comment out shooterCam & fix errors
 	private static int shooterCam = 1;
 	private static int gearCam = 0;
 	private static PrintWriter file;
@@ -143,7 +143,7 @@ public class Vision implements Runnable {
 				runAutoAlign = false;
 				// displays shooter cam
 				switchCamera(1);
-			} 
+			}
 
 			// TODO test and see if code works without this
 			// we have a putVideo line 98, do we need putFrame?
@@ -332,9 +332,10 @@ public class Vision implements Runnable {
 
 		output.copyTo(distanceTemp);
 
-		// pixels to inches conversion factor 2 inches over average of widths
+		// pixels to inches conversion factor -> 2 inches over average of widths
 		conversion = 4.0 / (rec1.width + rec2.width);
 
+		// calculate percieved distance between outer edges of tapes in pixels
 		// if rec1 is on the right
 		if (rec1.x > rec2.x) {
 			perceivedPx = (rec1.x + rec1.width) - rec2.x;
@@ -344,6 +345,7 @@ public class Vision implements Runnable {
 			perceivedPx = (rec2.x + rec2.width) - rec1.x;
 		}
 
+		// adds 1/2 the percieved distance to the left edge of the left tape
 		// find center of tapes
 		if (rec1.x > rec2.x) {
 			centerOfTapes = rec2.x + (perceivedPx / 2.0);
@@ -351,7 +353,7 @@ public class Vision implements Runnable {
 			centerOfTapes = rec1.x + (perceivedPx / 2.0);
 		}
 
-		// find center of the frame
+		// divides the width of the frame by 2 to find center of the frame
 		centerOfFrame = output.width() / 2.0;
 
 		str += "\ncenter of tapes: " + centerOfTapes + " center of frame: " + centerOfFrame + "\n\n";
@@ -364,7 +366,11 @@ public class Vision implements Runnable {
 			e.printStackTrace();
 		}
 
-		// find distance to move
+		/*
+		 * subtractes centerOfTapes from centerOfFrame to get distance to move in pixels
+		 * multiply that by conversion factor to get it in inches
+		 * multiply that by 0.0254 to get it in meters
+		 */
 		return ((centerOfTapes - centerOfFrame) * conversion) * 0.0254;
 	}// end getDistance
 
@@ -388,7 +394,7 @@ public class Vision implements Runnable {
 			} else {
 				cvSink = CameraServer.getInstance().getVideo(camera1);
 			}
-//			System.out.println("shooter cam");
+			// System.out.println("shooter cam");
 			cameraNumber = shooterCam;
 			isSwitched = true;
 			break;
@@ -399,13 +405,13 @@ public class Vision implements Runnable {
 			} else {
 				cvSink = CameraServer.getInstance().getVideo(camera1);
 			}
-//			System.out.println("gear cam");
+			// System.out.println("gear cam");
 			cameraNumber = gearCam;
 			isSwitched = false;
 			break;
 		default:
 			cvSink = CameraServer.getInstance().getVideo(camera0);
-//			System.out.println("gear cam");
+			// System.out.println("gear cam");
 			cameraNumber = gearCam;
 			isSwitched = false;
 		}
