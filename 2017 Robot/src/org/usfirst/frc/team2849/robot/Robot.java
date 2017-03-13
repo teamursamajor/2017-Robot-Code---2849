@@ -82,7 +82,7 @@ public class Robot extends IterativeRobot {
 		 * 
 		 * Alright just change the finals up above instead of this line
 		 */
-		drive = new Drive(FRONT_LEFT_DRIVE, BACK_LEFT_DRIVE, FRONT_RIGHT_DRIVE, BACK_RIGHT_DRIVE, ahrs);
+		drive = new Drive(FRONT_LEFT_DRIVE, BACK_LEFT_DRIVE, FRONT_RIGHT_DRIVE, BACK_RIGHT_DRIVE, ahrs, joy);
 		drive.startDrive();
 
 		Shooter.shooterInit(drive);
@@ -229,7 +229,6 @@ public class Robot extends IterativeRobot {
 
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
 			//resets headless angle
-			//TODO test if we have practice time
 //			drive.turnToAngle(180);
 			ahrs.reset();
 			ahrs.zeroYaw();
@@ -301,42 +300,38 @@ public class Robot extends IterativeRobot {
 		}
 
 		//
-		// // TODO Needed?
-		// // Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
-		//// Shooter.startShoot(() -> !joy.getButton(1), ahrs);
 		//
-
-		if (joy.getButton(1)) {
-			Shooter.startShoot(() -> !joy.getButton(1));
-			
-			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
-
-			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
-
-//			 // TODO Why is this code commented out??????? -Sheldon
-//			 // drive.angleLock(joy.getAxisGreaterThan(0, 0.1),
-//			 // joy.getAxisGreaterThan(2, 0.1), currentAngle);
-//			 //
+		//  Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
+		//  Shooter.startShoot(() -> !joy.getButton(1), ahrs);
+		//
+//
+//		if (joy.getButton(1)) {
+//			Shooter.startShoot(() -> !joy.getButton(1));
+//			
+//			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
+//
+//			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
+//		
 //			 Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
-//			 // joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
+//			 joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
 //			
 //			 if (joy.getButton(3)) {
 //			 Shooter.ballIntake(1, 1);
 //			 }
-//			// else {
-//			// Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
-//			// }
+//			 else {
+//			 Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+//			 }
 //			
-
-		}
-
-		if (joy.getButton(1)) {
-			Shooter.startShoot(() -> !joy.getButton(1));
-			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
-
-			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
-
-		}
+//
+//		}
+//
+//		if (joy.getButton(1)) {
+//			Shooter.startShoot(() -> !joy.getButton(1));
+//			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
+//
+//			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
+//
+//		}
 	}
 
 	public void disabledInit() {

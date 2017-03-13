@@ -231,7 +231,7 @@ public class Autonomous implements Runnable {
 			drive.turnToAngle(42.5);
 		}
 		// second drive towards peg
-		drive.driveDirection(180, 750);
+		drive.driveDirection(180, 800);
 
 		// wait for the robot to stop rolling
 		try {
@@ -269,7 +269,7 @@ public class Autonomous implements Runnable {
 		} catch (Exception e) {
 		}
 
-		// back of robot moves backwards for 50 ms, should be about 3 in
+		// back of robot moves backwards for 100 ms, should be about 3 in
 		/*
 		 * this is in case the gear is put in too slanted and needs to get
 		 * lifted up a bit by having the robot move back and letting the peg

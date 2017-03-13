@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.Spark;
 
 public class Drive implements Runnable {
 
-	// TODO NICK YOU SHOULD CLEAN UP THIS CODE THANKS
-	// TODO ALSO GET RID OF THE YELLOW TRIANGLES THANKS AGAIN NICK
+	// NICK YOU SHOULD CLEAN UP THIS CODE THANKS
+	// ALSO GET RID OF THE YELLOW TRIANGLES THANKS AGAIN NICK
 
 	/**
 	 * can't have Sparks and RobotDrive inside another robot drive you would
@@ -42,6 +42,8 @@ public class Drive implements Runnable {
 	public Ultrasonic ultra = new Ultrasonic(0, 7);
 	private static boolean autoDrive = false;
 
+	private static LogitechFlightStick joy;
+
 	private final double STOPPING_DISTANCE = 8.0;
 
 	/**
@@ -56,7 +58,7 @@ public class Drive implements Runnable {
 	 * @param t4
 	 *            Port of the back right motor.
 	 */
-	public Drive(int t1, int t2, int t3, int t4, AHRS ahrs) {
+	public Drive(int t1, int t2, int t3, int t4, AHRS ahrs, LogitechFlightStick joy) {
 
 		frontLeftMotor1 = new Spark(t1);
 		backLeftMotor1 = new Spark(t2);
@@ -66,6 +68,7 @@ public class Drive implements Runnable {
 		backRightMotor1.setInverted(true);
 		numMotors = 4;
 		Drive.ahrs = ahrs;
+		this.joy = joy;
 	}
 
 	/**
@@ -90,7 +93,7 @@ public class Drive implements Runnable {
 	 */
 	public Drive(int t1, int t3, int t2, int t4,
 
-			int t5, int t7, int t6, int t8, AHRS ahrs) {
+			int t5, int t7, int t6, int t8, AHRS ahrs, LogitechFlightStick joy) {
 
 		frontLeftMotor1 = new Spark(t1);
 		frontLeftMotor2 = new Spark(t2);
@@ -102,6 +105,7 @@ public class Drive implements Runnable {
 		backRightMotor2 = new Spark(t8);
 		numMotors = 8;
 		Drive.ahrs = ahrs;
+		this.joy = joy;
 	}
 
 	/**
@@ -126,16 +130,16 @@ public class Drive implements Runnable {
 	/**
 	 * Rotate a vector in Cartesian space.
 	 * 
-     * @param x
-     *          X coordinate to be rotated
-     * @param y
-     *          Y coordinate to be rotated
-     * @param angle
-     *          angle in degrees to be rotated by
-     *
-     * Derived via the relationship [Rotation Matrix]*[x; y] = [rotated vector]
-     * Where [Rotation Matrix] = [cos(angle) -sin(angle)] 
-     *                           [sin(angle)  cos(angle)]
+	 * @param x
+	 *            X coordinate to be rotated
+	 * @param y
+	 *            Y coordinate to be rotated
+	 * @param angle
+	 *            angle in degrees to be rotated by
+	 *
+	 *            Derived via the relationship [Rotation Matrix]*[x; y] =
+	 *            [rotated vector] Where [Rotation Matrix] = [cos(angle)
+	 *            -sin(angle)] [sin(angle) cos(angle)]
 	 */
 	protected double[] rotateVector(double x, double y, double angle) {
 		double cosA = Math.cos(angle * (Math.PI / 180.0));
@@ -173,7 +177,7 @@ public class Drive implements Runnable {
 		yIn = rotated[1];
 
 		if (numMotors == 4) {
-			// TODO had to change new double[numMotors] to 14 so we can use
+			// had to change new double[numMotors] to 14 so we can use
 			// motor #s > 4
 			double[] wheelSpeeds = new double[14];
 			wheelSpeeds[0] = xIn + yIn + raxis;
@@ -302,10 +306,10 @@ public class Drive implements Runnable {
 			angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(1, 0.1), joy.getAxisGreaterThan(2, 0.1),
 					currentAngle);
 			if (autoDrive) {
-				angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(1, 0.1),
-						joy.getAxisGreaterThan(2, 0.1), currentAngle);
-				System.out.println("Distance: " + ultra.getDistance());
-				System.out.println("Voltage: " + ultra.getVoltage());
+				currentAngle = getHeading();
+				angleLock();
+				// System.out.println("Distance: " + ultra.getDistance());
+				// System.out.println("Voltage: " + ultra.getVoltage());
 				// checking in centimeters
 				if (ultra.getDistance() < STOPPING_DISTANCE) {
 					System.out.println("distance less than STOPPING_DISTANCE, drive stopped");
@@ -427,7 +431,8 @@ public class Drive implements Runnable {
 	 * This function makes the robot stay on a straight line when moving
 	 * forward/backward or left/right by taking values from the joystick and
 	 * when the other two axises are within the deadzone it turns the robot to
-	 * the angle that we were previously at. This eliminates drift (theoretically)
+	 * the angle that we were previously at. This eliminates drift
+	 * (theoretically)
 	 * 
 	 * @param xaxis
 	 *            The X axis value from the joystick
@@ -444,6 +449,17 @@ public class Drive implements Runnable {
 		}
 
 		if (Math.abs(xaxis) > 0 && yaxis == 0 && zaxis == 0) {
+			driveAngle(currentAngle);
+		}
+	}
+
+	/**
+	 * Same as regular angleLock() but with no parameters to make it easier to
+	 * read
+	 */
+	public void angleLock() {
+
+		if (autoDrive) {
 			driveAngle(currentAngle);
 		}
 	}

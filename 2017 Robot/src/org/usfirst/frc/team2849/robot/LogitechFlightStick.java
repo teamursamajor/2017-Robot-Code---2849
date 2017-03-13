@@ -45,7 +45,6 @@ public class LogitechFlightStick extends Joystick {
 	}
 
 	public boolean getButton(int buttonNumber) {
-		//TODO take out when done testing
 		return super.getRawButton(buttonNumber);
 	}
 

@@ -77,7 +77,6 @@ public class Vision implements Runnable {
 
 	// starts with gear cam
 	private static int cameraNumber = 0;
-	// TODO if bandwidth issues persist, comment out shooterCam & fix errors
 	private static int shooterCam = 1;
 	private static int gearCam = 0;
 	private static PrintWriter file;
@@ -139,7 +138,6 @@ public class Vision implements Runnable {
 			}
 
 			// TODO test and see if code works without this
-			// we have a putVideo line 98, do we need putFrame?
 			try {
 				if (cameraNumber == gearCam) {
 					outputStream.putFrame(source);
@@ -222,7 +220,6 @@ public class Vision implements Runnable {
 			}
 		}
 
-		// TODO is this only for testing
 		System.out.printf("Auto align distance: %f", distance);
 		Drive.setAutoDrive(false);
 	} // end autoAlign
@@ -262,7 +259,7 @@ public class Vision implements Runnable {
 		Imgproc.Canny(temp, output, 200, 255);
 		// finds the information for those lines which we can use for autoalign
 		Imgproc.findContours(output, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-
+		
 		// if there are no contours, return nothing
 		if (contours.size() == 0) {
 			str += " size is 0 ";
