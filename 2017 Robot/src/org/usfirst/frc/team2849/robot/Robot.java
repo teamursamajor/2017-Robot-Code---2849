@@ -207,10 +207,8 @@ public class Robot extends IterativeRobot {
 		// to front cam
 
 		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
-			System.out.println("switch to shooter camera");
 			Vision.switchCamera(1);
 		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
-			System.out.println("switch to front cam");
 			Vision.switchCamera(0);
 		}
 		//TODO figure out if this is in the right spot
@@ -233,10 +231,7 @@ public class Robot extends IterativeRobot {
 
 		// run auto align for the three different gear pegs
 
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-			Vision.setPegSide("left");
-			Vision.setRunAutoAlign(true);
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
 			//resets headless angle
 			//TODO test if we have practice time
 //			drive.turnToAngle(180);
