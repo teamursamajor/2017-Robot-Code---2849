@@ -126,7 +126,16 @@ public class Drive implements Runnable {
 	/**
 	 * Rotate a vector in Cartesian space.
 	 * 
-	 * TODO: Document units (deg/rad??) for angle .
+     * @param x
+     *          X coordinate to be rotated
+     * @param y
+     *          Y coordinate to be rotated
+     * @param angle
+     *          angle in degrees to be rotated by
+     *
+     * Derived via the relationship [Rotation Matrix]*[x; y] = [rotated vector]
+     * Where [Rotation Matrix] = [cos(angle) -sin(angle)] 
+     *                           [sin(angle)  cos(angle)]
 	 */
 	protected double[] rotateVector(double x, double y, double angle) {
 		double cosA = Math.cos(angle * (Math.PI / 180.0));
