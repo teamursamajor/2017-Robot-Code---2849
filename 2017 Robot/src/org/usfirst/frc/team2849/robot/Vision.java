@@ -181,7 +181,6 @@ public class Vision implements Runnable {
 				drive.driveDirection(270, 400);
 			} else {
 				drive.driveDirection(90, 400);
-
 			}
 
 			// recalculate the distance to see if it's better

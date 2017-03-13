@@ -13,19 +13,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 //on right, starting 49in from edge of field
 
-/* these buttons are accurate for both teleop and test
+/* these buttons are accurate for teleop
  * Dpad Up: exact driving
  * Dpad Down: exact driving
  * Dpad Left: exact driving
  * Dpad Right: exact driving
  * Trigger: Shooter
  * Side: (currently nothing)
- * Button 3: intake
+ * Button 3:
  * Button 4: switched which shooter motor the slider sets power for
  * Button 5: climber forwards
- * Button 6: clifmber backwards
- * Button 7:  left gear
- * Button 8: clear intake
+ * Button 6: climber backwards
+ * Button 7:
+ * Button 8:
  * Button 9: climbing low gear
  * Button 10: switch headless
  * Button 11: reset heading angle
@@ -201,33 +201,10 @@ public class Robot extends IterativeRobot {
 		 * This should be getButton, not getSingleButtonPress
 		 */
 
-		// if the camera is on shooter cam when shooting is done, switch it back
-		// to front cam
-
-		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
-			Vision.switchCamera(1);
-		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
-			Vision.switchCamera(0);
-		}
 		currentAngle = drive.getHeading();
 		// TODO add a y deadzone for anglelock
 		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
 
-		if (joy.getButton(3)) {
-			Shooter.ballIntake(-1.0);
-		} else {
-			Shooter.ballIntake(0);
-//			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
-		}
-
-		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
-		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
-		//
-		// if (joy.getButton(LogitechFlightStick.BUTTON_Side8)) {
-		// Shooter.clearIntake(joy);
-		// }
-
-		// run auto align for the three different gear pegs
 
 		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
 			//resets headless angle
