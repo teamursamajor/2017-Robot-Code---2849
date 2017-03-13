@@ -54,9 +54,6 @@ public class Vision implements Runnable {
 	private static Mat temp = new Mat();
 	private static Mat distanceTemp = new Mat();
 
-	// String for the peg side the robot is going to auto align to
-	private static String pegSide = "right";
-
 	private static CvSink cvSink;
 	private static CvSource outputStream;
 
@@ -94,10 +91,6 @@ public class Vision implements Runnable {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		// default peg side to middle
-		// TODO why is this right instead of middle? testing?
-		pegSide = "right";
 
 		Vision.drive = drive;
 
@@ -185,20 +178,10 @@ public class Vision implements Runnable {
 		} else {
 			if (distance > 0) {
 				// if the tapes are to the right of the center, then move right
-				if (pegSide.equals("right") || pegSide.equals("left")) {
-					drive.driveDirection(270, 400);
-				} else {
-					// we don't want to drive as far if we're in the center
-					drive.driveDirection(270, 200);
-				}
+				drive.driveDirection(270, 400);
 			} else {
-				// if the tapes are to the left of center, then move left
-				if (pegSide.equals("right") || pegSide.equals("left")) {
-					drive.driveDirection(90, 400);
-				} else {
-					// we don't want to drive as far if we're in the center
-					drive.driveDirection(90, 200);
-				}
+				drive.driveDirection(90, 400);
+
 			}
 
 			// recalculate the distance to see if it's better
@@ -359,10 +342,6 @@ public class Vision implements Runnable {
 		 */
 		return ((centerOfTapes - centerOfFrame) * conversion) * 0.0254;
 	}// end getDistance
-
-	public static void setPegSide(String pegSide) {
-		Vision.pegSide = pegSide;
-	}
 
 	public static void setRunAutoAlign(boolean runAutoAlign) {
 		Vision.runAutoAlign = runAutoAlign;

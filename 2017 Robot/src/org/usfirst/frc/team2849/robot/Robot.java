@@ -229,10 +229,7 @@ public class Robot extends IterativeRobot {
 
 		// run auto align for the three different gear pegs
 
-		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side7)) {
-			Vision.setPegSide("left");
-			Vision.setRunAutoAlign(true);
-		} else if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
 			//resets headless angle
 			//TODO test if we have practice time
 //			drive.turnToAngle(180);
