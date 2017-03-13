@@ -205,10 +205,8 @@ public class Robot extends IterativeRobot {
 		// to front cam
 
 		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
-			System.out.println("switch to shooter camera");
 			Vision.switchCamera(1);
 		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
-			System.out.println("switch to front cam");
 			Vision.switchCamera(0);
 		}
 		currentAngle = drive.getHeading();

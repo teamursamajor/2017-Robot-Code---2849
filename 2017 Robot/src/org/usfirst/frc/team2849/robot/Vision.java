@@ -171,86 +171,70 @@ public class Vision implements Runnable {
 		 * facing relative to a default angle (0 degrees) set at robotInit and
 		 * set it to a specific angle depending on which side we are on
 		 */
-		// TODO check these numbers
-		if (Robot.getIsTeleop()) {
-			// TODO vijay said we dont want this, so i commented it out -20XX
-			switch (pegSide) {
-			case "left":
-				// drive.turnToAngle(50.0);
-				break;
-			case "right":
-				// TODO was -40, made -42.5
-				// drive.turnToAngle(-42.5);
-				break;
-			case "middle":
-				// drive.turnToAngle(0.0);
-			default:
-				break;
-			}
-		}
 
 		distance = getDistance(cvSink, outputStream);
 
 		/*
-		 * checks to see if the horizontal distance we need to move is greater
-		 * than 3.25 inches (.08255 meters) Ends after 3 attempts and stops auto
-		 * align
+		 * checks to see if the horizontal distance we need to move is less than
+		 * DIST_MARGIN_ERROR, if so, moves forward, if not moves left or right
+		 * based on the sign of distance
 		 */
 		if (Math.abs(distance) < DIST_MARGIN_ERROR) {
 			// move forward
-			// drive.mechDriveDistance(1, 180);
 			drive.driveDirection(180, 750);
 		} else {
 			if (distance > 0) {
 				// if the tapes are to the right of the center, then move right
-				// the robot wasn't moving with mechDriveDistance, so we want to
-				// try
-				// driveDistance to see if that fixes it
-				// drive.mechDriveDistance(distance, 90);
 				if (pegSide.equals("right") || pegSide.equals("left")) {
 					drive.driveDirection(270, 400);
 				} else {
+					// we don't want to drive as far if we're in the center
 					drive.driveDirection(270, 200);
 				}
 			} else {
 				// if the tapes are to the left of center, then move left
-				// drive.mechDriveDistance(distance, 270);
 				if (pegSide.equals("right") || pegSide.equals("left")) {
 					drive.driveDirection(90, 400);
 				} else {
+					// we don't want to drive as far if we're in the center
 					drive.driveDirection(90, 200);
 				}
 			}
 
+			// recalculate the distance to see if it's better
 			distance = getDistance(cvSink, outputStream);
 
+			/*
+			 * if new distance is less that DIST_MARGIN_ERROR, move forward if
+			 * not, recalculate distance and move again, each time decreasing
+			 * the length of time the robot drives by 50 miliseconds if, at the
+			 * end of any of these iterations the distance is less than
+			 * DIST_MARGIN_ERROR, it ends the loop and moves forward, if not it
+			 * moves forward after 3 iterations
+			 * 
+			 */
 			if (Math.abs(distance) < DIST_MARGIN_ERROR) {
-				// move forward
-				// drive.mechDriveDistance(1, 180);
 				drive.driveDirection(180, 750);
 			} else {
 				int i;
 				int time = 200;
-				for (i = 3; Math.abs(distance) > DIST_MARGIN_ERROR && i > 0; i--) {
+				for (i = 3; i > 0; i--) {
 					distance = getDistance(cvSink, outputStream);
-					if (i < 3) {
-						time -= 50;
-					}
-					if (distance > 0) {
+					if (Math.abs(distance) < DIST_MARGIN_ERROR) {
+						break;
+					} else if (distance > 0) {
 						// if the tapes are right of the center, then move right
-						// drive.mechDriveDistance(distance, 270);
 						drive.driveDirection(270, time);
 					} else {
 						// if the tapes are left of center, then move left
-						// drive.mechDriveDistance(distance, 90);
 						drive.driveDirection(90, time);
 					}
-
+					time -= 50;
 				}
 				if (i == 0) {
 					System.out.println("ERROR: AUTO ALIGN FAILED :( ");
 				}
-				// TODO was 850 ms, changed it to 100 and run auto align twice
+				// should move robot halfway to peg, autoAlign is called twice
 				drive.driveDirection(180, 100);
 			}
 		}
@@ -263,7 +247,9 @@ public class Vision implements Runnable {
 	/**
 	 * Uses contours to find centerOfTapes (peg location) and
 	 * centerOfFrame(robot location), then calculates and returns distance
-	 * between them in meters. Might return Double.NaN
+	 * between them in meters. If the distance is negative, the tapes are to the
+	 * left of center and you need to move left. If positive, move right. Might
+	 * return Double.NaN
 	 * 
 	 * @param cvSink
 	 * @param outputStream
@@ -367,8 +353,8 @@ public class Vision implements Runnable {
 		}
 
 		/*
-		 * subtractes centerOfTapes from centerOfFrame to get distance to move in pixels
-		 * multiply that by conversion factor to get it in inches
+		 * subtractes centerOfTapes from centerOfFrame to get distance to move
+		 * in pixels multiply that by conversion factor to get it in inches
 		 * multiply that by 0.0254 to get it in meters
 		 */
 		return ((centerOfTapes - centerOfFrame) * conversion) * 0.0254;
