@@ -404,11 +404,18 @@ public class Drive implements Runnable {
 		} 
 		turn(desired); 
 	} 
-
-	public void angleLock(double xaxis, double zaxis, double currentAngle) { 
+	
+	//TODO repurpose this so that we can move forward without drifting if within deadzone on x/z axis & not within deadzone on y
+	//if the angle we WERE at is different from the angle we ARE at then go back to where we were
+	//should let us stop drifting
+	public void angleLock(double xaxis, double yaxis, double zaxis, double currentAngle) { 
+		if (yaxis > 0 && xaxis < 0.1 && zaxis < 0.1){
+			driveAngle(currentAngle);
+		}
+		
 		if (xaxis > 0 && zaxis == 0) { 
 			driveAngle(currentAngle); 
-		} 
+		}
 	} 
 
 	public void switchHeadless() {

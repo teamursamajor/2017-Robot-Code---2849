@@ -161,9 +161,11 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		// PLACE NO TEST CODE INTO HERE
 		System.out.println("Current angle is: " + ahrs.getAngle());
+//		System.out.println();
 //		System.out.println("Distance: " + drive.ultra.getDistance());
+//		System.out.println();
 //		System.out.println("Voltage: " + drive.ultra.getVoltage());
-		System.out.println();
+//		System.out.println();
 		try {
 			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
 			// {
@@ -211,9 +213,9 @@ public class Robot extends IterativeRobot {
 			System.out.println("switch to front cam");
 			Vision.switchCamera(0);
 		}
+		//TODO figure out if this is in the right spot
 		currentAngle = drive.getHeading();
-		// TODO add a y deadzone for anglelock
-		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
+		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(1, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
 
 		if (joy.getButton(3)) {
 			Shooter.ballIntake(-1.0);
