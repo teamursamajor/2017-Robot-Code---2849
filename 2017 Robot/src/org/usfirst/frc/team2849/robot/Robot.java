@@ -53,7 +53,6 @@ public class Robot extends IterativeRobot {
 	
 	private Drive drive;
 	private int povAngle = 0;
-	private double currentAngle = 0.0;
 
 	Latch b1 = new Latch();
 	Latch xboxLatch = new Latch();
@@ -211,16 +210,13 @@ public class Robot extends IterativeRobot {
 		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
 			Vision.switchCamera(0);
 		}
-		//TODO figure out if this is in the right spot
-		currentAngle = drive.getHeading();
-		drive.angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(1, 0.1), joy.getAxisGreaterThan(2, 0.1), currentAngle);
 
-		if (joy.getButton(3)) {
-			Shooter.ballIntake(-1.0);
-		} else {
-			Shooter.ballIntake(0);
+//		if (joy.getButton(3)) {
+//			Shooter.ballIntake(-1.0);
+//		} else {
+//			Shooter.ballIntake(0);
 //			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
-		}
+//		}
 
 		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
 		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
