@@ -12,7 +12,6 @@ public class Autonomous implements Runnable {
 	private static EndCondition ending = null;
 	private static Boolean threadOneUse = false;
 	private static StartPosition position = null;
-	@SuppressWarnings("unused")
 	private static String team = null;
 	private static final int GEAR_LIFT_TIME = 5000;
 
@@ -48,7 +47,6 @@ public class Autonomous implements Runnable {
 			}
 			previousMode = currentMode;
 		}
-		// idk ask charlie
 		synchronized (threadOneUse) {
 			threadOneUse = false;
 		}
@@ -57,82 +55,57 @@ public class Autonomous implements Runnable {
 	// for crossing the line at the beginning of auto
 	public void cross(AutoMode previousMode) {
 		// if auto ends stop autoing
-		if (isKilled())
+		if (isKilled()) {
 			return;
-		// if you selected gear on the chooser and then want to cross
+		}
 		if (previousMode == AutoMode.GEAR) {
-			if (position == StartPosition.LEFT) {
-				// in gear position, straighten out by backing up, turning
-				// to face the field, and drive forward
-				gearToStraight();
-			} else if (position == StartPosition.RIGHT) {
-				// in gear position, straighten out by backing up, turning
-				// to face the field, and drive forward
-				gearToStraight();
-			}
-
 		} else if (previousMode == AutoMode.CROSS) {
 			if (position != StartPosition.CENTER) {
 				// moves forward straight from the wall on the left or right
 				// side, no gear
 				drive.driveDirection(180, 3000);
 			}
+		} else {
 		}
 
 	} // end cross
 
-	// not used
 	public void shoot(AutoMode previousMode) {
-		if (isKilled())
+		if (isKilled()) {
 			return;
+		}
+		if (previousMode == AutoMode.GEAR) {
+			// get from gear to boiler and then ethod to dump fuel
+			// remember boiler is on a different side depending on team
+			// (right for red, left for blue?)
+			if (team == "blue") {
+
+			} else {
+
+			}
+		} else {
+		}
 	}
 
 	public void gear(AutoMode previousMode, int i) {
-		if (isKilled())
+		if (isKilled()) {
 			return;
+		}
 
-		// if we're doing gear and this is the 1st time (1st selector)
 		if (previousMode == AutoMode.GEAR) {
+			// if we're doing gear and this is the 1st time (1st selector)
 			if (i == 0) {
 				if (position == StartPosition.LEFT) {
-					/*
-					 * drive forward 1750, turn 45 degrees clockwise and drive
-					 * forward again so we are close to the peg and on the
-					 * correct angle. Then we wait so the robot doesn't roll and
-					 * run auto align twice, then wait so gear can be pulled.
-					 */
-
 					wallToGear("left");
-
 				} else if (position == StartPosition.RIGHT) {
-
-					/*
-					 * drive forward 1750, turn 42.5 degrees counterclockwise
-					 * and drive forward again so we are close to the peg and on
-					 * the correct angle. Then we wait so the robot doesn't roll
-					 * and run auto align twice, then wait so gear can be
-					 * pulled.
-					 */
-
 					wallToGear("right");
-
 				} else if (position == StartPosition.CENTER) {
-					// moves forward a lot to reach the peg from center
-					// waits 2 seconds so pilot can take gear or wait a sec
-					// moves back ~3in (50ms?) so peg properly catches gear
-					// waits 5 seconds for pilot if needed
 					centerToGear();
 				}
-				Vision.setRunAutoAlign(true);
-			} else if (position == StartPosition.RIGHT) {
-				drive.driveDirection(180, 1850);
-				drive.turnToAngle(-40);
-				drive.driveDirection(180, 300);
-				try {
-					Thread.sleep(1000);
-				} catch (Exception e) {
 
-				// if we aren't center, theres a second auto, and its not gear,
+				Vision.setRunAutoAlign(true);
+
+				// if not center & theres a second auto thats not gear,
 				// straighten
 				if (position != StartPosition.CENTER) {
 					if (mode.size() > 1) {
@@ -151,13 +124,8 @@ public class Autonomous implements Runnable {
 				gearToGear();
 				gearToStraight();
 			}
-
-		} else if (previousMode == AutoMode.SHOOT) {
-			// shooting not used
-			drive.driveDirection(180, 2000);
-		} else if (previousMode == AutoMode.CROSS) {
-			// we cant cross and then do gear so its empty
-		} // end of previousmode = gear
+		} else {
+		}
 	} // end of gear
 
 	private Autonomous(EndCondition ending, List<AutoMode> mode, StartPosition position, String team, Drive drive) {
