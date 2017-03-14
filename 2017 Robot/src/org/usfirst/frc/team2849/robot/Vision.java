@@ -172,13 +172,13 @@ public class Vision implements Runnable {
 		 */
 		if (Math.abs(distance) < DIST_MARGIN_ERROR) {
 			// move forward
-			drive.driveDirection(180, 750);
+			drive.driveDirection(0, 750);
 		} else {
 			if (distance > 0) {
 				// if the tapes are to the right of the center, then move right
-				drive.driveDirection(270, 400);
-			} else {
 				drive.driveDirection(90, 400);
+			} else {
+				drive.driveDirection(270, 400);
 			}
 
 			// recalculate the distance to see if it's better
@@ -194,7 +194,7 @@ public class Vision implements Runnable {
 			 * 
 			 */
 			if (Math.abs(distance) < DIST_MARGIN_ERROR) {
-				drive.driveDirection(180, 750);
+				drive.driveDirection(0, 750);
 			} else {
 				int i;
 				int time = 200;
@@ -204,10 +204,10 @@ public class Vision implements Runnable {
 						break;
 					} else if (distance > 0) {
 						// if the tapes are right of the center, then move right
-						drive.driveDirection(270, time);
+						drive.driveDirection(90, time);
 					} else {
 						// if the tapes are left of center, then move left
-						drive.driveDirection(90, time);
+						drive.driveDirection(270, time);
 					}
 					time -= 50;
 				}
@@ -215,7 +215,7 @@ public class Vision implements Runnable {
 					System.out.println("ERROR: AUTO ALIGN FAILED :( ");
 				}
 				// should move robot halfway to peg, autoAlign is called twice
-				drive.driveDirection(180, 100);
+				drive.driveDirection(0, 100);
 			}
 		}
 

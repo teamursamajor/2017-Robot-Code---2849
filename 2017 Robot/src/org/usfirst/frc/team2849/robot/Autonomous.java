@@ -63,7 +63,7 @@ public class Autonomous implements Runnable {
 			if (position != StartPosition.CENTER) {
 				// moves forward straight from the wall on the left or right
 				// side, no gear
-				drive.driveDirection(180, 3000);
+				drive.driveDirection(0, 3000);
 			}
 		} else {
 		}
@@ -165,7 +165,7 @@ public class Autonomous implements Runnable {
 	 * Backs the robot up and auto aligns twice again to attempt auto gear again
 	 */
 	public static void gearToGear() {
-		drive.driveDirection(0, 300);
+		drive.driveDirection(180, 300);
 		Vision.setRunAutoAlign(true);
 		Vision.setRunAutoAlign(true);
 	}
@@ -175,9 +175,9 @@ public class Autonomous implements Runnable {
 	 * then moves forward
 	 */
 	public static void gearToStraight() {
-		drive.driveDirection(0, 1000);
-		drive.turnToAngle(180);
-		drive.driveDirection(180, 100);
+		drive.driveDirection(180, 1000);
+		drive.turnToAngle(0);
+		drive.driveDirection(0, 100);
 	}
 
 	/**
@@ -191,15 +191,17 @@ public class Autonomous implements Runnable {
 	 */
 	public static void wallToGear(String side) {
 		// initial drive
-		drive.driveDirection(180, 1750);
+		drive.driveDirection(0, 1750);
 		// turn, angle depends on side: right or left
 		if (side.equals("right")) {
-			drive.turnToAngle(-42.5);
+			//TODO added 180, originally -42.5
+			drive.turnToAngle(137.5);
 		} else if (side.equals("left")) {
-			drive.turnToAngle(42.5);
+			//TODO subtracted 180, originally 42.5
+			drive.turnToAngle(-137.5);
 		}
 		// second drive towards peg
-		drive.driveDirection(180, 800);
+		drive.driveDirection(0, 800);
 
 		// wait for the robot to stop rolling
 		try {
@@ -218,7 +220,7 @@ public class Autonomous implements Runnable {
 		}
 
 		// slight move backwards
-		drive.driveDirection(0, 100);
+		drive.driveDirection(180, 100);
 	}
 
 	/**
@@ -230,7 +232,7 @@ public class Autonomous implements Runnable {
 	public static void centerToGear() {
 
 		// initial drive forward from wall for 3.5 seconds
-		drive.driveDirection(180, 3500);
+		drive.driveDirection(0, 3500);
 		try {
 			// waits two seconds so pilot can get gear or wait for readjustment
 			Thread.sleep(2000);
@@ -243,7 +245,7 @@ public class Autonomous implements Runnable {
 		 * lifted up a bit by having the robot move back and letting the peg
 		 * pull the gear forward
 		 */
-		drive.driveDirection(0, 100);
+		drive.driveDirection(180, 100);
 
 		// waits 5 seconds for driver to get peg
 		try {
