@@ -252,6 +252,7 @@ public class Vision implements Runnable {
 		// extracts one of those values (H, S, or V & idk which is which)
 		Core.extractChannel(temp, temp, 2);
 		// only shows images of a certain brightness
+	
 		Imgproc.threshold(temp, temp, 200, 600, Imgproc.THRESH_BINARY);
 		// only shows the outlines of each object seen in the image (rectangles
 		// from tape and/or lights)
