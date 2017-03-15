@@ -75,15 +75,13 @@ public class Autonomous implements Runnable {
 			return;
 		}
 		if (previousMode == AutoMode.GEAR) {
-			// get from gear to boiler and then ethod to dump fuel
-			// remember boiler is on a different side depending on team
-			// (right for red, left for blue?)
-			if (team == "blue") {
-
-			} else {
-
-			}
+			gearToBoiler(position, team);
+			dumpBalls();
+		} else if (previousMode == AutoMode.SHOOT) {
+			wallToBoiler(position, team);
+			dumpBalls();
 		} else {
+
 		}
 	}
 
@@ -257,46 +255,61 @@ public class Autonomous implements Runnable {
 		// we could possibly shoot
 	}
 
-	public void gearToBoiler(String startPosition, String team) {
+	public void gearToBoiler(StartPosition startPosition, String team) {
 		// the boiler is on the left if blue and right if red
 		if (team.equals("blue")) {
 			if (startPosition.equals("left")) {
 				gearToStraight();
 				drive.driveDirection(180, 1750);
-				drive.turnToAngle(270);
-				drive.driveDirection(0, 1000);
 			} else if (startPosition.equals("right")) {
 				gearToStraight();
 				drive.driveDirection(180, 1750);
-				drive.turnToAngle(270);
-				drive.driveDirection(0, 3000);
 			} else {
 				drive.driveDirection(180, 1000);
-				drive.turnToAngle(270);
-				drive.driveDirection(0, 1750);
 			}
-		} else if(team.equals("red")){
+		} else if (team.equals("red")) {
 			if (startPosition.equals("left")) {
 				gearToStraight();
 				drive.driveDirection(180, 1750);
-				drive.turnToAngle(90);
-				drive.driveDirection(0, 3000);
 			} else if (startPosition.equals("right")) {
 				gearToStraight();
 				drive.driveDirection(180, 1750);
+			} else {
+				drive.driveDirection(180, 1000);
+			}
+		} else {
+		}
+		wallToBoiler(startPosition, team);
+	}
+
+	public void dumpBalls() {
+		// let him down easy though
+	}
+	public void wallToBoiler(StartPosition startPosition, String team){
+		if (team.equals("blue")) {
+			if (startPosition.equals("left")) {
+				drive.turnToAngle(270);
+				drive.driveDirection(0, 1000);
+			} else if (startPosition.equals("right")) {
+				drive.turnToAngle(270);
+				drive.driveDirection(0, 3000);
+			} else {
+				drive.turnToAngle(270);
+				drive.driveDirection(0, 1750);
+			}
+		} else if (team.equals("red")) {
+			if (startPosition.equals("left")) {
+				drive.turnToAngle(90);
+				drive.driveDirection(0, 3000);
+			} else if (startPosition.equals("right")) {
 				drive.turnToAngle(90);
 				drive.driveDirection(0, 1000);
 			} else {
-				drive.driveDirection(180, 1000);
 				drive.turnToAngle(90);
 				drive.driveDirection(0, 1750);
 			}
 		} else {
-			
+
 		}
-	}
-	
-	public void dumpBalls(){
-		//let him down easy though
 	}
 }
