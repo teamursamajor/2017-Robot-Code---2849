@@ -201,7 +201,7 @@ public class Autonomous implements Runnable {
 			drive.turnToAngle(-137.5);
 		}
 		// second drive towards peg
-		drive.driveDirection(0, 800);
+		drive.driveDirection(180, 800);
 
 		// wait for the robot to stop rolling
 		try {
@@ -220,13 +220,13 @@ public class Autonomous implements Runnable {
 		}
 
 		// slight move backwards
-		drive.driveDirection(180, 100);
+		drive.driveDirection(0, 100);
 	}
 
 	/**
 	 * Moves the robot from the center wall to the gear by moving forward (3.5
 	 * secs), waiting (2 seconds), moving backwards 3 inches (50 ms), and then
-	 * stopping until auto ends
+	 * stopping until auto ends.
 	 * 
 	 */
 	public static void centerToGear() {
@@ -252,5 +252,7 @@ public class Autonomous implements Runnable {
 			Thread.sleep(GEAR_LIFT_TIME);
 		} catch (InterruptedException e) {
 		}
+		//TODO we have a solid 5 seconds of doing nothing after this is done.
+		//we could possibly shoot
 	}
 }
