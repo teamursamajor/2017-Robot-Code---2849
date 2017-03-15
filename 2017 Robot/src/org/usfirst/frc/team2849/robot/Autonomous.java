@@ -194,10 +194,10 @@ public class Autonomous implements Runnable {
 		drive.driveDirection(0, 1750);
 		// turn, angle depends on side: right or left
 		if (side.equals("right")) {
-			//TODO added 180, originally -42.5
+			// TODO added 180, originally -42.5
 			drive.turnToAngle(137.5);
 		} else if (side.equals("left")) {
-			//TODO subtracted 180, originally 42.5
+			// TODO subtracted 180, originally 42.5
 			drive.turnToAngle(-137.5);
 		}
 		// second drive towards peg
@@ -231,8 +231,9 @@ public class Autonomous implements Runnable {
 	 */
 	public static void centerToGear() {
 
-		// initial drive forward from wall for 3.5 seconds
-		drive.driveDirection(0, 3500);
+		// initial drive forward from wall for 1 seconds
+		// TODO needs testing
+		drive.driveDirection(0, 1000);
 		try {
 			// waits two seconds so pilot can get gear or wait for readjustment
 			Thread.sleep(2000);
@@ -252,7 +253,50 @@ public class Autonomous implements Runnable {
 			Thread.sleep(GEAR_LIFT_TIME);
 		} catch (InterruptedException e) {
 		}
-		//TODO we have a solid 5 seconds of doing nothing after this is done.
-		//we could possibly shoot
+		// TODO we have a solid 5 seconds of doing nothing after this is done.
+		// we could possibly shoot
+	}
+
+	public void gearToBoiler(String startPosition, String team) {
+		// the boiler is on the left if blue and right if red
+		if (team.equals("blue")) {
+			if (startPosition.equals("left")) {
+				gearToStraight();
+				drive.driveDirection(180, 1750);
+				drive.turnToAngle(270);
+				drive.driveDirection(0, 1000);
+			} else if (startPosition.equals("right")) {
+				gearToStraight();
+				drive.driveDirection(180, 1750);
+				drive.turnToAngle(270);
+				drive.driveDirection(0, 3000);
+			} else {
+				drive.driveDirection(180, 1000);
+				drive.turnToAngle(270);
+				drive.driveDirection(0, 1750);
+			}
+		} else if(team.equals("red")){
+			if (startPosition.equals("left")) {
+				gearToStraight();
+				drive.driveDirection(180, 1750);
+				drive.turnToAngle(90);
+				drive.driveDirection(0, 3000);
+			} else if (startPosition.equals("right")) {
+				gearToStraight();
+				drive.driveDirection(180, 1750);
+				drive.turnToAngle(90);
+				drive.driveDirection(0, 1000);
+			} else {
+				drive.driveDirection(180, 1000);
+				drive.turnToAngle(90);
+				drive.driveDirection(0, 1750);
+			}
+		} else {
+			
+		}
+	}
+	
+	public void dumpBalls(){
+		//let him down easy though
 	}
 }
