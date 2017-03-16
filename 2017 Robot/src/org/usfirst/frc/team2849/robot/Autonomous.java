@@ -63,7 +63,7 @@ public class Autonomous implements Runnable {
 			if (position != StartPosition.CENTER) {
 				// moves forward straight from the wall on the left or right
 				// side, no gear
-				drive.driveDirection(0, 3000);
+				drive.driveDirection(0, 2900);
 			}
 		} else {
 		}
@@ -163,7 +163,7 @@ public class Autonomous implements Runnable {
 	 * Backs the robot up and auto aligns twice again to attempt auto gear again
 	 */
 	public static void gearToGear() {
-		drive.driveDirection(180, 300);
+		drive.driveDirection(180, 250);
 		Vision.setRunAutoAlign(true);
 		Vision.setRunAutoAlign(true);
 	}
@@ -173,9 +173,9 @@ public class Autonomous implements Runnable {
 	 * then moves forward
 	 */
 	public static void gearToStraight() {
-		drive.driveDirection(180, 1000);
+		drive.driveDirection(180, 950);
 		drive.turnToAngle(0);
-		drive.driveDirection(0, 100);
+		drive.driveDirection(0, 90);
 	}
 
 	/**
@@ -189,7 +189,7 @@ public class Autonomous implements Runnable {
 	 */
 	public static void wallToGear(String side) {
 		// initial drive
-		drive.driveDirection(0, 1750);
+		drive.driveDirection(0, 170);
 		// turn, angle depends on side: right or left
 		if (side.equals("right")) {
 			// TODO added 180, originally -42.5
@@ -199,7 +199,7 @@ public class Autonomous implements Runnable {
 			drive.turnToAngle(-137.5);
 		}
 		// second drive towards peg
-		drive.driveDirection(180, 800);
+		drive.driveDirection(180, 750);
 
 		// wait for the robot to stop rolling
 		try {
@@ -218,7 +218,7 @@ public class Autonomous implements Runnable {
 		}
 
 		// slight move backwards
-		drive.driveDirection(0, 100);
+		drive.driveDirection(0, 90);
 	}
 
 	/**
@@ -231,7 +231,7 @@ public class Autonomous implements Runnable {
 
 		// initial drive forward from wall for 1 seconds
 		// TODO needs testing
-		drive.driveDirection(0, 1000);
+		drive.driveDirection(0, 900);
 		try {
 			// waits two seconds so pilot can get gear or wait for readjustment
 			Thread.sleep(2000);
@@ -244,7 +244,7 @@ public class Autonomous implements Runnable {
 		 * lifted up a bit by having the robot move back and letting the peg
 		 * pull the gear forward
 		 */
-		drive.driveDirection(180, 100);
+		drive.driveDirection(180, 90);
 
 		// waits 5 seconds for driver to get peg
 		try {
@@ -260,22 +260,22 @@ public class Autonomous implements Runnable {
 		if (team.equals("blue")) {
 			if (startPosition.equals("left")) {
 				gearToStraight();
-				drive.driveDirection(180, 1750);
+				drive.driveDirection(180, 1700);
 			} else if (startPosition.equals("right")) {
 				gearToStraight();
-				drive.driveDirection(180, 1750);
+				drive.driveDirection(180, 1700);
 			} else {
-				drive.driveDirection(180, 1000);
+				drive.driveDirection(180, 950);
 			}
 		} else if (team.equals("red")) {
 			if (startPosition.equals("left")) {
 				gearToStraight();
-				drive.driveDirection(180, 1750);
+				drive.driveDirection(180, 1700);
 			} else if (startPosition.equals("right")) {
 				gearToStraight();
-				drive.driveDirection(180, 1750);
+				drive.driveDirection(180, 1700);
 			} else {
-				drive.driveDirection(180, 1000);
+				drive.driveDirection(180, 950);
 			}
 		} else {
 		}
@@ -289,24 +289,24 @@ public class Autonomous implements Runnable {
 		if (team.equals("blue")) {
 			if (startPosition.equals("left")) {
 				drive.turnToAngle(270);
-				drive.driveDirection(0, 1000);
+				drive.driveDirection(0, 950);
 			} else if (startPosition.equals("right")) {
 				drive.turnToAngle(270);
-				drive.driveDirection(0, 3000);
+				drive.driveDirection(0, 2900);
 			} else {
 				drive.turnToAngle(270);
-				drive.driveDirection(0, 1750);
+				drive.driveDirection(0, 1700);
 			}
 		} else if (team.equals("red")) {
 			if (startPosition.equals("left")) {
 				drive.turnToAngle(90);
-				drive.driveDirection(0, 3000);
+				drive.driveDirection(0, 2900);
 			} else if (startPosition.equals("right")) {
 				drive.turnToAngle(90);
-				drive.driveDirection(0, 1000);
+				drive.driveDirection(0, 950);
 			} else {
 				drive.turnToAngle(90);
-				drive.driveDirection(0, 1750);
+				drive.driveDirection(0, 1700);
 			}
 		} else {
 
