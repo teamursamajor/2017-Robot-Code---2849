@@ -94,21 +94,21 @@ public class Autonomous implements Runnable {
 			// if we're doing gear and this is the 1st time (1st selector)
 			if (i == 0) {
 				if (position == StartPosition.LEFT) {
-					wallToGear("left");
+					leftToGear();
+					// Vision.setRunAutoAlign(true);
 				} else if (position == StartPosition.RIGHT) {
-					wallToGear("right");
+					rightToGear();
+					// Vision.setRunAutoAlign(true);
 				} else if (position == StartPosition.CENTER) {
 					centerToGear();
 				}
-
-				Vision.setRunAutoAlign(true);
 
 				// if not center & theres a second auto thats not gear,
 				// straighten
 				if (position != StartPosition.CENTER) {
 					if (mode.size() > 1) {
 						if (mode.get(1) != AutoMode.GEAR) {
-							gearToStraight();
+							// gearToStraight();
 						}
 					}
 				}
@@ -164,8 +164,8 @@ public class Autonomous implements Runnable {
 	 */
 	public static void gearToGear() {
 		drive.driveDirection(180, 250);
-		Vision.setRunAutoAlign(true);
-		Vision.setRunAutoAlign(true);
+		// Vision.setRunAutoAlign(true);
+		// Vision.setRunAutoAlign(true);
 	}
 
 	/**
@@ -178,6 +178,82 @@ public class Autonomous implements Runnable {
 		drive.driveDirection(0, 90);
 	}
 
+	
+	/**
+	 * Moves the robot from the wall on the right to the gear peg by
+	 * moving forward, turning, moving forward
+	 * again, waiting 3 seconds, then moving back slightly
+	 * 
+	 */
+	public static void rightToGear() {
+		drive.driveDirection(180, 1600);
+		// TODO added 180, originally -42.5, 137.5
+		drive.turnToAngle(-35);
+
+		// drive towards peg
+		drive.driveDirection(180, 750);
+
+		// wait for the robot to stop rolling
+		try {
+			Thread.sleep(100);
+		} catch (Exception e) {
+		}
+
+		// auto align twice, moves forward slightly after each auto align
+		drive.driveDirection(180, 450);
+
+		try {
+			Thread.sleep(3000);
+		} catch (Exception e) {
+		}
+
+		// move back slightly
+		drive.driveDirection(0, 150);
+
+		// waits for 5 seconds for the pilot to pick up the gear
+		try {
+			Thread.sleep(GEAR_LIFT_TIME);
+		} catch (Exception e) {
+		}
+	}
+
+	/**
+	 * Moves the robot from the wall on the left to the gear peg by
+	 * moving forward, turning, moving forward
+	 * again, waiting 3 seconds, then moving back slightly
+	 * 
+	 */
+	public static void leftToGear() {
+		drive.driveDirection(180, 1500);
+		// TODO subtracted 180, originally 48, -137.5
+		drive.turnToAngle(48);
+
+		// drive towards peg
+		drive.driveDirection(180, 750);
+
+		// wait for the robot to stop rolling
+		try {
+			Thread.sleep(100);
+		} catch (Exception e) {
+		}
+
+		drive.driveDirection(160, 750);
+
+		try {
+			Thread.sleep(3000);
+		} catch (Exception e) {
+		}
+
+		// move back slightly
+		drive.driveDirection(0, 150);
+
+		// waits for 5 seconds for the pilot to pick up the gear
+		try {
+			Thread.sleep(GEAR_LIFT_TIME);
+		} catch (Exception e) {
+		}
+	}
+
 	/**
 	 * Moves the robot from the wall on the left or right to the gear peg by
 	 * moving forward, turning to an angle depending on side, moving forward
@@ -188,17 +264,17 @@ public class Autonomous implements Runnable {
 	 *            robot is on. Used to determine which angle to turn to
 	 */
 	public static void wallToGear(String side) {
-		// initial drive
-		drive.driveDirection(0, 170);
-		// turn, angle depends on side: right or left
 		if (side.equals("right")) {
-			// TODO added 180, originally -42.5
-			drive.turnToAngle(137.5);
+			drive.driveDirection(180, 1600);
+			// TODO added 180, originally -42.5, 137.5
+			drive.turnToAngle(-35);
 		} else if (side.equals("left")) {
-			// TODO subtracted 180, originally 42.5
-			drive.turnToAngle(-137.5);
+			drive.driveDirection(180, 1450);
+			// TODO subtracted 180, originally 48, -137.5
+			drive.turnToAngle(48);
 		}
-		// second drive towards peg
+
+		// drive towards peg
 		drive.driveDirection(180, 750);
 
 		// wait for the robot to stop rolling
@@ -208,17 +284,27 @@ public class Autonomous implements Runnable {
 		}
 
 		// auto align twice, moves forward slightly after each auto align
-		Vision.setRunAutoAlign(true);
-		Vision.setRunAutoAlign(true);
+		// Vision.setRunAutoAlign(true);
+		// Vision.setRunAutoAlign(true);
+		if (side.equals("right")) {
+			drive.driveDirection(180, 750);
+		} else if (side.equals("left")) {
+			drive.driveDirection(160, 750);
+		}
+
+		try {
+			Thread.sleep(3000);
+		} catch (Exception e) {
+		}
+
+		// move back slightly
+		drive.driveDirection(0, 150);
 
 		// waits for 5 seconds for the pilot to pick up the gear
 		try {
 			Thread.sleep(GEAR_LIFT_TIME);
 		} catch (Exception e) {
 		}
-
-		// slight move backwards
-		drive.driveDirection(0, 90);
 	}
 
 	/**
@@ -228,13 +314,21 @@ public class Autonomous implements Runnable {
 	 * 
 	 */
 	public static void centerToGear() {
+		// WHERE ISAIAH WROTE HIS NAME NEEDS TO BE LINED UP WITH THE DAVIT
 
 		// initial drive forward from wall for 1 seconds
 		// TODO needs testing
-		drive.driveDirection(0, 900);
+		// drive.driveDirection(180, 200);
+		// drive.turnAngle(160);
+		/*
+		 * try { Thread.sleep(100); } catch (Exception e) {
+		 * 
+		 * }
+		 */
+		drive.driveDirection(180, 1850);
 		try {
 			// waits two seconds so pilot can get gear or wait for readjustment
-			Thread.sleep(2000);
+			Thread.sleep(3000);
 		} catch (Exception e) {
 		}
 
@@ -244,7 +338,7 @@ public class Autonomous implements Runnable {
 		 * lifted up a bit by having the robot move back and letting the peg
 		 * pull the gear forward
 		 */
-		drive.driveDirection(180, 90);
+		drive.driveDirection(0, 180);
 
 		// waits 5 seconds for driver to get peg
 		try {
@@ -285,7 +379,8 @@ public class Autonomous implements Runnable {
 	public void dumpBalls() {
 		// let him down easy though
 	}
-	public void wallToBoiler(StartPosition startPosition, String team){
+
+	public void wallToBoiler(StartPosition startPosition, String team) {
 		if (team.equals("blue")) {
 			if (startPosition.equals("left")) {
 				drive.turnToAngle(270);
@@ -303,7 +398,7 @@ public class Autonomous implements Runnable {
 				drive.driveDirection(0, 2900);
 			} else if (startPosition.equals("right")) {
 				drive.turnToAngle(90);
-				drive.driveDirection(0, 950);
+				drive.driveDirection(0, 1000);
 			} else {
 				drive.turnToAngle(90);
 				drive.driveDirection(0, 1700);

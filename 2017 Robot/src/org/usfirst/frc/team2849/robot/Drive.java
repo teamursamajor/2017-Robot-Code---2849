@@ -222,8 +222,7 @@ public class Drive implements Runnable {
 	 *            An angle measurement in degrees.
 	 */
 	public void driveDirection(double angleDeg) {
-
-		drive(0, .5, 0, -angleDeg);
+		drive(0, 0.5, 0, -angleDeg);
 
 	}
 
@@ -302,12 +301,12 @@ public class Drive implements Runnable {
 	 */
 	public void run() {
 		while (true) {
-			currentAngle = getHeading();
-			angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(1, 0.1), joy.getAxisGreaterThan(2, 0.1),
-					currentAngle);
+			//currentAngle = getHeading();
+			//angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(1, 0.1), joy.getAxisGreaterThan(2, 0.1),
+					//currentAngle);
 			if (autoDrive) {
-				currentAngle = getHeading();
-				angleLock();
+				//currentAngle = getHeading();
+				//angleLock();
 				// System.out.println("Distance: " + ultra.getDistance());
 				// System.out.println("Voltage: " + ultra.getVoltage());
 				// checking in centimeters

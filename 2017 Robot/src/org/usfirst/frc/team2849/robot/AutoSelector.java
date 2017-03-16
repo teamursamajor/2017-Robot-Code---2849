@@ -16,6 +16,7 @@ public class AutoSelector {
 	public SendableChooser<String> teamChooser;
 
 	public void initialize(){
+		//7-8 inches from the end of the tape (where it intersects w/ wall) to the closest bumper
 		autoModeChooser1 = new SendableChooser<String>();
 		autoModeChooser1.addDefault("1: Cross", "0");
 		autoModeChooser1.addObject("1: Shoot", "1");
