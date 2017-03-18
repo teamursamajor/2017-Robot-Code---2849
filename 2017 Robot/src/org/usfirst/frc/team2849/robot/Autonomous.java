@@ -11,7 +11,7 @@ public class Autonomous implements Runnable {
 	private static Thread autoRunner = null;
 	private static EndCondition ending = null;
 	private static Boolean threadOneUse = false;
-	private static StartPosition position = null;
+	private static StartPosition position = StartPosition.LEFT;
 	private static String team = null;
 	private static final int GEAR_LIFT_TIME = 5000;
 

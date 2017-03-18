@@ -11,7 +11,7 @@
 		<property name="MJPG Server URL" value="http://10.28.49.99/mjpg/video.mpg "/>
 	</static-widget>
 	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
-		<location x="588" y="4"/>
+		<location x="584" y="18"/>
 		<width>432</width>
 		<height>312</height>
 		<property name="Camera Choice" value=""/>
