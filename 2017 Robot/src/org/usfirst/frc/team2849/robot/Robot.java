@@ -72,7 +72,8 @@ public class Robot extends IterativeRobot {
 	// private PowerDistributionPanel board = new PowerDistributionPanel(0);
 
 	/**
-	 * This function is run when the robot is first started up and should be
+	 * This function is run when the ro
+	 * bot is first started up and should be
 	 * used for any initialization code.
 	 */
 	public void robotInit() {
