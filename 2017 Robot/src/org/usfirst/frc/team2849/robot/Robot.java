@@ -147,6 +147,8 @@ public class Robot extends IterativeRobot {
 		isTeleop = true;
 		drive.setHeadingOffset(0);
 		
+		Climber.kill();
+		
 		if(autoSelector.getCameras()==0){
 			Vision.setCameras(1, 0);
 		} else {

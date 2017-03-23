@@ -16,6 +16,7 @@ public class Climber implements Runnable {
 
 	private static boolean backwards = false;
 	private static boolean forwards = false;
+	private static boolean isKilled = false;
 
 	// TODO comment your code so I can actually understand it please
 
@@ -26,6 +27,9 @@ public class Climber implements Runnable {
 	@Override
 	public void run() {
 		while (!ending.done()) {
+			if (isKilled) {
+				break;
+			}
 			if (backwards) {
 				climber.set(-.5);
 				setBackwards(false);
@@ -69,6 +73,10 @@ public class Climber implements Runnable {
 	
 	public static void setButton4 (boolean button4) {
 		Climber.button4 = button4;
+	}
+	
+	public static void kill() {
+		isKilled = true;
 	}
 
 }

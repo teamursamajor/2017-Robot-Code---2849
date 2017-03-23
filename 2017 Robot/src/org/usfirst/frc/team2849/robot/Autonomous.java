@@ -377,7 +377,8 @@ public class Autonomous implements Runnable {
 	}
 
 	public void dumpBalls() {
-		// let him down easy though
+		Climber.climb(() -> Robot.getIsAutonomous());
+		Climber.setForwards(true);
 	}
 
 	public void wallToBoiler(StartPosition startPosition, String team) {
