@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Button 3: intake
  * Button 4: switched which shooter motor the slider sets power for
  * Button 5: climber forwards
- * Button 6: clifmber backwards
+ * Button 6: 
  * Button 7:  left gear
  * Button 8: clear intake
  * Button 9: climbing low gear
@@ -190,11 +190,6 @@ public class Robot extends IterativeRobot {
 			Climber.climb(() -> !joy.getButton(5));
 		}
 
-		// run climber to unwind rope
-		if (joy.getButton(6)) {
-			Climber.setBackwards(true);
-			Climber.climb(() -> !joy.getButton(6));
-		}
 
 		/*
 		 * switch camera from gear to shooter when trigger is pressed and then
@@ -275,12 +270,6 @@ public class Robot extends IterativeRobot {
 		if (joy.getButton(5)) {
 			Climber.setForwards(true);
 			Climber.climb(() -> !joy.getButton(5));
-		}
-
-		// run climber to unwind rope
-		if (joy.getButton(6)) {
-			Climber.setBackwards(true);
-			Climber.climb(() -> !joy.getButton(6));
 		}
 
 		if (joy.getButton(12)) {

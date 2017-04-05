@@ -14,7 +14,6 @@ public class Climber implements Runnable {
 
 	private static Spark climber = new Spark(2);
 
-	private static boolean backwards = false;
 	private static boolean forwards = false;
 
 	// TODO comment your code so I can actually understand it please
@@ -26,10 +25,7 @@ public class Climber implements Runnable {
 	@Override
 	public void run() {
 		while (!ending.done()) {
-			if (backwards) {
-				climber.set(-.5);
-				setBackwards(false);
-			} else if (forwards) {
+			if (forwards) {
 				climber.set(-1);
 				setForwards(false);
 			} else if (button4) {
@@ -57,10 +53,6 @@ public class Climber implements Runnable {
 		}
 		climberRunner = new Thread(new Climber(ending), "climber");
 		climberRunner.start();
-	}
-
-	public static void setBackwards(boolean backwards) {
-		Climber.backwards = backwards;
 	}
 
 	public static void setForwards(boolean forwards) {
