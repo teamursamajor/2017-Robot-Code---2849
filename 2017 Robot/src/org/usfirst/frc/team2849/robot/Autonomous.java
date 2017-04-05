@@ -78,6 +78,7 @@ public class Autonomous implements Runnable {
 			gearToBoiler(position, team);
 			dumpBalls();
 		} else if (previousMode == AutoMode.SHOOT) {
+			turnByWall();
 			wallToBoiler(position, team);
 			dumpBalls();
 		} else {
@@ -104,7 +105,7 @@ public class Autonomous implements Runnable {
 				}
 
 				// if not center & theres a second auto thats not gear,
-				// straighten
+				// straighten - this isn't happening anymore
 				if (position != StartPosition.CENTER) {
 					if (mode.size() > 1) {
 						if (mode.get(1) != AutoMode.GEAR) {
@@ -118,8 +119,8 @@ public class Autonomous implements Runnable {
 				 * we call gear twice for autonomous, then straightens out
 				 */
 
-				gearToGear();
-				gearToStraight();
+				// gearToGear();
+				// gearToStraight();
 			} else {
 				System.out.println("error in selecting auto: empty function selected");
 			}
@@ -160,34 +161,23 @@ public class Autonomous implements Runnable {
 	}
 
 	/**
-	 * Backs the robot up and auto aligns twice again to attempt auto gear again
-	 */
-	public static void gearToGear() {
-		drive.driveDirection(180, 250);
-		// Vision.setRunAutoAlign(true);
-		// Vision.setRunAutoAlign(true);
-	}
-
-	/**
 	 * Moves the robot from the gear peg and orients it to make it straight,
 	 * then moves forward
 	 */
-	public static void gearToStraight() {
-		drive.driveDirection(180, 950);
-		drive.turnToAngle(0);
-		drive.driveDirection(0, 90);
+	public static void gearToAngle(double angle) {
+		drive.driveDirection(0, 950);
+		drive.turnToAngle(angle);
 	}
 
-	
 	/**
-	 * Moves the robot from the wall on the right to the gear peg by
-	 * moving forward, turning, moving forward
-	 * again, waiting 3 seconds, then moving back slightly
+	 * Moves the robot from the wall on the right to the gear peg by moving
+	 * forward, turning, moving forward again, waiting 3 seconds, then moving
+	 * back slightly
 	 * 
 	 */
 	public static void rightToGear() {
 		drive.driveDirection(180, 1600);
-		// TODO added 180, originally -42.5, 137.5
+		// added 180, originally -42.5, 137.5
 		drive.turnToAngle(-35);
 
 		// drive towards peg
@@ -199,7 +189,7 @@ public class Autonomous implements Runnable {
 		} catch (Exception e) {
 		}
 
-		// auto align twice, moves forward slightly after each auto align
+		// second move forward (dont ask why we move twice)
 		drive.driveDirection(180, 450);
 
 		try {
@@ -218,9 +208,9 @@ public class Autonomous implements Runnable {
 	}
 
 	/**
-	 * Moves the robot from the wall on the left to the gear peg by
-	 * moving forward, turning, moving forward
-	 * again, waiting 3 seconds, then moving back slightly
+	 * Moves the robot from the wall on the left to the gear peg by moving
+	 * forward, turning, moving forward again, waiting 3 seconds, then moving
+	 * back slightly
 	 * 
 	 */
 	public static void leftToGear() {
@@ -260,8 +250,9 @@ public class Autonomous implements Runnable {
 	 * again, then auto aligning twice
 	 * 
 	 * @param side
-	 *            String "left" or "right" that tells you which side peg the
-	 *            robot is on. Used to determine which angle to turn to
+	 *            *PROBABLY* UNUSED String "left" or "right" that tells you
+	 *            which side peg the robot is on. Used to determine which angle
+	 *            to turn to
 	 */
 	public static void wallToGear(String side) {
 		if (side.equals("right")) {
@@ -353,23 +344,25 @@ public class Autonomous implements Runnable {
 		// the boiler is on the left if blue and right if red
 		if (team.equals("blue")) {
 			if (startPosition.equals("left")) {
-				gearToStraight();
-				drive.driveDirection(180, 1700);
+				gearToAngle(270.0);
+				drive.driveDirection(270, 1500);
 			} else if (startPosition.equals("right")) {
-				gearToStraight();
-				drive.driveDirection(180, 1700);
+				gearToAngle(270.0);
+				drive.driveDirection(270, 1600);
 			} else {
-				drive.driveDirection(180, 950);
+				drive.driveDirection(180, 925);
+				drive.turnToAngle(270);
+				drive.driveDirection(270, 925);
 			}
 		} else if (team.equals("red")) {
 			if (startPosition.equals("left")) {
-				gearToStraight();
-				drive.driveDirection(180, 1700);
+				gearToAngle(90.0);
+				drive.driveDirection(90, 1500);
 			} else if (startPosition.equals("right")) {
-				gearToStraight();
-				drive.driveDirection(180, 1700);
+				gearToAngle(90.0);
+				drive.driveDirection(90, 1600);
 			} else {
-				drive.driveDirection(180, 950);
+				drive.driveDirection(90, 950);
 			}
 		} else {
 		}
@@ -383,28 +376,35 @@ public class Autonomous implements Runnable {
 	public void wallToBoiler(StartPosition startPosition, String team) {
 		if (team.equals("blue")) {
 			if (startPosition.equals("left")) {
-				drive.turnToAngle(270);
 				drive.driveDirection(0, 950);
 			} else if (startPosition.equals("right")) {
-				drive.turnToAngle(270);
 				drive.driveDirection(0, 2900);
 			} else {
-				drive.turnToAngle(270);
 				drive.driveDirection(0, 1700);
 			}
 		} else if (team.equals("red")) {
 			if (startPosition.equals("left")) {
-				drive.turnToAngle(90);
 				drive.driveDirection(0, 2900);
 			} else if (startPosition.equals("right")) {
-				drive.turnToAngle(90);
 				drive.driveDirection(0, 1000);
 			} else {
-				drive.turnToAngle(90);
 				drive.driveDirection(0, 1700);
 			}
 		} else {
 
+		}
+	}
+
+	public void turnByWall(){
+		//blue boiler left, red boiler right
+		if (team.equals("blue")){
+			drive.driveDirection(180, 500);
+			drive.turnToAngle(270);
+			drive.driveDirection(270,500);
+		} else if(team.equals("red")){
+			drive.driveDirection(180,500);
+			drive.turnToAngle(90);
+			drive.driveDirection(90,500);
 		}
 	}
 }
