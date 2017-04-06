@@ -68,7 +68,7 @@ public class Drive implements Runnable {
 		backRightMotor1.setInverted(true);
 		numMotors = 4;
 		Drive.ahrs = ahrs;
-		this.joy = joy;
+		Drive.joy = joy;
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class Drive implements Runnable {
 		backRightMotor2 = new Spark(t8);
 		numMotors = 8;
 		Drive.ahrs = ahrs;
-		this.joy = joy;
+		Drive.joy = joy;
 	}
 
 	/**
