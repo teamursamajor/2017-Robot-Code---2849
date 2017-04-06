@@ -140,6 +140,9 @@ public class Robot extends IterativeRobot {
 		System.out.println("Distance: " + drive.ultra.getDistance());
 		System.out.println("Voltage: " + drive.ultra.getVoltage());
 //		System.out.println(drive.getHeading());
+		if(joy.getSingleButtonPress(7)){
+			Autonomous.setKillAuto(true);
+		}
 	}
 
 	public void teleopInit() {
@@ -255,6 +258,10 @@ public class Robot extends IterativeRobot {
 			drive.switchHeadless();
 			System.out.println("Headless: " + drive.getHeadless());
 		}
+		
+		if(joy.getSingleButtonPress(7)){
+			Autonomous.setKillAuto(true);
+		}
 	}
 
 	public void testInit() {
@@ -347,4 +354,5 @@ public class Robot extends IterativeRobot {
 	public static boolean getIsTeleop(){
 		return isTeleop;
 	}
+	
 }

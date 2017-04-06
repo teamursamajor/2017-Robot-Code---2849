@@ -14,11 +14,15 @@ public class Autonomous implements Runnable {
 	private static StartPosition position = StartPosition.LEFT;
 	private static String team = null;
 	private static final int GEAR_LIFT_TIME = 5000;
+	private static boolean killAuto = false;
 
 	@Override
 	public void run() {
 		AutoMode previousMode;
 		AutoMode currentMode;
+		if(killAuto){
+			return;
+		}
 		// if there is no auto methods in the mode array, return
 		if (mode == null || mode.size() == 0) {
 			return;
@@ -396,5 +400,8 @@ public class Autonomous implements Runnable {
 			drive.turnToAngle(270);
 			drive.driveDirection(90, 500);
 		}
+	}
+	public static void setKillAuto(boolean killAuto){
+		Autonomous.killAuto = killAuto;
 	}
 }
