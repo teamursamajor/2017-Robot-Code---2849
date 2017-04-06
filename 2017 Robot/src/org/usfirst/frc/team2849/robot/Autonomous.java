@@ -344,25 +344,27 @@ public class Autonomous implements Runnable {
 		// the boiler is on the left if blue and right if red
 		if (team.equals("blue")) {
 			if (startPosition.equals("left")) {
-				gearToAngle(270.0);
+				gearToAngle(90.0);
 				drive.driveDirection(270, 1500);
 			} else if (startPosition.equals("right")) {
-				gearToAngle(270.0);
+				gearToAngle(90.0);
 				drive.driveDirection(270, 1600);
 			} else {
-				drive.driveDirection(180, 925);
-				drive.turnToAngle(270);
+				drive.driveDirection(0, 925);
+				drive.turnToAngle(90);
 				drive.driveDirection(270, 925);
 			}
 		} else if (team.equals("red")) {
 			if (startPosition.equals("left")) {
-				gearToAngle(90.0);
+				gearToAngle(270.0);
 				drive.driveDirection(90, 1500);
 			} else if (startPosition.equals("right")) {
-				gearToAngle(90.0);
+				gearToAngle(270.0);
 				drive.driveDirection(90, 1600);
 			} else {
-				drive.driveDirection(90, 950);
+				drive.driveDirection(0,925);
+				drive.turnToAngle(270.0);
+				drive.driveDirection(90, 925);
 			}
 		} else {
 		}
@@ -384,7 +386,7 @@ public class Autonomous implements Runnable {
 				drive.driveDirection(0, 1700);
 			}
 			//move left to get to low goal
-			drive.driveDirection(270, 300);
+			drive.driveDirection(90, 300);
 		} else if (team.equals("red")) {
 			if (startPosition.equals("left")) {
 				drive.driveDirection(0, 2900);
@@ -394,7 +396,7 @@ public class Autonomous implements Runnable {
 				drive.driveDirection(0, 1700);
 			}
 			//move right to get to low goal
-			drive.driveDirection(90, 300);
+			drive.driveDirection(270, 300);
 		} else {
 
 		}
@@ -404,11 +406,11 @@ public class Autonomous implements Runnable {
 		//blue boiler left, red boiler right
 		if (team.equals("blue")){
 			drive.driveDirection(180, 500);
-			drive.turnToAngle(270);
+			drive.turnToAngle(90);
 			drive.driveDirection(270,500);
 		} else if(team.equals("red")){
 			drive.driveDirection(180,500);
-			drive.turnToAngle(90);
+			drive.turnToAngle(270);
 			drive.driveDirection(90,500);
 		}
 	}
