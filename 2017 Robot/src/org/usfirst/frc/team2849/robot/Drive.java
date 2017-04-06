@@ -45,7 +45,7 @@ public class Drive implements Runnable {
 	private static LogitechFlightStick joy;
 
 	private final double STOPPING_DISTANCE = 8.0;
-
+//0 fl 1 fr 9 bl 8 br
 	/**
 	 * Drive constructor for 4-motor drive.
 	 * 

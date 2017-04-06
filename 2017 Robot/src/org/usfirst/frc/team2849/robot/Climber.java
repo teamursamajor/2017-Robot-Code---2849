@@ -14,6 +14,7 @@ public class Climber implements Runnable {
 
 	private static Spark climber = new Spark(2);
 
+//	private static boolean isKilled;
 	private static boolean forwards = false;
 
 	// TODO comment your code so I can actually understand it please
@@ -25,6 +26,9 @@ public class Climber implements Runnable {
 	@Override
 	public void run() {
 		while (!ending.done()) {
+//			if (isKilled){
+//				break;
+//			}
 			if (forwards) {
 				climber.set(-1);
 				setForwards(false);
@@ -63,4 +67,7 @@ public class Climber implements Runnable {
 		Climber.button4 = button4;
 	}
 
+//	public static void kill() {
+//		isKilled = true;
+//	}
 }
