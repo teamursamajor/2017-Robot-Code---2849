@@ -231,7 +231,6 @@ public class Drive implements Runnable {
 	 * This will drive the robot in a direction for the specified time.
 	 * 
 	 * @param angleDeg
-	 *            An angle measurement in degrees.
 	 * @param time
 	 *            A time measurement in milliseconds.
 	 */
@@ -489,7 +488,7 @@ public class Drive implements Runnable {
 	 * @param time
 	 *            A time measurement in milliseconds.
 	 * @param speed
-	 * 			  A speed to drive the robot. -1 is full speed, defaults to -0.5
+	 * 			  A speed to drive the robot. 1 is full speed, defaults to 0.5
 	 */
 	public void driveDirection(double angleDeg, int time, double speed) {
 		double timer = System.currentTimeMillis();

@@ -176,6 +176,7 @@ public class Autonomous implements Runnable {
 	 * 
 	 */
 	public static void rightToGear() {
+		//8.35 seconds
 		drive.driveDirection(180, 1600);
 		// added 180, originally -42.5, 137.5
 		drive.turnToAngle(-35);
@@ -190,15 +191,15 @@ public class Autonomous implements Runnable {
 		}
 
 		// second move forward at halfspeed
-		drive.driveDirection(180, 900, -0.25);
+		drive.driveDirection(180, 900, 0.25);
 
-		try {
-			Thread.sleep(3000);
-		} catch (Exception e) {
-		}
+//		try {
+//			Thread.sleep(3000);
+//		} catch (Exception e) {
+//		}
 
 		// move back slightly
-		drive.driveDirection(0, 150);
+//		drive.driveDirection(0, 150);
 
 		// waits for 5 seconds for the pilot to pick up the gear
 		try {
@@ -214,6 +215,7 @@ public class Autonomous implements Runnable {
 	 * 
 	 */
 	public static void leftToGear() {
+		//8.85 seconds
 		drive.driveDirection(180, 1500);
 		// TODO subtracted 180, originally 48, -137.5
 		drive.turnToAngle(48);
@@ -228,7 +230,7 @@ public class Autonomous implements Runnable {
 		}
 
 		// drive forward at half speed
-		drive.driveDirection(160, 1500, -0.25);
+		drive.driveDirection(160, 1500, 0.25);
 
 		// try {
 		// Thread.sleep(3000);
@@ -306,11 +308,12 @@ public class Autonomous implements Runnable {
 	 * 
 	 */
 	public static void centerToGear() {
+		//7.1 seconds
 		// WHERE ISAIAH WROTE HIS NAME NEEDS TO BE LINED UP WITH THE DAVIT
 		// drive forward
 		drive.driveDirection(180, 1600);
 		// drive forward at half speed
-		drive.driveDirection(180, 500, -0.25);
+		drive.driveDirection(180, 500, 0.25);
 
 		// waits 5 seconds for driver to get peg
 		try {
@@ -326,26 +329,26 @@ public class Autonomous implements Runnable {
 		if (team.equals("blue")) {
 			if (startPosition.equals("left")) {
 				gearToAngle(90.0);
-				drive.driveDirection(270, 1500);
+				drive.driveDirection(270, 750, 1);
 			} else if (startPosition.equals("right")) {
 				gearToAngle(90.0);
-				drive.driveDirection(270, 1600);
+				drive.driveDirection(270, 800, 1);
 			} else {
-				drive.driveDirection(0, 925);
+				drive.driveDirection(0, 462, 1);
 				drive.turnToAngle(90);
-				drive.driveDirection(270, 925);
+				drive.driveDirection(270, 463, 1);
 			}
 		} else if (team.equals("red")) {
 			if (startPosition.equals("left")) {
 				gearToAngle(270.0);
-				drive.driveDirection(90, 1500);
+				drive.driveDirection(90, 750, 1);
 			} else if (startPosition.equals("right")) {
 				gearToAngle(270.0);
-				drive.driveDirection(90, 1600);
+				drive.driveDirection(90, 800, 1);
 			} else {
-				drive.driveDirection(0, 925);
+				drive.driveDirection(0, 462, 1);
 				drive.turnToAngle(270.0);
-				drive.driveDirection(90, 925);
+				drive.driveDirection(90, 463, 1);
 			}
 		} else {
 		}
@@ -360,26 +363,25 @@ public class Autonomous implements Runnable {
 	public void wallToBoiler(StartPosition startPosition, String team) {
 		if (team.equals("blue")) {
 			if (startPosition.equals("left")) {
-				drive.driveDirection(0, 950);
+				drive.driveDirection(0, 475, 1);
 			} else if (startPosition.equals("right")) {
-				drive.driveDirection(0, 2900);
+				drive.driveDirection(0, 1450, 1);
 			} else {
-				drive.driveDirection(0, 1700);
+				drive.driveDirection(0, 850, 1);
 			}
 			// move left to get to low goal
 			drive.driveDirection(90, 300);
 		} else if (team.equals("red")) {
 			if (startPosition.equals("left")) {
-				drive.driveDirection(0, 2900);
+				drive.driveDirection(0, 1450, 1);
 			} else if (startPosition.equals("right")) {
-				drive.driveDirection(0, 1000);
+				drive.driveDirection(0, 500, 1);
 			} else {
-				drive.driveDirection(0, 1700);
+				drive.driveDirection(0, 850, 1);
 			}
 			// move right to get to low goal
 			drive.driveDirection(270, 300);
 		} else {
-
 		}
 	}
 
