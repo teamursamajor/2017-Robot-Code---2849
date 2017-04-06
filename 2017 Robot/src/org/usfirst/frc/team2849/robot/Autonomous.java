@@ -189,8 +189,8 @@ public class Autonomous implements Runnable {
 		} catch (Exception e) {
 		}
 
-		// second move forward (dont ask why we move twice)
-		drive.driveDirection(180, 450);
+		// second move forward at halfspeed
+		drive.driveDirection(180, 900, -0.25);
 
 		try {
 			Thread.sleep(3000);
@@ -227,15 +227,16 @@ public class Autonomous implements Runnable {
 		} catch (Exception e) {
 		}
 
-		drive.driveDirection(160, 750);
+		// drive forward at half speed
+		drive.driveDirection(160, 1500, -0.25);
 
-//		try {
-//			Thread.sleep(3000);
-//		} catch (Exception e) {
-//		}
+		// try {
+		// Thread.sleep(3000);
+		// } catch (Exception e) {
+		// }
 
 		// move back slightly
-//		drive.driveDirection(0, 150);
+		// drive.driveDirection(0, 150);
 
 		// waits for 5 seconds for the pilot to pick up the gear
 		try {
@@ -283,13 +284,13 @@ public class Autonomous implements Runnable {
 			drive.driveDirection(160, 750);
 		}
 
-//		try {
-//			Thread.sleep(3000);
-//		} catch (Exception e) {
-//		}
+		// try {
+		// Thread.sleep(3000);
+		// } catch (Exception e) {
+		// }
 
 		// move back slightly
-//		drive.driveDirection(0, 150);
+		// drive.driveDirection(0, 150);
 
 		// waits for 5 seconds for the pilot to pick up the gear
 		try {
@@ -306,30 +307,10 @@ public class Autonomous implements Runnable {
 	 */
 	public static void centerToGear() {
 		// WHERE ISAIAH WROTE HIS NAME NEEDS TO BE LINED UP WITH THE DAVIT
-
-		// initial drive forward from wall for 1 seconds
-		// TODO needs testing
-		// drive.driveDirection(180, 200);
-		// drive.turnAngle(160);
-		/*
-		 * try { Thread.sleep(100); } catch (Exception e) {
-		 * 
-		 * }
-		 */
-		drive.driveDirection(180, 1850);
-//		try {
-//			// waits two seconds so pilot can get gear or wait for readjustment
-//			Thread.sleep(3000);
-//		} catch (Exception e) {
-//		}
-
-		// back of robot moves backwards for 100 ms, should be about 3 in
-		/*
-		 * this is in case the gear is put in too slanted and needs to get
-		 * lifted up a bit by having the robot move back and letting the peg
-		 * pull the gear forward
-		 */
-//		drive.driveDirection(0, 180);
+		// drive forward
+		drive.driveDirection(180, 1600);
+		// drive forward at half speed
+		drive.driveDirection(180, 500, -0.25);
 
 		// waits 5 seconds for driver to get peg
 		try {
@@ -362,7 +343,7 @@ public class Autonomous implements Runnable {
 				gearToAngle(270.0);
 				drive.driveDirection(90, 1600);
 			} else {
-				drive.driveDirection(0,925);
+				drive.driveDirection(0, 925);
 				drive.turnToAngle(270.0);
 				drive.driveDirection(90, 925);
 			}
@@ -385,7 +366,7 @@ public class Autonomous implements Runnable {
 			} else {
 				drive.driveDirection(0, 1700);
 			}
-			//move left to get to low goal
+			// move left to get to low goal
 			drive.driveDirection(90, 300);
 		} else if (team.equals("red")) {
 			if (startPosition.equals("left")) {
@@ -395,23 +376,23 @@ public class Autonomous implements Runnable {
 			} else {
 				drive.driveDirection(0, 1700);
 			}
-			//move right to get to low goal
+			// move right to get to low goal
 			drive.driveDirection(270, 300);
 		} else {
 
 		}
 	}
 
-	public void turnByWall(){
-		//blue boiler left, red boiler right
-		if (team.equals("blue")){
+	public void turnByWall() {
+		// blue boiler left, red boiler right
+		if (team.equals("blue")) {
 			drive.driveDirection(180, 500);
 			drive.turnToAngle(90);
-			drive.driveDirection(270,500);
-		} else if(team.equals("red")){
-			drive.driveDirection(180,500);
+			drive.driveDirection(270, 500);
+		} else if (team.equals("red")) {
+			drive.driveDirection(180, 500);
 			drive.turnToAngle(270);
-			drive.driveDirection(90,500);
+			drive.driveDirection(90, 500);
 		}
 	}
 }

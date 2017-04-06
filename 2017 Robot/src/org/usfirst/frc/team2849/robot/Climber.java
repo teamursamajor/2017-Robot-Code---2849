@@ -33,7 +33,7 @@ public class Climber implements Runnable {
 				climber.set(-1);
 				setForwards(false);
 			} else if (button4) {
-				climber.set(.5);
+				climber.set(-0.5);
 				setButton4(false);
 			}
 			try {
