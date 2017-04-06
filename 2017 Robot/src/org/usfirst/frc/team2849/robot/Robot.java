@@ -146,9 +146,18 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopInit() {
+		//straighten robot and reset ahrs stuff
+		Autonomous.straighten();
+		ahrs.reset();
+		ahrs.zeroYaw();
+		ahrs.resetDisplacement();
+		drive.setHeadingOffset(0);
+		
 		isAutonomous = false;
 		isTeleop = true;
 		drive.setHeadingOffset(0);
+		
+		Autonomous.setKillAuto(true);
 		
 		//TODO do we need this?
 //		Climber.kill();

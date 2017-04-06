@@ -20,7 +20,7 @@ public class Autonomous implements Runnable {
 	public void run() {
 		AutoMode previousMode;
 		AutoMode currentMode;
-		if(killAuto){
+		if (killAuto) {
 			return;
 		}
 		// if there is no auto methods in the mode array, return
@@ -62,6 +62,10 @@ public class Autonomous implements Runnable {
 		if (isKilled()) {
 			return;
 		}
+
+		// TODO DELETE THIS
+		drive.turnToAngle(270);
+
 		if (previousMode == AutoMode.GEAR) {
 		} else if (previousMode == AutoMode.CROSS) {
 			if (position != StartPosition.CENTER) {
@@ -180,7 +184,7 @@ public class Autonomous implements Runnable {
 	 * 
 	 */
 	public static void rightToGear() {
-		//8.35 seconds
+		// 8.35 seconds
 		drive.driveDirection(180, 1600);
 		// added 180, originally -42.5, 137.5
 		drive.turnToAngle(-35);
@@ -197,13 +201,13 @@ public class Autonomous implements Runnable {
 		// second move forward at halfspeed
 		drive.driveDirection(180, 900, 0.25);
 
-//		try {
-//			Thread.sleep(3000);
-//		} catch (Exception e) {
-//		}
+		// try {
+		// Thread.sleep(3000);
+		// } catch (Exception e) {
+		// }
 
 		// move back slightly
-//		drive.driveDirection(0, 150);
+		// drive.driveDirection(0, 150);
 
 		// waits for 5 seconds for the pilot to pick up the gear
 		try {
@@ -219,7 +223,7 @@ public class Autonomous implements Runnable {
 	 * 
 	 */
 	public static void leftToGear() {
-		//8.85 seconds
+		// 8.85 seconds
 		drive.driveDirection(180, 1500);
 		// TODO subtracted 180, originally 48, -137.5
 		drive.turnToAngle(48);
@@ -312,7 +316,7 @@ public class Autonomous implements Runnable {
 	 * 
 	 */
 	public static void centerToGear() {
-		//7.1 seconds
+		// 7.1 seconds
 		// WHERE ISAIAH WROTE HIS NAME NEEDS TO BE LINED UP WITH THE DAVIT
 		// drive forward
 		drive.driveDirection(180, 1600);
@@ -401,7 +405,13 @@ public class Autonomous implements Runnable {
 			drive.driveDirection(90, 500);
 		}
 	}
-	public static void setKillAuto(boolean killAuto){
+
+	public static void setKillAuto(boolean killAuto) {
 		Autonomous.killAuto = killAuto;
+	}
+
+	public static void straighten() {
+		drive.driveDirection(0, 500);
+		drive.turnToAngle(180);
 	}
 }
