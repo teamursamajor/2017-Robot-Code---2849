@@ -185,9 +185,10 @@ public class Autonomous implements Runnable {
 	 */
 	public static void rightToGear() {
 		// 8.35 seconds, 1600 to 1500
-		drive.driveDirection(180, 1500);
+		drive.driveDirection(180, 1600);
 		// added 180, originally -42.5, 137.5
-		drive.turnToAngle(-35);
+		//changed from -35 to -40 (4/7/17)
+		drive.turnToAngle(-40);
 
 		// drive towards peg
 		drive.driveDirection(180, 750);
