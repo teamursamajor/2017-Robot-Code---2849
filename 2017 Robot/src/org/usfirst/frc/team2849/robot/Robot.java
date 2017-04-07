@@ -126,11 +126,6 @@ public class Robot extends IterativeRobot {
 		Autonomous.auto(() -> !this.isAutonomous(), modes, autoSelector.getStartPosition(), autoSelector.getTeam(), drive);
 		drive.setHeadingOffset(0);
 
-		if(autoSelector.getCameras()==0){
-			Vision.setCameras(1, 0);
-		} else {
-			Vision.setCameras(0, 1);
-		}
 	}
 
 	/**
@@ -161,12 +156,6 @@ public class Robot extends IterativeRobot {
 		
 		//TODO do we need this?
 //		Climber.kill();
-		
-		if(autoSelector.getCameras()==0){
-			Vision.setCameras(1, 0);
-		} else {
-			Vision.setCameras(0, 1);
-		}
 	}
 
 	/**
@@ -216,11 +205,6 @@ public class Robot extends IterativeRobot {
 		// if the camera is on shooter cam when shooting is done, switch it back
 		// to front cam
 
-		if (joy.getButton(LogitechFlightStick.BUTTON_Trigger) && !Vision.getIsSwitched()) {
-			Vision.switchCamera(1);
-		} else if (!joy.getButton(LogitechFlightStick.BUTTON_Trigger) && Vision.getIsSwitched()) {
-			Vision.switchCamera(0);
-		}
 //		if (joy.getButton(3)) {
 //			Shooter.ballIntake(-1.0);
 //		} else {

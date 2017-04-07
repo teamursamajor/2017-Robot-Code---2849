@@ -61,23 +61,17 @@ public class Vision implements Runnable {
 
 	// if true, run auto align
 	private static boolean runAutoAlign = false;
-	// if true the camera is on shooter cam, if false gear cam
-	private static boolean isSwitched = false;
 
 	// TODO do we need server still? if not, delete it
 	@SuppressWarnings("unused")
 	private static VideoSink server;
 
-	// Gear cam
 	private static UsbCamera camera0;
-	// shooter cam
-	private static UsbCamera camera1;
 
 	private static Drive drive;
 
 	// starts with gear cam
 	private static int cameraNumber = 0;
-	private static int shooterCam = 1;
 	private static int gearCam = 0;
 	private static PrintWriter file;
 
@@ -93,16 +87,11 @@ public class Vision implements Runnable {
 
 		Vision.drive = drive;
 
-		// gear camera
 		camera0 = new UsbCamera("USB Camera 0", 0);
-		// shooter camera
-		camera1 = new UsbCamera("USB Camera 1", 1);
 
 		CameraServer.getInstance().addCamera(camera0);
-		CameraServer.getInstance().addCamera(camera1);
 
 		camera0.setResolution(160, 120);
-		camera1.setResolution(160, 120);
 
 		cvSink = CameraServer.getInstance().getVideo(camera0);
 		outputStream = CameraServer.getInstance().putVideo("Camera 1", 160, 120);
@@ -118,8 +107,6 @@ public class Vision implements Runnable {
 	public void run() {
 
 		while (true) {
-			// displays shooter cam
-			switchCamera(1);
 			cvSink.grabFrame(source);
 			// getDistance(cvSink, outputStream);
 			if (runAutoAlign) {
@@ -128,13 +115,11 @@ public class Vision implements Runnable {
 				 * not sure if we need to switch for auto align to work, so I
 				 * put it in just in case
 				 */
-				switchCamera(0);
+				
 				System.out.println("Running Auto Align");
 				// System.out.println(getDistance(cvSink, outputStream));
 				autoAlign();
 				runAutoAlign = false;
-				// displays shooter cam
-				switchCamera(1);
 			}
 
 			// TODO test and see if code works without this
@@ -343,51 +328,6 @@ public class Vision implements Runnable {
 	public static void setRunAutoAlign(boolean runAutoAlign) {
 		Vision.runAutoAlign = runAutoAlign;
 		// switchCamera(0);
-	}
-
-	// changes which camera is showing
-	public static void switchCamera(int cameraNum) {
-
-		switch (cameraNum) {
-		case 1:
-			// displays the shooter camera
-			if (shooterCam == 0) {
-				cvSink = CameraServer.getInstance().getVideo(camera0);
-			} else {
-				cvSink = CameraServer.getInstance().getVideo(camera1);
-			}
-			// System.out.println("shooter cam");
-			cameraNumber = shooterCam;
-			isSwitched = true;
-			break;
-		case 0:
-			// displays the gear camera
-			if (gearCam == 0) {
-				cvSink = CameraServer.getInstance().getVideo(camera0);
-			} else {
-				cvSink = CameraServer.getInstance().getVideo(camera1);
-			}
-			// System.out.println("gear cam");
-			cameraNumber = gearCam;
-			isSwitched = false;
-			break;
-		default:
-			cvSink = CameraServer.getInstance().getVideo(camera0);
-			// System.out.println("gear cam");
-			cameraNumber = gearCam;
-			isSwitched = false;
-		}
-	}
-
-	// flips the cameras
-	public static void setCameras(int shooterCam, int gearCam) {
-		Vision.shooterCam = shooterCam;
-		Vision.gearCam = gearCam;
-		switchCamera(0);
-	}
-
-	public static boolean getIsSwitched() {
-		return isSwitched;
 	}
 
 	//ignore this

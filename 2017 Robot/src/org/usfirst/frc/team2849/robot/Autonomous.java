@@ -224,7 +224,7 @@ public class Autonomous implements Runnable {
 	 */
 	public static void leftToGear() {
 		// 8.85 seconds
-		drive.driveDirection(180, 1500);
+		drive.driveDirection(180, 1400);
 		// TODO subtracted 180, originally 48, -137.5
 		drive.turnToAngle(48);
 
