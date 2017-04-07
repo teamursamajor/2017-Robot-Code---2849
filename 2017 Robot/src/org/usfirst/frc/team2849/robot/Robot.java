@@ -157,7 +157,7 @@ public class Robot extends IterativeRobot {
 		isTeleop = true;
 		drive.setHeadingOffset(0);
 		
-		Autonomous.setKillAuto(true);
+//		Autonomous.setKillAuto(true);
 		
 		//TODO do we need this?
 //		Climber.kill();
