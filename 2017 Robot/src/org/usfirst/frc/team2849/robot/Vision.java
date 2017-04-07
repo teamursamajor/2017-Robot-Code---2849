@@ -390,6 +390,7 @@ public class Vision implements Runnable {
 		return isSwitched;
 	}
 
+	//ignore this
 	public static void closeFile() {
 		try {
 			file.close();

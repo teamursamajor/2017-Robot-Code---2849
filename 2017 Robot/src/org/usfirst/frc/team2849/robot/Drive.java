@@ -301,12 +301,13 @@ public class Drive implements Runnable {
 	 */
 	public void run() {
 		while (true) {
-			//currentAngle = getHeading();
-			//angleLock(joy.getAxisGreaterThan(0, 0.1), joy.getAxisGreaterThan(1, 0.1), joy.getAxisGreaterThan(2, 0.1),
-					//currentAngle);
+			// currentAngle = getHeading();
+			// angleLock(joy.getAxisGreaterThan(0, 0.1),
+			// joy.getAxisGreaterThan(1, 0.1), joy.getAxisGreaterThan(2, 0.1),
+			// currentAngle);
 			if (autoDrive) {
-				//currentAngle = getHeading();
-				//angleLock();
+				// currentAngle = getHeading();
+				// angleLock();
 				// System.out.println("Distance: " + ultra.getDistance());
 				// System.out.println("Voltage: " + ultra.getVoltage());
 				// checking in centimeters
@@ -444,7 +445,7 @@ public class Drive implements Runnable {
 	 */
 	public void angleLock(double xaxis, double yaxis, double zaxis, double currentAngle) {
 		if (Math.abs(yaxis) > 0 && xaxis == 0 && zaxis == 0) {
-			//TODO there is a chance that this should be turnToAngle()
+			// TODO there is a chance that this should be turnToAngle()
 			driveAngle(currentAngle);
 		}
 
@@ -479,4 +480,30 @@ public class Drive implements Runnable {
 	public static void setAutoDrive(boolean autoDrive) {
 		Drive.autoDrive = autoDrive;
 	}
+
+	/**
+	 * This will drive the robot in a direction for the specified time and at the specified speed.
+	 * 
+	 * @param angleDeg
+	 *            An angle measurement in degrees.
+	 * @param time
+	 *            A time measurement in milliseconds.
+	 * @param speed
+	 * 			  A speed to drive the robot. 1 is full speed, defaults to 0.5
+	 */
+	public void driveDirection(double angleDeg, int time, double speed) {
+		double timer = System.currentTimeMillis();
+		drive(0, -speed, 0, -angleDeg);
+
+		while (System.currentTimeMillis() - timer < time) {
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+
+		drive(0, 0, 0, 0);
+	}
+
 }
