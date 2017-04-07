@@ -481,7 +481,7 @@ public class Drive implements Runnable {
 	}
 
 	/**
-	 * This will drive the robot in a direction for the specified time and at the specified speed.
+	 * This will drive the robot in a direction for the specified time and at the specified speed
 	 * 
 	 * @param angleDeg
 	 *            An angle measurement in degrees.
