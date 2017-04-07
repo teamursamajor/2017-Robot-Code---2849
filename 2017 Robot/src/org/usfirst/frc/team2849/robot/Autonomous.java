@@ -184,8 +184,8 @@ public class Autonomous implements Runnable {
 	 * 
 	 */
 	public static void rightToGear() {
-		// 8.35 seconds
-		drive.driveDirection(180, 1600);
+		// 8.35 seconds, 1600 to 1500
+		drive.driveDirection(180, 1500);
 		// added 180, originally -42.5, 137.5
 		drive.turnToAngle(-35);
 
@@ -385,7 +385,7 @@ public class Autonomous implements Runnable {
 			} else if (startPosition.equals("right")) {
 				drive.driveDirection(0, 500, 1);
 			} else {
-				drive.driveDirection(0, 850, 1);
+				drive.driveDirection(0, 1000, 1);
 			}
 			// move right to get to low goal
 			drive.driveDirection(270, 300);
@@ -398,11 +398,11 @@ public class Autonomous implements Runnable {
 		if (team.equals("blue")) {
 			drive.driveDirection(180, 500);
 			drive.turnToAngle(90);
-			drive.driveDirection(270, 500);
+			drive.driveDirection(270, 500, 1);
 		} else if (team.equals("red")) {
 			drive.driveDirection(180, 500);
 			drive.turnToAngle(270);
-			drive.driveDirection(90, 500);
+			drive.driveDirection(90, 500, 1);
 		}
 	}
 

@@ -147,11 +147,11 @@ public class Robot extends IterativeRobot {
 
 	public void teleopInit() {
 		//straighten robot and reset ahrs stuff
-		Autonomous.straighten();
-		ahrs.reset();
-		ahrs.zeroYaw();
-		ahrs.resetDisplacement();
-		drive.setHeadingOffset(0);
+		//Autonomous.straighten();
+//		ahrs.reset();
+//		ahrs.zeroYaw();
+//		ahrs.resetDisplacement();
+//		drive.setHeadingOffset(0);
 		
 		isAutonomous = false;
 		isTeleop = true;
