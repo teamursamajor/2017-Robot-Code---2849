@@ -8,6 +8,7 @@ import org.usfirst.frc.team2849.robot.Autonomous.AutoMode;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -65,6 +66,8 @@ public class Robot extends IterativeRobot {
 	private final int BACK_RIGHT_DRIVE = 8;
 
 	private AutoSelector autoSelector;
+	
+	private PowerDistributionPanel board = new PowerDistributionPanel();
 	
 	private static boolean isAutonomous = false;
 	private static boolean isTeleop = false;
@@ -268,13 +271,85 @@ public class Robot extends IterativeRobot {
 	 * code here instead of teleopPeriodic().
 	 */
 	public void testPeriodic() {
+		//System.out.println("Current angle is: " + ahrs.getAngle());
+//		System.out.println();
+//		System.out.println("Distance: " + drive.ultra.getDistance());
+//		System.out.println();
+//		System.out.println("Voltage: " + drive.ultra.getVoltage());
+//		System.out.println();
+		try {
+			// if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side10))
+			// {
+			Drive.drive(joy.getXAxis(), joy.getYAxis(), -joy.getZAxis(), ahrs.getAngle());
+			// }
+		} catch (NullPointerException e) {
+			e.printStackTrace();
+		}
 
-		System.out.println(drive.getHeading());
+		if (joy.getButton(1)) {
+			Shooter.startShoot(() -> !joy.getButton(1));
+		}
+		
+//		Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
+//		Shooter.setPowerSided((joy.getAxis(3) - 1) * -.5d);
+		if (joy.getButton(4)) {
+			Climber.setButton4(true);
+			Climber.climb(() -> !joy.getButton(4));
+		}
 		if (joy.getButton(5)) {
 			Climber.setForwards(true);
 			Climber.climb(() -> !joy.getButton(5));
 		}
+		
+		if (joy.getSingleButtonPress(3)) {
+			System.out.println(board.getCurrent(0));
+			System.out.println(board.getCurrent(1));
+			System.out.println(board.getCurrent(14));
+			System.out.println(board.getCurrent(15));
+		}
 
+
+		/*
+		 * switch camera from gear to shooter when trigger is pressed and then
+		 * switch back to gear when trigger is released
+		 * 
+		 * This should be getButton, not getSingleButtonPress
+		 */
+
+		// if the camera is on shooter cam when shooting is done, switch it back
+		// to front cam
+
+//		if (joy.getButton(3)) {
+//			Shooter.ballIntake(-1.0);
+//		} else {
+//			Shooter.ballIntake(0);
+//			Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
+//		}
+
+		// Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
+		// joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y));
+		//
+		// if (joy.getButton(LogitechFlightStick.BUTTON_Side8)) {
+		// Shooter.clearIntake(joy);
+		// }
+
+		// run auto align for the three different gear pegs
+
+		if (joy.getSingleButtonPress(LogitechFlightStick.BUTTON_Side11)) {
+			//resets headless angle
+//			drive.turnToAngle(180);
+			ahrs.reset();
+			ahrs.zeroYaw();
+			ahrs.resetDisplacement();
+			drive.setHeadingOffset(0);
+		} 
+		
+		if (joy.getButton(9)) {
+			joy.setMaxXY(0.5);
+		} else{
+			joy.setMaxXY(1.0);
+		}
+		
 		if (joy.getButton(12)) {
 			povAngle = joy.getPOV(0);
 			if (povAngle == -1) {
@@ -290,40 +365,10 @@ public class Robot extends IterativeRobot {
 			drive.switchHeadless();
 			System.out.println("Headless: " + drive.getHeadless());
 		}
-
-		//
-		//
-		//  Shooter.shoot(joy.getButton(LogitechFlightStick.BUTTON_Trigger));
-		//  Shooter.startShoot(() -> !joy.getButton(1), ahrs);
-		//
-//
-//		if (joy.getButton(1)) {
-//			Shooter.startShoot(() -> !joy.getButton(1));
-//			
-//			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
-//
-//			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
-//		
-//			 Shooter.ballIntake(joy.getRawAxis(LogitechFlightStick.AXIS_TILT_X),
-//			 joy.getRawAxis(LogitechFlightStick.AXIS_TILT_Y) );
-//			
-//			 if (joy.getButton(3)) {
-//			 Shooter.ballIntake(1, 1);
-//			 }
-//			 else {
-//			 Shooter.ballIntake(joy.getXAxis(), joy.getYAxis());
-//			 }
-//			
-//
-//		}
-//
-//		if (joy.getButton(1)) {
-//			Shooter.startShoot(() -> !joy.getButton(1));
-//			Shooter.switchPower(b1.buttonPress(joy.getButton(4)));
-//
-//			Shooter.setPowerSided((joy.getAxis(3) - 1) * -0.5d);
-//
-//		}
+		
+		if(joy.getSingleButtonPress(7)){
+			Autonomous.setKillAuto(true);
+		}
 	}
 
 	public void disabledInit() {

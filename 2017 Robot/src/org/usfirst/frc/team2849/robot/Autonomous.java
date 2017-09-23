@@ -165,7 +165,7 @@ public class Autonomous implements Runnable {
 	}
 
 	public static boolean isKilled() {
-		return ending.done();
+		return ending.done() || !Robot.getIsAutonomous();
 	}
 
 	/**

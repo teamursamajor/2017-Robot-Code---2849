@@ -42,7 +42,7 @@ public class Drive implements Runnable {
 	public Ultrasonic ultra = new Ultrasonic(0, 7);
 	private static boolean autoDrive = false;
 
-	private static LogitechFlightStick joy;
+	//private static LogitechFlightStick joy;
 
 	private final double STOPPING_DISTANCE = 8.0;
 //0 fl 1 fr 9 bl 8 br
@@ -68,7 +68,7 @@ public class Drive implements Runnable {
 		backRightMotor1.setInverted(true);
 		numMotors = 4;
 		Drive.ahrs = ahrs;
-		Drive.joy = joy;
+		//Drive.joy = joy;
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class Drive implements Runnable {
 		backRightMotor2 = new Spark(t8);
 		numMotors = 8;
 		Drive.ahrs = ahrs;
-		Drive.joy = joy;
+		//Drive.joy = joy;
 	}
 
 	/**
